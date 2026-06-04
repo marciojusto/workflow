@@ -1,0 +1,11 @@
+### 1. OKTA PKCE (IntelliJ) — abre browser para login Renault
+# Após executar, copia o access_token do response e corre:
+#   echo "<access_token>" > ~/.config/refdata-loader/okta-token
+GET {{baseURI}}{{mmp-api.token}}/token
+Content-Type: application/json
+x-gateway-apikey: {{gatewayKey}}
+x-keycloak-token: {{$auth.token("okta-uat-refdev")}}
+
+### 2. Keycloak password — alternativa sem browser
+# Usa o CLI em vez deste request:
+#   npx tsx src/index.ts login --username twam1 --password 123456Cc

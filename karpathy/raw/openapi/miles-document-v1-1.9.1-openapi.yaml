@@ -1,0 +1,527 @@
+openapi: 3.0.1
+info:
+  title: miles-document
+  contact:
+    url: https://www.sofico.global
+  license:
+    name: Sofico
+    url: https://www.sofico.global
+  version: 1.9.1
+  x-milesServiceType: functional
+  x-logo:
+    url: https://www.sofico.global/sofico.svg
+    altText: Sofico logo
+tags:
+  - name: DocumentTemplatesResourceAPI
+    description: |
+      All endpoints related to retrieving document templates for an object.
+
+      **Important:** These endpoints can only be called from another Miles microservice.
+  - name: DocumentsResourceAPI
+    description: All endpoints related to managing of documents.
+paths:
+  /amendment-quotes/document-templates:
+    get:
+      tags:
+        - DocumentTemplatesResourceAPI
+      summary: Find amendment quote document templates
+      description: |
+        This endpoint retrieves a filtered list of document templates that can be used for an amendment quote.
+
+        **Important:** This endpoint can only be called from another Miles microservice.
+      operationId: findAmendmentQuoteDocumentTemplates
+      parameters:
+        - name: count
+          in: query
+          description: The maximum number of elements to be returned
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 10
+        - name: offset
+          in: query
+          description: The number of elements to skip before returning the requested list of elements
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 50
+        - name: sort_by
+          in: query
+          description: List of order clauses in which the elements will be returned, deprecated since 2022-09-06 and version 1.184.0 in favor of sorting
+          deprecated: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: sorting
+          in: query
+          description: List of order clauses in which the elements will be returned
+          schema:
+            type: array
+            items:
+              type: string
+        - name: document_template_id
+          in: query
+          description: The IDs of the document template you want to filter
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+              example: '214456782'
+        - name: included_access_type_id
+          in: query
+          description: The IDs of the access types that the document templates should have
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+              example: '2655'
+        - name: excluded_access_type_id
+          in: query
+          description: The IDs of the access types that the document templates cannot have
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+              example: '2652'
+        - name: usage
+          in: query
+          description: Identify for which use-case you want to retrieve document templates
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              $ref: '#/components/schemas/DocumentTemplateUsage'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindDocumentTemplatesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+  /documents:
+    post:
+      tags:
+        - DocumentsResourceAPI
+      summary: Generate documents
+      description: |
+        This endpoint creates documents based on the given parameters.
+      operationId: generateDocument
+      requestBody:
+        description: Data required to generate a document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDocumentRequestParameters'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateDocumentResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - backoffice_user
+  /documents/{document_uuid}:
+    get:
+      tags:
+        - DocumentsResourceAPI
+      summary: Retrieve document by ID
+      description: This endpoint retrieves a document by its UUID. It then returns the document content as binary data.
+      operationId: getDocumentById
+      parameters:
+        - name: document_uuid
+          in: path
+          description: UUID of the document to retrieve
+          required: true
+          schema:
+            type: string
+          example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - user
+components:
+  schemas:
+    ComponentAccessType:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The component access type ID
+          example: '2655'
+        description:
+          type: string
+          description: The component access type description
+          example: All
+      description: The access type of the document template
+    DocumentTemplateUsage:
+      type: string
+      enum:
+        - GENERATION
+        - IMPORTATION
+    FindDocumentTemplate:
+      type: object
+      properties:
+        documentTemplateId:
+          type: string
+          description: The ID of the document template
+          example: '214456782'
+        name:
+          description: The name of the document template
+          $ref: '#/components/schemas/MultiLanguageValue'
+        description:
+          description: The description of the document template
+          $ref: '#/components/schemas/MultiLanguageValue'
+        usage:
+          description: Identifies for which usage the document template can be used
+          $ref: '#/components/schemas/DocumentTemplateUsage'
+        accessType:
+          description: The access type of the document template
+          $ref: '#/components/schemas/ComponentAccessType'
+      description: A document template
+    FindDocumentTemplatesResponse:
+      type: object
+      properties:
+        documentTemplates:
+          type: array
+          description: The paginated list of filtered document templates
+          items:
+            $ref: '#/components/schemas/FindDocumentTemplate'
+        totalCount:
+          type: integer
+          description: The total number of document templates that apply to the filters
+          format: int64
+          example: 25
+    MultiLanguageValue:
+      title: MultiLanguageValue
+      type: object
+      properties:
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '170392'
+        translation:
+          type: string
+          description: The translation of the multi-language ID in human-readable format
+          example: Hatchback
+      description: Miles API v1 representation of a translated string value.
+    ExceptionInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/problems/microservices/service-unavailable
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Service Unavailable
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: The requested service is not available.
+        message:
+          description: Message objects containing translation information
+          $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '34898219'
+    DocumentResponse:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: The reference of the document to be generated. This can be used to retrieve the contents of the document.
+          example: d7484849-c19b-4f7d-915e-349003345c7a
+        status:
+          description: The Miles back-office application enumeration ID of the document generation status
+          $ref: '#/components/schemas/DocumentStatus'
+        message:
+          type: string
+          description: Additional details on the status/error of the document generation
+          example: Something went wrong during the generation of the document.
+      description: Document
+    DocumentStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The document generation status ID
+          example: '1696'
+        description:
+          type: string
+          description: The document generation status description
+          example: Finished
+      description: The Miles back-office application enumeration ID of the document generation status
+    GenerateDocumentResponse:
+      type: object
+      properties:
+        documents:
+          type: array
+          description: A list of details pertaining to the generated documents
+          items:
+            $ref: '#/components/schemas/DocumentResponse'
+    DataFormat:
+      type: string
+      description: Specifies the data format of the data source result (case-insensitive)
+      example: xml, json
+      enum:
+        - XML
+        - JSON
+    Document:
+      required:
+        - documentTemplateId
+        - language
+        - outputFormat
+      type: object
+      properties:
+        outputFormat:
+          description: The enumeration ID representing the document format to be generated in the Miles back-office application
+          $ref: '#/components/schemas/SimpleEnumValue'
+        language:
+          maxLength: 3
+          minLength: 2
+          pattern: ^([A-Za-z]{2,3})?$
+          type: string
+          description: The language in which the document should be generated. The language is case insensitive and both ISO CODE 2 and 3 are accepted
+          format: ISO 639-1 or ISO 639-2
+          example: eng
+        locale:
+          type: object
+          properties:
+            language:
+              type: string
+            displayName:
+              type: string
+            country:
+              type: string
+            variant:
+              type: string
+            script:
+              type: string
+            unicodeLocaleAttributes:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            unicodeLocaleKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            displayLanguage:
+              type: string
+            displayScript:
+              type: string
+            displayCountry:
+              type: string
+            displayVariant:
+              type: string
+            extensionKeys:
+              uniqueItems: true
+              type: array
+              items:
+                type: string
+            iso3Language:
+              type: string
+            iso3Country:
+              type: string
+          description: The case-insensitive Java locale determined by the calling application
+          example: en_US
+        documentTemplateId:
+          type: string
+          description: The document template ID used to generate the document
+          example: '600021'
+        documentData:
+          description: Data required for the generation of an individual document. This data is used for the creation of the template.
+          $ref: '#/components/schemas/DocumentData'
+      description: Document
+    DocumentData:
+      type: object
+      properties:
+        data:
+          type: string
+          description: The result of the datasource
+        dataFormat:
+          description: Specifies the data format of the data source result (case-insensitive)
+          $ref: '#/components/schemas/DataFormat'
+        parameters:
+          type: array
+          description: List of parameters necessary to fill in so the document can be generated. Each parameter is represented by a specific subtype (e.g., Long, String, Boolean, Integer, etc.), depending on its data type.
+          example:
+            - name: PAR_QUOTE_ID
+              dataType: LONG
+              value: 10000000
+            - name: PAR_STRING
+              dataType: string
+              value: abc
+            - name: PAR_DATE
+              dataType: DATE
+              value: '2023-10-01T00:00:00Z'
+          items:
+            $ref: '#/components/schemas/Parameter'
+      description: Data required for the generation of an individual document. This data is used for the creation of the template.
+    GenerateDocumentRequestParameters:
+      required:
+        - documents
+      type: object
+      properties:
+        documents:
+          type: array
+          description: A list of details pertaining to the documents to be generated
+          items:
+            $ref: '#/components/schemas/Document'
+    Parameter:
+      required:
+        - dataType
+        - name
+      type: object
+      properties:
+        dataType:
+          type: string
+          description: The data type of the parameter that is going to be used on the reporting service. The value of this field is case-insensitive.
+          example: LONG, long
+          enum:
+            - LONG
+            - INTEGER
+            - STRING
+            - STRINGCOLLECTION
+            - DOUBLE
+            - DATE
+            - BOOLEAN
+            - DATETIME
+        name:
+          minLength: 1
+          type: string
+          description: The name of the parameter that is going to be used on the reporting service
+          example: PAR_QUOTE_ID
+      description: List of parameters necessary to fill in so the document can be generated. Each parameter is represented by a specific subtype (e.g., Long, String, Boolean, Integer, etc.), depending on its data type.
+      example:
+        - name: PAR_QUOTE_ID
+          dataType: LONG
+          value: 10000000
+        - name: PAR_STRING
+          dataType: string
+          value: abc
+        - name: PAR_DATE
+          dataType: DATE
+          value: '2023-10-01T00:00:00Z'
+      discriminator:
+        propertyName: dataType
+    SimpleEnumValue:
+      title: SimpleEnumValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID
+          example: '100002'
+      description: Miles API v1 representation of a simple enumeration value
+      example: 1132
+    WarningsInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/warnings/microservices/unprocessable-entity
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Unprocessable Entity
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Unable to process payload due to invalid data.
+        messages:
+          type: array
+          description: An array of message objects containing translation information
+          items:
+            $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '23121434'
+        isInteractiveWarning:
+          type: boolean
+          description: Indicates whether this error requires user interaction
+          example: false
+  securitySchemes:
+    Roles:
+      type: openIdConnect
+      description: Users need to have certain roles to be able to access certain API endpoints. If there are no roles defined for the endpoint, * is shown. This means that every authorized user has access to the endpoint.
+      openIdConnectUrl: ''
+x-tagGroups:
+  - tags:
+      - DocumentsResourceAPI
+      - DocumentTemplatesResourceAPI
+    name: User experience-oriented endpoints

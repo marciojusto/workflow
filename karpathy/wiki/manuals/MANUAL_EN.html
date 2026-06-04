@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Manual</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-deep: #0a0e14;
+    --bg-primary: #0d1117;
+    --bg-secondary: #131920;
+    --bg-tertiary: #1a2129;
+    --bg-elevated: #21262d;
+    --border-subtle: #21262d;
+    --border-default: #30363d;
+    --border-strong: #484f58;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-tertiary: #6e7681;
+    --text-muted: #484f58;
+    --accent-blue: #58a6ff;
+    --accent-cyan: #39c5cf;
+    --accent-green: #3fb950;
+    --accent-yellow: #d29922;
+    --accent-orange: #db6d28;
+    --accent-red: #f85149;
+    --accent-purple: #a371f7;
+    --accent-pink: #db61a2;
+    --gradient-blue: linear-gradient(135deg, #1f6feb, #388bfd);
+    --gradient-green: linear-gradient(135deg, #238636, #3fb950);
+    --gradient-purple: linear-gradient(135deg, #a371f7, #db61a2);
+    --gradient-orange: linear-gradient(135deg, #d29922, #db6d28);
+    --gradient-cyan: linear-gradient(135deg, #0891b2, #39c5cf);
+    --glow-blue: rgba(56, 139, 253, 0.3);
+    --glow-green: rgba(63, 185, 80, 0.25);
+    --glow-purple: rgba(163, 113, 247, 0.25);
+    --glow-orange: rgba(219, 109, 40, 0.25);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 15px;
+    min-height: 100vh;
+}
+
+/* ============ APP CONTAINER ============ */
+.app-container { display: flex; min-height: 100vh; }
+
+/* ============ SIDEBAR ============ */
+.sidebar {
+    width: 280px; background: var(--bg-primary);
+    border-right: 1px solid var(--border-subtle);
+    position: fixed; height: 100vh; overflow-y: auto;
+    z-index: 100; padding: 0;
+}
+.sidebar-header {
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.sidebar-logo {
+    display: flex; align-items: center; gap: 12px;
+}
+.sidebar-logo-icon {
+    width: 40px; height: 40px;
+    background: var(--gradient-blue);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 20px var(--glow-blue);
+}
+.sidebar-logo-text {
+    font-size: 18px; font-weight: 700;
+    background: var(--gradient-blue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.sidebar-version {
+    display: inline-block; margin-top: 8px;
+    padding: 4px 10px; background: var(--bg-tertiary);
+    border-radius: 20px; font-size: 11px;
+    color: var(--text-tertiary); font-weight: 500;
+}
+.sidebar-section {
+    padding: 16px 12px 8px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted);
+}
+.sidebar-nav { padding: 4px 8px; }
+.nav-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 8px;
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 14px; font-weight: 500;
+    transition: all 0.2s; margin: 2px 0;
+    cursor: pointer;
+}
+.nav-link:hover {
+    background: var(--bg-secondary); color: var(--text-primary);
+}
+.nav-link.active {
+    background: rgba(31, 111, 235, 0.15);
+    color: var(--accent-blue);
+    border: 1px solid rgba(56, 139, 253, 0.3);
+}
+.nav-link.nav-h2 { padding-left: 28px; font-size: 13px; }
+.nav-icon { font-size: 16px; width: 24px; text-align: center; }
+
+/* ============ MAIN ============ */
+.main-content { flex: 1; margin-left: 280px; }
+
+/* ============ HERO ============ */
+.hero {
+    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    padding: 60px 50px 40px;
+    border-bottom: 1px solid var(--border-subtle);
+    position: relative; overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute; top: -100px; left: -100px; right: -100px;
+    height: 400px;
+    background:
+        radial-gradient(ellipse 600px 300px at 30% 0%, rgba(56,139,253,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 200px at 70% 0%, rgba(163,113,247,0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+.hero-content { max-width: 800px; position: relative; z-index: 1; }
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; background: var(--bg-tertiary);
+    border-radius: 20px; font-size: 12px;
+    color: var(--text-secondary); margin-bottom: 20px;
+}
+.hero-title {
+    font-size: 44px; font-weight: 800; margin-bottom: 16px;
+    line-height: 1.15;
+}
+.hero-title-gradient {
+    background: linear-gradient(135deg, #58a6ff, #39c5cf, #a371f7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.hero-desc {
+    font-size: 18px; color: var(--text-secondary); max-width: 600px;
+}
+.hero-meta {
+    display: flex; gap: 24px; margin-top: 24px;
+    flex-wrap: wrap;
+}
+.hero-meta-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-tertiary);
+}
+
+/* ============ CONTENT ============ */
+.content { padding: 50px; max-width: 960px; }
+
+/* ============ SECTION CARDS ============ */
+.section-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 32px 0;
+}
+
+/* ============ HEADINGS ============ */
+h1 {
+    font-size: 38px; font-weight: 700; margin: 0 0 24px;
+    color: var(--accent-blue);
+}
+h2 {
+    font-size: 28px; font-weight: 600; margin: 48px 0 20px;
+    color: var(--text-primary);
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    scroll-margin-top: 20px;
+}
+h2 .h2-number {
+    font-size: 14px; font-weight: 700;
+    background: var(--accent-blue); color: var(--bg-deep);
+    padding: 4px 10px; border-radius: 6px;
+}
+h2::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--border-subtle);
+}
+h3 {
+    font-size: 21px; font-weight: 600; margin: 32px 0 16px;
+    color: var(--text-primary);
+    scroll-margin-top: 20px;
+}
+h4 {
+    font-size: 17px; font-weight: 600; margin: 24px 0 12px;
+    color: var(--text-primary);
+    scroll-margin-top: 20px;
+}
+p { margin: 16px 0; color: var(--text-secondary); }
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { color: var(--accent-cyan); }
+
+/* ============ WORKFLOW DIAGRAM ============ */
+.workflow-section { margin: 32px 0; }
+.workflow-section h2 { margin-top: 0; }
+.workflow-visual {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 40px 32px;
+    margin: 24px 0;
+    overflow-x: auto;
+}
+.workflow-diagram {
+    display: flex; align-items: center; justify-content: center;
+    gap: 4px; flex-wrap: nowrap;
+    min-width: 700px;
+}
+.workflow-step {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; flex-shrink: 0;
+}
+.flow-node {
+    width: 96px; padding: 16px 8px;
+    border-radius: 14px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; gap: 4px;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+.flow-node:hover {
+    transform: translateY(-4px);
+}
+.flow-node::after {
+    content: ''; position: absolute; inset: -3px;
+    border-radius: 17px; opacity: 0;
+    transition: opacity 0.3s;
+}
+.flow-node:hover::after { opacity: 1; }
+.flow-icon { font-size: 22px; }
+.flow-label { font-size: 10px; font-weight: 600; color: #fff; line-height: 1.2; }
+.flow-meta { font-size: 8px; color: rgba(255,255,255,0.7); }
+
+.node-user { background: var(--gradient-blue); width: 110px; }
+.node-user::after { box-shadow: 0 0 25px var(--glow-blue); }
+.node-orch { background: linear-gradient(135deg, #6366f1, #818cf8); padding: 14px 8px; }
+.node-orch::after { box-shadow: 0 0 25px rgba(99,102,241,0.3); }
+.node-keeper { background: var(--gradient-green); }
+.node-keeper::after { box-shadow: 0 0 25px var(--glow-green); }
+.node-expert { background: var(--gradient-purple); }
+.node-expert::after { box-shadow: 0 0 25px var(--glow-purple); }
+.node-skill { background: var(--gradient-cyan); }
+.node-skill::after { box-shadow: 0 0 25px rgba(57,197,207,0.3); }
+.node-runner { background: var(--gradient-orange); }
+.node-runner::after { box-shadow: 0 0 25px var(--glow-orange); }
+
+.flow-arrow {
+    font-size: 18px; color: var(--text-muted);
+    flex-shrink: 0;
+    animation: arrowPulse 2s ease-in-out infinite;
+}
+.flow-line {
+    width: 40px; height: 2px;
+    background: var(--border-default);
+    flex-shrink: 0; position: relative;
+}
+.flow-line::after {
+    content: '▶';
+    position: absolute; right: -6px; top: -6px;
+    font-size: 10px; color: var(--text-tertiary);
+}
+@keyframes arrowPulse {
+    0%, 100% { opacity: 0.4; transform: translateX(0); }
+    50% { opacity: 1; transform: translateX(3px); }
+}
+
+/* Workflow details grid */
+.wf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+}
+.wf-card {
+    background: var(--bg-deep);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s;
+}
+.wf-card:hover {
+    border-color: var(--border-default);
+    background: var(--bg-tertiary);
+}
+.wf-card-icon { font-size: 20px; margin-bottom: 8px; }
+.wf-card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.wf-card-desc { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; }
+.wf-card-time {
+    display: inline-block; margin-top: 8px;
+    padding: 2px 8px; background: var(--bg-tertiary);
+    border-radius: 4px; font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-tertiary);
+}
+
+/* Workflow alt view (table-like) */
+.wf-table {
+    margin: 24px 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.wf-row {
+    display: flex; align-items: center;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 12px 20px;
+    transition: background 0.2s;
+}
+.wf-row:last-child { border-bottom: none; }
+.wf-row:hover { background: var(--bg-tertiary); }
+.wf-step-num {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0; margin-right: 16px;
+}
+.wf-step-num.s0 { background: var(--gradient-blue); color: #fff; }
+.wf-step-num.s1 { background: var(--gradient-green); color: #fff; }
+.wf-step-num.s2 { background: var(--gradient-purple); color: #fff; }
+.wf-step-num.s3 { background: var(--gradient-cyan); color: #fff; }
+.wf-step-num.s4 { background: var(--gradient-orange); color: #fff; }
+.wf-step-num.s5 { background: rgba(99,102,241,1); color: #fff; }
+.wf-step-num.s6 { background: linear-gradient(135deg, #db61a2, #a371f7); color: #fff; }
+.wf-row-icon { font-size: 18px; margin-right: 12px; }
+.wf-row-info { flex: 1; }
+.wf-row-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.wf-row-desc { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+.wf-row-badge {
+    padding: 4px 10px; background: var(--bg-tertiary);
+    border-radius: 6px; font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-secondary); flex-shrink: 0;
+}
+
+/* Orchestrator modes */
+.modes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+.mode-card {
+    background: var(--bg-deep);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+}
+.mode-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.mode-icon { font-size: 32px; margin-bottom: 12px; }
+.mode-name {
+    font-size: 18px; font-weight: 700;
+    color: var(--text-primary); margin-bottom: 8px;
+}
+.mode-desc { font-size: 13px; color: var(--text-tertiary); }
+.mode-cmd {
+    display: inline-block; margin-top: 12px;
+    padding: 6px 16px; background: var(--bg-tertiary);
+    border-radius: 6px; font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent-cyan);
+}
+.mode-card.auto { border-color: rgba(63,185,80,0.3); }
+.mode-card.auto:hover { box-shadow: 0 8px 30px var(--glow-green); }
+.mode-card.plan { border-color: rgba(56,139,253,0.3); }
+.mode-card.plan:hover { box-shadow: 0 8px 30px var(--glow-blue); }
+.mode-card.build { border-color: rgba(163,113,247,0.3); }
+.mode-card.build:hover { box-shadow: 0 8px 30px var(--glow-purple); }
+
+/* ============ AGENT CARDS ============ */
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 20px;
+    margin: 24px 0;
+}
+.agent-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+.agent-card:hover {
+    border-color: var(--border-default);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.agent-card-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 16px;
+}
+.agent-avatar {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+}
+.agent-orch { background: linear-gradient(135deg, #6366f1, #818cf8); }
+.agent-keeper { background: var(--gradient-green); }
+.agent-expert { background: var(--gradient-purple); }
+.agent-runner { background: var(--gradient-orange); }
+.agent-info { flex: 1; }
+.agent-name { font-size: 17px; font-weight: 600; color: var(--text-primary); }
+.agent-role { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+.agent-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.agent-tag {
+    padding: 3px 10px; border-radius: 6px;
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+}
+.agent-tag.model { background: rgba(56,139,253,0.15); color: var(--accent-blue); }
+.agent-tag.timeout { background: rgba(210,153,34,0.15); color: var(--accent-yellow); }
+.agent-tag.retry { background: rgba(163,113,247,0.15); color: var(--accent-purple); }
+.agent-body { color: var(--text-secondary); font-size: 14px; }
+.agent-body p { margin: 8px 0; }
+
+/* ============ TABLES ============ */
+.table-wrap {
+    overflow-x: auto; margin: 20px 0;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+}
+table {
+    width: 100%; border-collapse: collapse; font-size: 14px;
+}
+th {
+    background: var(--bg-tertiary); color: var(--accent-blue);
+    padding: 14px 16px; text-align: left; font-weight: 600;
+    border-bottom: 1px solid var(--border-default);
+    white-space: nowrap; font-size: 13px;
+}
+td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-secondary); font-size: 13px;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-elevated); }
+
+/* ============ CODE BLOCKS ============ */
+pre {
+    background: var(--bg-deep);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    margin: 20px 0;
+    overflow-x: auto;
+    position: relative;
+    counter-reset: line;
+}
+pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0; right: 0;
+    padding: 4px 12px;
+    background: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    border-radius: 0 12px 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-left: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+pre code {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-primary);
+    padding: 16px;
+}
+/* JSON specific - add subtle color */
+.language-json { color: #d4d4d4; }
+.language-bash { color: var(--accent-green); }
+.language-yaml { color: var(--accent-cyan); }
+/* Inline code */
+p code, li code, td code {
+    background: var(--bg-tertiary);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--accent-cyan);
+    font-family: 'JetBrains Mono', monospace;
+    border: 1px solid var(--border-subtle);
+}
+
+/* ============ CALLOUTS ============ */
+.callout {
+    padding: 16px 20px; border-radius: 12px;
+    margin: 20px 0;
+    display: flex; align-items: flex-start; gap: 12px;
+    border: 1px solid;
+}
+.callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.callout-body { flex: 1; }
+.callout-title { font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
+.callout p { margin: 0; font-size: 14px; }
+.callout-info { background: rgba(56,139,253,0.08); border-color: rgba(56,139,253,0.25); }
+.callout-info .callout-title { color: var(--accent-blue); }
+.callout-warn { background: rgba(210,153,34,0.08); border-color: rgba(210,153,34,0.25); }
+.callout-warn .callout-title { color: var(--accent-yellow); }
+.callout-good { background: rgba(63,185,80,0.08); border-color: rgba(63,185,80,0.25); }
+.callout-good .callout-title { color: var(--accent-green); }
+
+/* ============ LISTS ============ */
+ul, ol { margin: 16px 0; padding-left: 24px; color: var(--text-secondary); }
+li { margin: 8px 0; padding-left: 4px; }
+li::marker { color: var(--accent-blue); }
+
+/* ============ BLOCKQUOTE (default fallback) ============ */
+blockquote {
+    border-left: 4px solid var(--accent-blue);
+    background: var(--bg-secondary);
+    padding: 16px 20px; margin: 20px 0;
+    border-radius: 0 12px 12px 0;
+}
+blockquote p { color: var(--text-tertiary); }
+
+/* ============ BADGES ============ */
+.badge {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 6px; font-size: 12px; font-weight: 600;
+}
+.badge-blue { background: rgba(56,139,253,0.2); color: var(--accent-blue); }
+.badge-green { background: rgba(63,185,80,0.2); color: var(--accent-green); }
+.badge-yellow { background: rgba(210,153,34,0.2); color: var(--accent-yellow); }
+.badge-purple { background: rgba(163,113,247,0.2); color: var(--accent-purple); }
+
+/* ============ HR ============ */
+hr {
+    border: none; height: 1px;
+    background: var(--border-subtle); margin: 48px 0;
+}
+
+/* ============ FOOTER ============ */
+.footer {
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-subtle);
+    padding: 40px; text-align: center;
+    color: var(--text-muted); font-size: 13px;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+    .hero { padding: 40px 24px; }
+    .content { padding: 24px; }
+    .hero-title { font-size: 30px; }
+    .agents-grid { grid-template-columns: 1fr; }
+    .workflow-diagram { min-width: auto; flex-wrap: wrap; gap: 8px; }
+    .flow-arrow { transform: rotate(90deg); }
+}
+
+/* ============ SCROLLBAR ============ */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+</style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">📘</div>
+                    <div class="sidebar-logo-text">Workflow</div>
+                </div>
+                <span class="sidebar-version">v2.3</span>
+            </div>
+            <div class="sidebar-section">Navegação</div>
+            <nav class="sidebar-nav">
+<a href="#1-overview" class="nav-link nav-h2">1. Overview</a>
+<a href="#2-workflow-flowchart" class="nav-link nav-h2">2. Workflow Flowchart</a>
+<a href="#3-agent-descriptions-and-functions" class="nav-link nav-h2">3. Agent Descriptions and Functions</a>
+<a href="#31-workflow-orchestrator" class="nav-link nav-h3">3.1 workflow-orchestrator</a>
+<a href="#311-orchestrator-operation-modes" class="nav-link nav-h3">3.1.1 Orchestrator Operation Modes</a>
+<a href="#32-wiki-keeper" class="nav-link nav-h3">3.2 wiki-keeper</a>
+<a href="#33-miles-expert" class="nav-link nav-h3">3.3 miles-expert</a>
+<a href="#34-e2e-runner" class="nav-link nav-h3">3.4 e2e-runner</a>
+<a href="#4-agent-delegation-table" class="nav-link nav-h2">4. Agent Delegation Table</a>
+<a href="#fallback-models" class="nav-link nav-h3">Fallback Models</a>
+<a href="#miles-expert-model-selection" class="nav-link nav-h3">Miles-Expert Model Selection</a>
+<a href="#5-skill-descriptions" class="nav-link nav-h2">5. Skill Descriptions</a>
+<a href="#51-workflow-jira-ticket-skill" class="nav-link nav-h3">5.1 workflow-jira-ticket (SKILL)</a>
+<a href="#52-e2e-validator-skill" class="nav-link nav-h3">5.2 e2e-validator (SKILL)</a>
+<a href="#53-code-principles-verification" class="nav-link nav-h3">5.3 Code Principles Verification</a>
+<a href="#54-skills-that-can-be-invoked-independently" class="nav-link nav-h3">5.4 Skills That Can Be Invoked Independently</a>
+<a href="#55-summary-how-to-invoke-skills-independently" class="nav-link nav-h3">5.5 Summary: How to Invoke Skills Independently</a>
+<a href="#56-when-to-use-skill-vs-agent" class="nav-link nav-h3">5.6 When to Use Skill vs Agent</a>
+<a href="#6-can-agents-be-invoked-individually" class="nav-link nav-h2">6. Can Agents Be Invoked Individually?</a>
+<a href="#61-direct-invocation-examples" class="nav-link nav-h3">6.1 Direct Invocation Examples</a>
+<a href="#62-example-prompts-for-individual-agents" class="nav-link nav-h3">6.2 Example Prompts for Individual Agents</a>
+<a href="#7-can-agents-be-invoked-without-prompt" class="nav-link nav-h2">7. Can Agents Be Invoked Without Prompt?</a>
+<a href="#8-error-handling-and-recovery" class="nav-link nav-h2">8. Error Handling and Recovery</a>
+<a href="#81-when-an-agent-fails" class="nav-link nav-h3">8.1 When an Agent Fails:</a>
+<a href="#82-rate-limiting" class="nav-link nav-h3">8.2 Rate Limiting</a>
+<a href="#83-emergency-stop" class="nav-link nav-h3">8.3 Emergency Stop</a>
+<a href="#9-gitnexus-code-intelligence" class="nav-link nav-h2">9. GitNexus - Code Intelligence</a>
+<a href="#91-installation-and-setup" class="nav-link nav-h3">9.1 Installation and Setup</a>
+<a href="#92-mcp-configuration" class="nav-link nav-h3">9.2 MCP Configuration</a>
+<a href="#93-available-tools" class="nav-link nav-h3">9.3 Available Tools</a>
+<a href="#94-usage-in-workflow" class="nav-link nav-h3">9.4 Usage in Workflow</a>
+<a href="#95-heuristics-for-suggestion" class="nav-link nav-h3">9.5 Heuristics for Suggestion</a>
+<a href="#96-gitnexus-scan-skill" class="nav-link nav-h3">9.6 gitnexus-scan Skill</a>
+<a href="#97-key-directories" class="nav-link nav-h3">9.7 Key Directories</a>
+<a href="#98-important-notes" class="nav-link nav-h3">9.8 Important Notes</a>
+<a href="#10-directory-structure" class="nav-link nav-h2">10. Directory Structure</a>
+<a href="#key-scripts" class="nav-link nav-h3">Key Scripts</a>
+<a href="#11-complete-hierarchy-summary" class="nav-link nav-h2">11. Complete Hierarchy Summary</a>
+<a href="#12-diagnostics-and-troubleshooting" class="nav-link nav-h2">12. Diagnostics and Troubleshooting</a>
+<a href="#13-model-pricing-summary" class="nav-link nav-h2">13. Model Pricing Summary</a>
+</nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="hero">
+                <div class="hero-content">
+                    <div class="hero-badge">🚀 Automação Inteligente</div>
+                    <h1 class="hero-title"><span class="hero-title-gradient">Workflow Manual</span></h1>
+                    <p class="hero-desc">
+                        Complete workflow automation system with specialized agents, intelligent skills, and dynamic AI model selection.
+                    </p>
+                    <div class="hero-meta">
+                        <span class="hero-meta-item">🤖 4 Agentes</span>
+                        <span class="hero-meta-item">⚡ 7 Skills</span>
+                        <span class="hero-meta-item">🔄 Fluxo Automático</span>
+                        <span class="hero-meta-item">🧠 Modelos Dinâmicos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="search-bar" style="position: relative;">
+                    <span class="icon">🔍</span>
+                    <input id="search-input" type="text" placeholder="Search the manual..." autocomplete="off">
+                    <span class="count"></span>
+                    <div id="search-results" class="search-results"></div>
+                </div>
+                <div class="section-card" style="padding: 24px;"><h4 style="margin: 0 0 16px; color: var(--accent-blue);">📑 On this page</h4><ul style="margin:0; padding:0; list-style:none;"><li style="margin: 6px 0; padding-left: 0px;"><a href="#workflow-manual-english" style="font-size:14px;">Workflow Manual (English)</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#1-overview" style="font-size:14px;">1. Overview</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#2-workflow-flowchart" style="font-size:14px;">2. Workflow Flowchart</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#3-agent-descriptions-and-functions" style="font-size:14px;">3. Agent Descriptions and Functions</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#31-workflow-orchestrator" style="font-size:14px;">3.1 workflow-orchestrator</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#311-orchestrator-operation-modes" style="font-size:14px;">3.1.1 Orchestrator Operation Modes</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#32-wiki-keeper" style="font-size:14px;">3.2 wiki-keeper</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#33-miles-expert" style="font-size:14px;">3.3 miles-expert</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#34-e2e-runner" style="font-size:14px;">3.4 e2e-runner</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#4-agent-delegation-table" style="font-size:14px;">4. Agent Delegation Table</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#fallback-models" style="font-size:14px;">Fallback Models</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#miles-expert-model-selection" style="font-size:14px;">Miles-Expert Model Selection</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#5-skill-descriptions" style="font-size:14px;">5. Skill Descriptions</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#51-workflow-jira-ticket-skill" style="font-size:14px;">5.1 workflow-jira-ticket (SKILL)</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#52-e2e-validator-skill" style="font-size:14px;">5.2 e2e-validator (SKILL)</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#53-code-principles-verification" style="font-size:14px;">5.3 Code Principles Verification</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#54-skills-that-can-be-invoked-independently" style="font-size:14px;">5.4 Skills That Can Be Invoked Independently</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#55-summary-how-to-invoke-skills-independently" style="font-size:14px;">5.5 Summary: How to Invoke Skills Independently</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#56-when-to-use-skill-vs-agent" style="font-size:14px;">5.6 When to Use Skill vs Agent</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#6-can-agents-be-invoked-individually" style="font-size:14px;">6. Can Agents Be Invoked Individually?</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#61-direct-invocation-examples" style="font-size:14px;">6.1 Direct Invocation Examples</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#62-example-prompts-for-individual-agents" style="font-size:14px;">6.2 Example Prompts for Individual Agents</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#7-can-agents-be-invoked-without-prompt" style="font-size:14px;">7. Can Agents Be Invoked Without Prompt?</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#8-error-handling-and-recovery" style="font-size:14px;">8. Error Handling and Recovery</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#81-when-an-agent-fails" style="font-size:14px;">8.1 When an Agent Fails:</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#82-rate-limiting" style="font-size:14px;">8.2 Rate Limiting</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#83-emergency-stop" style="font-size:14px;">8.3 Emergency Stop</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#9-gitnexus-code-intelligence" style="font-size:14px;">9. GitNexus - Code Intelligence</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#91-installation-and-setup" style="font-size:14px;">9.1 Installation and Setup</a></li><li style="margin: 6px 0; padding-left: 0px;"><a href="#install-cli-globally" style="font-size:14px;">Install CLI globally</a></li><li style="margin: 6px 0; padding-left: 0px;"><a href="#index-repositories-run-from-each-repo-root" style="font-size:14px;">Index repositories (run from each repo root)</a></li><li style="margin: 6px 0; padding-left: 0px;"><a href="#start-local-server-with-web-ui" style="font-size:14px;">Start local server with web UI</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#92-mcp-configuration" style="font-size:14px;">9.2 MCP Configuration</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#93-available-tools" style="font-size:14px;">9.3 Available Tools</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#94-usage-in-workflow" style="font-size:14px;">9.4 Usage in Workflow</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#95-heuristics-for-suggestion" style="font-size:14px;">9.5 Heuristics for Suggestion</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#96-gitnexus-scan-skill" style="font-size:14px;">9.6 gitnexus-scan Skill</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#97-key-directories" style="font-size:14px;">9.7 Key Directories</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#98-important-notes" style="font-size:14px;">9.8 Important Notes</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#10-directory-structure" style="font-size:14px;">10. Directory Structure</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#key-scripts" style="font-size:14px;">Key Scripts</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#11-complete-hierarchy-summary" style="font-size:14px;">11. Complete Hierarchy Summary</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#agents-4" style="font-size:14px;">Agents (4)</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#skills-7" style="font-size:14px;">Skills (7)</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#workflow-jira-ticket-steps" style="font-size:14px;">workflow-jira-ticket Steps</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#domain-tags-for-email" style="font-size:14px;">Domain Tags for Email</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#12-diagnostics-and-troubleshooting" style="font-size:14px;">12. Diagnostics and Troubleshooting</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#121-quick-health-check" style="font-size:14px;">12.1 Quick Health Check</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#122-common-failure-scenarios" style="font-size:14px;">12.2 Common Failure Scenarios</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#123-check-workflow-state" style="font-size:14px;">12.3 Check Workflow State</a></li><li style="margin: 6px 0; padding-left: 0px;"><a href="#view-current-step-of-a-specific-workflow" style="font-size:14px;">View current step of a specific workflow</a></li><li style="margin: 6px 0; padding-left: 0px;"><a href="#view-last-20-log-entries" style="font-size:14px;">View last 20 log entries</a></li><li style="margin: 6px 0; padding-left: 0px;"><a href="#view-only-failures" style="font-size:14px;">View only failures</a></li><li style="margin: 6px 0; padding-left: 0px;"><a href="#view-stats-for-last-7-days" style="font-size:14px;">View stats for last 7 days</a></li><li style="margin: 6px 0; padding-left: 0px;"><a href="#update-excel-dashboard-with-real-metrics" style="font-size:14px;">Update Excel dashboard with real metrics</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#124-preventive-maintenance" style="font-size:14px;">12.4 Preventive Maintenance</a></li><li style="margin: 6px 0; padding-left: 40px;"><a href="#125-workflow-reset" style="font-size:14px;">12.5 Workflow Reset</a></li><li style="margin: 6px 0; padding-left: 20px;"><a href="#13-model-pricing-summary" style="font-size:14px;">13. Model Pricing Summary</a></li></ul></div>
+                <h1 id="workflow-manual-english">Workflow Manual (English)</h1>
+
+<blockquote><p>Version: 2.3 | Last Updated: 2026-05-14</p></blockquote>
+
+<h2 id="1-overview"><span class="h2-number">§</span>1. Overview</h2>
+
+<p>This workflow is an automated implementation system for Jira tickets that coordinates multiple AI agents to analyze requirements, implement features, and validate results using Playwright E2E tests.</p>
+
+<h2 id="2-workflow-flowchart"><span class="h2-number">§</span>2. Workflow Flowchart</h2>
+
+<div class="workflow-visual"><div class="workflow-diagram">
+        <div class="workflow-step">
+            <div class="flow-node node-user">
+                <span class="flow-icon">👤</span>
+                <span class="flow-label">Utilizador</span>
+                <span class="flow-meta">Fornece Ticket</span>
+<p>            </div></p>
+<p>        </div><div class="flow-arrow">▶</div></p>
+        <div class="workflow-step">
+            <div class="flow-node node-orch">
+                <span class="flow-icon">🎯</span>
+                <span class="flow-label">Orchestrator</span>
+                <span class="flow-meta">Coordena fluxo</span>
+<p>            </div></p>
+<p>        </div><div class="flow-arrow">▶</div></p>
+        <div class="workflow-step">
+            <div class="flow-node node-keeper">
+                <span class="flow-icon">📚</span>
+                <span class="flow-label">wiki-keeper</span>
+                <span class="flow-meta">Consulta wiki</span>
+<p>            </div></p>
+<p>        </div><div class="flow-arrow">▶</div></p>
+        <div class="workflow-step">
+            <div class="flow-node node-expert">
+                <span class="flow-icon">🔍</span>
+                <span class="flow-label">miles-expert</span>
+                <span class="flow-meta">Análise domínio</span>
+<p>            </div></p>
+<p>        </div><div class="flow-arrow">▶</div></p>
+        <div class="workflow-step">
+            <div class="flow-node node-skill">
+                <span class="flow-icon">⚡</span>
+                <span class="flow-label">workflow-jira</span>
+                <span class="flow-meta">Implementação</span>
+<p>            </div></p>
+<p>        </div><div class="flow-arrow">▶</div></p>
+        <div class="workflow-step">
+            <div class="flow-node node-runner">
+                <span class="flow-icon">🧪</span>
+                <span class="flow-label">e2e-runner</span>
+                <span class="flow-meta">Testes E2E</span>
+<p>            </div></p>
+<p>        </div><div class="flow-arrow">▶</div></p>
+        <div class="workflow-step">
+            <div class="flow-node node-keeper">
+                <span class="flow-icon">✅</span>
+                <span class="flow-label">wiki-keeper</span>
+                <span class="flow-meta">Regista ticket</span>
+<p>            </div></p>
+<p>        </div></div></div></p>
+
+<div class="wf-table">
+        <div class="wf-row">
+            <div class="wf-step-num s0">01</div>
+            <span class="wf-row-icon">👤</span>
+            <div class="wf-row-info">
+                <div class="wf-row-name">Utilizador</div>
+                <div class="wf-row-desc">Fornece ID do ticket Jira ao orchestrator</div>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="wf-row">
+            <div class="wf-step-num s1">02</div>
+            <span class="wf-row-icon">🎯</span>
+            <div class="wf-row-info">
+                <div class="wf-row-name">workflow-orchestrator</div>
+                <div class="wf-row-desc">Coordena todo o fluxo: delega, gere erros, pede aprovação</div>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="wf-row">
+            <div class="wf-step-num s2">03</div>
+            <span class="wf-row-icon">📚</span>
+            <div class="wf-row-info">
+                <div class="wf-row-name">wiki-keeper</div>
+                <div class="wf-row-desc">Início: verifica conhecimento existente na wiki</div>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="wf-row">
+            <div class="wf-step-num s3">04</div>
+            <span class="wf-row-icon">🔍</span>
+            <div class="wf-row-info">
+                <div class="wf-row-name">miles-expert</div>
+                <div class="wf-row-desc">Análise profunda de domínio: APIs, implementação, riscos</div>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="wf-row">
+            <div class="wf-step-num s4">05</div>
+            <span class="wf-row-icon">⚡</span>
+            <div class="wf-row-info">
+                <div class="wf-row-name">workflow-jira-ticket</div>
+                <div class="wf-row-desc">Skill principal: 8 passos de implementação automática</div>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="wf-row">
+            <div class="wf-step-num s5">06</div>
+            <span class="wf-row-icon">🧪</span>
+            <div class="wf-row-info">
+                <div class="wf-row-name">e2e-runner</div>
+                <div class="wf-row-desc">Executa testes E2E para validar a implementação</div>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="wf-row">
+            <div class="wf-step-num s0">07</div>
+            <span class="wf-row-icon">✅</span>
+            <div class="wf-row-info">
+                <div class="wf-row-name">wiki-keeper</div>
+                <div class="wf-row-desc">Fim: regista nota do ticket no histórico do workflow</div>
+<p>            </div></p>
+<p>        </div></div></p>
+
+
+
+
+<h2 id="3-agent-descriptions-and-functions"><span class="h2-number">§</span>3. Agent Descriptions and Functions</h2>
+
+<div class="agents-grid">
+        <div class="agent-card">
+            <div class="agent-card-header">
+                <div class="agent-avatar agent-orch">🎯</div>
+                <div class="agent-info">
+                    <div class="agent-name">workflow-orchestrator</div>
+                    <div class="agent-role">Main orchestrator</div>
+                    <div class="agent-tags">
+                        <span class="agent-tag model">deepseek-v4-flash</span>
+                        <span class="agent-tag timeout">⏱ 10min</span>
+                        <span class="agent-tag retry">🔄 3 retries</span>
+<p>                    </div></p>
+<p>                </div></p>
+<p>            </div></p>
+            <div class="agent-body">
+                <p>Full workflow coordinator. Receives Jira tickets, delegates tasks, manages error handling and correction cycles, requests human approval when needed.</p>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="agent-card">
+            <div class="agent-card-header">
+                <div class="agent-avatar agent-keeper">📚</div>
+                <div class="agent-info">
+                    <div class="agent-name">wiki-keeper</div>
+                    <div class="agent-role">Knowledge manager</div>
+                    <div class="agent-tags">
+                        <span class="agent-tag model">qwen3.5-flash</span>
+                        <span class="agent-tag timeout">⏱ 5min</span>
+                        <span class="agent-tag retry">🔄 4 retries</span>
+<p>                    </div></p>
+<p>                </div></p>
+<p>            </div></p>
+            <div class="agent-body">
+                <p>Maintains the workflow wiki. Creates, updates, and queries notes. Processes PDFs, emails (.eml), and documentation. Auto-syncs with Obsidian.</p>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="agent-card">
+            <div class="agent-card-header">
+                <div class="agent-avatar agent-expert">🔍</div>
+                <div class="agent-info">
+                    <div class="agent-name">miles-expert</div>
+                    <div class="agent-role">Domain specialist</div>
+                    <div class="agent-tags">
+                        <span class="agent-tag model">minimax-m2.7 / V4 Pro</span>
+                        <span class="agent-tag timeout">⏱ 10-15min</span>
+                        <span class="agent-tag retry">🔄 3 retries</span>
+<p>                    </div></p>
+<p>                </div></p>
+<p>            </div></p>
+            <div class="agent-body">
+                <p>Expert in MMP APIs, EU auto leasing. Auto-selects model: M2.7 (simple) or V4 Pro (complex/cross-module/high risk).</p>
+<p>            </div></p>
+<p>        </div></p>
+        <div class="agent-card">
+            <div class="agent-card-header">
+                <div class="agent-avatar agent-runner">🧪</div>
+                <div class="agent-info">
+                    <div class="agent-name">e2e-runner</div>
+                    <div class="agent-role">E2E tester</div>
+                    <div class="agent-tags">
+                        <span class="agent-tag model">step-3.5-flash</span>
+                        <span class="agent-tag timeout">⏱ 15min</span>
+                        <span class="agent-tag retry">🔄 2 retries</span>
+<p>                    </div></p>
+<p>                </div></p>
+<p>            </div></p>
+            <div class="agent-body">
+                <p>Runs Playwright E2E tests against acceptance criteria. Validates full flows, takes screenshots, and reports detailed results.</p>
+<p>            </div></p>
+<p>        </div></div></p>
+
+
+
+<h3 id="31-workflow-orchestrator">3.1 workflow-orchestrator</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.3</td></tr>
+<tr><td><strong>Model</strong></td><td>opencode/deepseek-v4-flash-free-free</td></tr>
+<tr><td><strong>Fallback Model</strong></td><td>kilo/minimax/minimax-m2.7</td></tr>
+<tr><td><strong>Timeout</strong></td><td>10 minutes</td></tr>
+<tr><td><strong>Mode</strong></td><td><strong>primary</strong> (user invokes directly)</td></tr>
+<tr><td><strong>Primary Function</strong></td><td>Coordinate the complete implementation workflow</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Responsibilities:</strong>
+<ul>
+<li>Receive user tasks or Jira ticket IDs</li>
+<li>Delegate tasks to appropriate agents in sequence</li>
+<li>Manage error handling and correction cycles</li>
+<li>Request human approval when needed</li>
+<li>Maintain workflow state and traceability</li>
+</ul>
+<strong>Error Handling:</strong>
+<ul>
+<li>If timeout: retry with same model (up to retry limit)</li>
+<li>If model error: switch to fallback model</li>
+<li>Log the error in workflow history</li>
+<li>If all retries exhausted: request human intervention</li>
+</ul>
+<strong>Emergency Commands:</strong>
+<ul>
+<li><code>/stop</code> or <code>/cancel</code>: Cancel workflow at any time</li>
+</ul>
+<strong>When invoked:</strong>
+<ul>
+<li>User provides a task or Jira ticket ID</li>
+<li>Orchestrator starts the workflow at step 1 (wiki-keeper)</li>
+<li>Orchestrator delegates to miles-expert for analysis</li>
+<li>Orchestrator invokes workflow-jira-ticket for implementation</li>
+<li>Orchestrator delegates to e2e-runner for testing</li>
+<li>Orchestrator invokes wiki-keeper at END to create ticket notes</li>
+<li>If tests fail, orchestrator loops back to miles-expert</li>
+</ul>
+<h3 id="32-wiki-keeper">3.2 wiki-keeper</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.1</td></tr>
+<tr><td><strong>Model</strong></td><td>kilo/qwen/qwen3.5-flash-02-23</td></tr>
+<tr><td><strong>Fallback Model</strong></td><td>kilo/qwen/qwen3.6-flash</td></tr>
+<tr><td><strong>Retry</strong></td><td>3</td></tr>
+<tr><td><strong>Timeout</strong></td><td>5 minutes</td></tr>
+<tr><td><strong>Mode</strong></td><td>subagent</td></tr>
+<tr><td><strong>Primary Function</strong></td><td>Knowledge management using the Karpathy Method</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>PDF Reading Capability:</strong>
+<ul>
+<li>wiki-keeper can read PDF files (text or image-based)</li>
+<li>Uses <code>pdftotext</code> for selectable text PDFs</li>
+<li>Uses <code>pdftoppm</code> + <code>tesseract</code> (OCR) for scanned/image PDFs</li>
+<li>Requires tools: <code>poppler</code> and <code>tesseract</code> (via Homebrew)</li>
+</ul>
+<strong>Email (.eml) Reading Capability:</strong>
+<ul>
+<li>wiki-keeper can read .eml email files</li>
+<li>Uses Python's <code>email</code> library for full parsing</li>
+<li>Handles multipart emails (text/plain + text/html)</li>
+<li>Decodes headers (From, To, Subject, Date)</li>
+<li>Extracts and cleans body content (removes HTML tags)</li>
+<li>Automatically assigns domain tags: #okta, #party, #offer, #stipulations, #contract, #delivery, #catalog, #general</li>
+<li>Creates notes in <code>wiki/emails/</code> directory</li>
+<li>Processes new emails automatically at workflow START</li>
+</ul>
+<strong>Responsibilities:</strong>
+<ul>
+<li>Manage personal wiki in Markdown format</li>
+<li>Query existing knowledge in the wiki</li>
+<li>Ingest new documents (PDFs, OpenAPIs, etc.)</li>
+<li>Create ticket notes after implementation</li>
+<li>Perform health checks on wiki structure</li>
+<li>Track processed files in control/log.md</li>
+</ul>
+<strong>Operations:</strong>
+<ul>
+<li><strong>Query (Search)</strong>: Search existing notes in wiki</li>
+<li><strong>Ingestion</strong>: Process new documents and create notes</li>
+<li><strong>Health Check</strong>: Find orphaned notes, resolve contradictions</li>
+<li><strong>Ticket Note Creation</strong>: Create documentation for implemented tickets</li>
+</ul>
+<strong>Wiki Structure:</strong>
+
+<h3 id="33-miles-expert">3.3 miles-expert</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.2</td></tr>
+<tr><td><strong>Model</strong></td><td>kilo/deepseek/deepseek-v4-pro</td></tr>
+<tr><td><strong>Fallback Model</strong></td><td>kilo/minimax/minimax-m2.7</td></tr>
+<tr><td><strong>Retry</strong></td><td>2</td></tr>
+<tr><td><strong>Timeout</strong></td><td>15 minutes</td></tr>
+<tr><td><strong>Mode</strong></td><td>subagent</td></tr>
+<tr><td><strong>Primary Function</strong></td><td>European automotive domain expert (leasing/financing)</td></tr>
+<tr><td><strong>Reasoning</strong></td><td>mode: all (deep reasoning for bug investigation and code analysis)</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Responsibilities:</strong>
+<ul>
+<li>Deep analysis of Jira tickets (user stories and bugs)</li>
+<li>Identify affected MMP APIs (Miles/Sofico Platform)</li>
+<li>Consult RAG materials (OpenAPI specs, local files)</li>
+<li>Ask clarifying questions before proceeding</li>
+<li>Invoke workflow-jira-ticket for implementation</li>
+</ul>
+<strong>Domain Knowledge:</strong>
+<ul>
+<li>10 MMP APIs: Quotation, Car Quote, Catalog, Dealer POS, Contract, Credit Retail, Customer, Document, Driver, Supplier</li>
+<li>EU vehicle lifecycle regulations</li>
+<li>VAT and tax calculations</li>
+<li>Contract lifecycle: quote → pending → active → terminated</li>
+</ul>
+<h3 id="34-e2e-runner">3.4 e2e-runner</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.3</td></tr>
+<tr><td><strong>Model</strong></td><td>kilo/stepfun/step-3.5-flash:free</td></tr>
+<tr><td><strong>Fallback Model</strong></td><td>kilo/minimax/minimax-m2.7</td></tr>
+<tr><td><strong>Retry</strong></td><td>2</td></tr>
+<tr><td><strong>Timeout</strong></td><td>15 minutes</td></tr>
+<tr><td><strong>Mode</strong></td><td>subagent</td></tr>
+<tr><td><strong>Primary Function</strong></td><td>E2E testing with Playwright</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Responsibilities:</strong>
+<ul>
+<li>Execute Playwright E2E tests</li>
+<li>Validate Acceptance Criteria (AC)</li>
+<li>Take screenshots at key validation points</li>
+<li>Provide clear pass/fail feedback</li>
+<li>Include contextId in error output for debugging</li>
+</ul>
+<strong>Guidelines:</strong>
+<ul>
+<li>When login expires: let user log in again</li>
+<li>When Data Privacy popup: click "sending by email"</li>
+<li>When postal code required: use 35309</li>
+<li>Proposal phase button enabled after clicking "send secci"</li>
+</ul>
+<h2 id="4-agent-delegation-table"><span class="h2-number">§</span>4. Agent Delegation Table</h2>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Task</th><th>Delegate To</th><th>Model</th><th>Retry</th><th>Timeout</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>Knowledge management (end)</td><td>@wiki-keeper</td><td>kilo/qwen/qwen3.5-flash-02-23</td><td>3</td><td>5min</td></tr>
+<tr><td>Deep domain analysis (default)</td><td>@miles-expert</td><td>kilo/minimax/minimax-m2.7</td><td>2</td><td>10min</td></tr>
+<tr><td>Deep domain analysis (escalation)</td><td>@miles-expert</td><td>kilo/deepseek/deepseek-v4-pro</td><td>2</td><td>15min</td></tr>
+<tr><td>Independent plan review</td><td>@review-plan</td><td>kilo/z-ai/glm-5.1</td><td>2</td><td>10min</td></tr>
+<tr><td>Architecture coherence validation</td><td>@coherence-checker</td><td>kilo/minimax/minimax-m2.7</td><td>2</td><td>8min</td></tr>
+<tr><td>Test execution</td><td>@e2e-runner</td><td>kilo/stepfun/step-3.5-flash:free</td><td>2</td><td>15min</td></tr>
+<tr><td>Implementation workflow</td><td>@workflow-jira-ticket</td><td>(skill)</td><td>2</td><td>30min</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h3 id="fallback-models">Fallback Models</h3>
+<p>If primary model fails, use these in order:</p>
+<ul>
+<li><strong>wiki-keeper</strong>: kilo/qwen/qwen3.6-flash → kilo/qwen/qwen3.5-flash-02-23</li>
+<li><strong>miles-expert</strong>: M2.7 default → V4 Pro escalation (on complexity/ambiguity) → V4 Pro fallback (on failure)</li>
+<li><strong>e2e-runner</strong>: kilo/minimax/minimax-m2.7 → openrouter/qwen-3.6-plus (self-fallback)</li>
+</ul>
+<h3 id="miles-expert-model-selection">Miles-Expert Model Selection</h3>
+<ul>
+<li><strong>Default</strong>: MiniMax M2.7 (204,800 tokens) for low/medium complexity, single-module analysis</li>
+<li><strong>Escalation</strong>: DeepSeek V4 Pro (1M tokens) when: high ambiguity, cross-module, large context, high risk</li>
+<li><strong>Fallback</strong>: If M2.7 fails → escalate to V4 Pro</li>
+</ul>
+<h2 id="5-skill-descriptions"><span class="h2-number">§</span>5. Skill Descriptions</h2>
+
+<h3 id="51-workflow-jira-ticket-skill">5.1 workflow-jira-ticket (SKILL)</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Type</strong></td><td>Skill (iterative workflow)</td></tr>
+<tr><td><strong>Retry</strong></td><td>2</td></tr>
+<tr><td><strong>Timeout</strong></td><td>30 minutes</td></tr>
+<tr><td><strong>Purpose</strong></td><td>Implement Jira tickets AC by AC</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>4 Operation Modes:</strong>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Mode</th><th>Description</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><code>bug</code></td><td>Bug fix for ticket without ACs</td></tr>
+<tr><td><code>validar</code></td><td>Validate existing branch (checklist + screenshots)</td></tr>
+<tr><td><code>continuar</code></td><td>Resume incomplete implementation from history</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Auto-Detect Project Type:</strong>
+
+<p>The workflow automatically detects the project type:</p>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Detected Type</th><th>File Indicator</th><th>Test Framework</th><th>Command</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>java-spring-backend</td><td>pom.xml + src/test/java</td><td>JUnit/Maven</td><td>./mvnw test</td></tr>
+<tr><td>node-backend</td><td>package.json (no playwright)</td><td>Jest/Mocha</td><td>npm test</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<p>Default paths:</p>
+<ul>
+<li>Frontend: ~/Development/teamwill/mobilize/hyperfront</li>
+<li>Backend (Java): ~/Development/teamwill/mobilize/deal-bs</li>
+<li>Backend (Node): detected from project root</li>
+</ul>
+<strong>Full Flow:</strong>
+<ul>
+<li><strong>mode-selection</strong>: User selects mode (nova/bug/validar/continuar)</li>
+</ul>0.1 <strong>check-project-guidelines</strong>: Read AGENTS.md for project guidelines
+<p>0.2 <strong>check-app-running</strong>: Check if app is running (validate mode only)</p>
+<p>0.3 <strong>extract-jira-ticket</strong>: Extract ticket details, ACs, attachments</p>
+<p>0.4 <strong>check-all-done</strong>: Check if all ACs completed</p>
+<p>0.5 <strong>analyze-with-miles-expert</strong> (MANDATORY - nova/bug/continuar modes only, NOT validar):</p>
+<p>   - Deep domain analysis via miles-expert (ALWAYS executed)</p>
+<p>   - Input: title, description, ACs, current_ac, project_type</p>
+<p>   - Output: domain_analysis, risk_areas, dependencies</p>
+<p>   - Used to inform create-plan regardless of complexity</p>
+
+<strong>Validate Mode (1):</strong>
+<ul>
+<li><strong>validate-branch</strong>: Run e2e-validator with all ACs → create wiki report → STOP</li>
+</ul>
+<strong>Nova/Bug Modes (2-10):</strong>
+<ul>
+<li><strong>check-existing-plan</strong>: Verify if plan already exists</li>
+<li><strong>create-plan</strong>: Generate implementation plan for current AC</li>
+<li><strong>validate-plan</strong>: Validate plan correctness (2 retries)</li>
+<li><strong>request-human-approval</strong>: <strong>REQUIRED</strong> - Get approval before executing</li>
+</ul>   - CRITICAL: NO code changes allowed before approved == true
+<ul>
+<li><strong>execute-plan</strong>: Implement the code (ONLY AFTER approved == true)</li>
+<li><strong>e2e-validator</strong>: Run E2E tests (calls e2e-runner agent)</li>
+</ul>7.5 <strong>generate-regression-test</strong>: Auto-generate regression test after successful validation
+<p>   - Copies template to <code>playwright/tests/regression/{ticket_id}_ac{index}.spec.ts</code></p>
+<p>   - Includes full ticket flow and validator assertions</p>
+<p>   - Automatically run in step 8c</p>
+<ul>
+<li><strong>review-implementation</strong>: Review code changes (2 retries)</li>
+</ul>8b. <strong>code-quality-checker</strong>: Check code principles (DRY, KISS, YAGNI, SOLID, SoC) AND run SonarQube automatically
+<p>8c. <strong>run-regression-tests</strong>: Execute regression tests</p>
+<p>8d. <strong>log-history</strong>: Update implementation history → next AC</p>
+
+<h3 id="52-e2e-validator-skill">5.2 e2e-validator (SKILL)</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.1</td></tr>
+<tr><td><strong>Type</strong></td><td>Skill (validation)</td></tr>
+<tr><td><strong>Purpose</strong></td><td>Test acceptance criteria using Playwright</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Inputs:</strong>
+<ul>
+<li>current_ac: The AC to validate</li>
+<li>scope: "current_only" or "all"</li>
+<li>app_url: Target app URL (default: http://localhost:3000)</li>
+</ul>
+<strong>Outputs:</strong>
+<ul>
+<li>passed: Boolean</li>
+<li>screenshot_path: Path to screenshot</li>
+<li>error_message: Error description if failed</li>
+<li>contextId: Debug identifier</li>
+</ul>
+<h3 id="53-code-principles-verification">5.3 Code Principles Verification</h3>
+
+<p>During <strong>review-implementation</strong> step, the workflow automatically verifies code principles AND runs SonarQube:</p>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Principle</th><th>Frontend (Nuxt/Vue)</th><th>Backend (Java/Spring)</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>SoC</strong></td><td>API calls via bsClient (NOT direct fetch)</td><td>Proper layer separation (controller → service → repository)</td></tr>
+<tr><td><strong>KISS</strong></td><td>Functions < 50 lines</td><td>Methods < 30 lines</td></tr>
+<tr><td><strong>YAGNI</strong></td><td>No unused imports</td><td>No unused imports/methods</td></tr>
+<tr><td><strong>SOLID</strong></td><td>Component responsibility</td><td>DI, single responsibility per class</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Reference Files:</strong>
+<ul>
+<li>Frontend: <code>hyperfront/AGENTS.md</code></li>
+<li>Backend: <code>deal-bs/AGENTS.md</code></li>
+</ul>
+<strong>Step: review-implementation → step 2.5 verify-code-principles (code-quality-checker v1.0.1)</strong>
+<ul>
+<li>Automatically verifies principles after code usage check</li>
+<li>If violations found → approved = false, feedback with issues</li>
+<li>If all principles pass → approved = true</li>
+</ul>
+<h3 id="54-skills-that-can-be-invoked-independently">5.4 Skills That Can Be Invoked Independently</h3>
+
+<p>All skills can be called directly via <code>call: skill.skill-name</code>, without going through workflow-jira-ticket. This enables modular use for specific tasks.</p>
+
+<h4 id="541-e2e-validator">5.4.1 e2e-validator</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.1</td></tr>
+<tr><td><strong>When to use</strong></td><td>"test this AC", "test E2E", "check UI", "validate implementation"</td></tr>
+<tr><td><strong>Auto-detection</strong></td><td>NO - requires explicit inputs</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Inputs:</strong>
+<ul>
+<li><code>current_ac</code>: Acceptance criteria to test</li>
+<li><code>scope</code>: "current_only" or "all"</li>
+<li><code>app_url</code>: App URL (optional, default: http://localhost:3000)</li>
+</ul>
+<strong>Example Call:</strong>
+<pre data-lang="YAML">
+<code class="language-yaml">
+- call: skill.e2e-validator
+  input:
+    - current_ac: "User can see deal status as approved"
+    - scope: "current_only"
+    - app_url: "http://localhost:3000"
+</code>
+</pre>
+
+<h4 id="542-code-quality-checker">5.4.2 code-quality-checker</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.1</td></tr>
+<tr><td><strong>When to use</strong></td><td>"check code principles", "verify DRY", "check SoC", "code review", "run sonar", "sonar scan"</td></tr>
+<tr><td><strong>Auto-detection</strong></td><td>YES - detects project_type if not provided</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Inputs:</strong>
+<ul>
+<li><code>files_modified</code>: List of changed files</li>
+<li><code>project_type</code>: "nuxt-frontend" <div class="table-wrap"><table></li>
+</ul><thead>
+<tr><th>"java-spring-backend"</th><th>"node-backend"</th></tr>
+<p></thead></p>
+<tbody>
+<p></tbody></p>
+<p></table></div> "auto" (default: auto)</p>
+<ul>
+<li><code>base_path</code>: Project path (optional)</li>
+<li><code>scope</code>: "full" | "quick" (default: quick)</li>
+<li><code>run_sonar</code>: boolean (default: true)</li>
+<li><code>sonar_url</code>: SonarQube URL (default: http://localhost:9002)</li>
+<li><code>sonar_token</code>: Authentication token (default: pre-generated)</li>
+</ul>
+<strong>Example Call:</strong>
+<pre data-lang="YAML">
+<code class="language-yaml">
+- call: skill.code-quality-checker
+  input:
+    - files_modified: ["src/components/DealStatus.vue", "server/api/deals.ts"]
+    - project_type: "nuxt-frontend"
+    - base_path: "/Users/marcio_oliveira/Development/teamwill/mobilize/hyperfront"
+    - run_sonar: true
+</code>
+</pre>
+
+<strong>Independent Call (without project_type):</strong>
+<pre data-lang="YAML">
+<code class="language-yaml">
+- call: skill.code-quality-checker
+  input:
+    - files_modified: ["src/components/DealStatus.vue"]
+    - project_type: "auto"  # Auto-detects via pom.xml/package.json
+</code>
+</pre>
+
+<h4 id="543-log-analyzer-pro">5.4.3 log-analyzer-pro</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.0</td></tr>
+<tr><td><strong>When to use</strong></td><td>"analyze logs", "check errors", "debug issue"</td></tr>
+<tr><td><strong>Auto-detection</strong></td><td>NO - requires explicit inputs</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Inputs:</strong>
+<ul>
+<li><code>log_path</code>: Path to log file</li>
+<li><code>search_pattern</code>: Search pattern (optional)</li>
+<li><code>error_only</code>: boolean (optional)</li>
+</ul>
+<h4 id="544-tana-jira-sync">5.4.4 tana-jira-sync</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.0</td></tr>
+<tr><td><strong>When to use</strong></td><td>"sync to Tana", "create Tana node", "Jira to Tana"</td></tr>
+<tr><td><strong>Auto-detection</strong></td><td>NO - requires explicit inputs</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Inputs:</strong>
+<ul>
+<li><code>jira_ticket_id</code>: Jira ticket ID</li>
+<li><code>workspace</code>: Tana workspace (optional)</li>
+</ul>
+<h4 id="545-workflow-jira-ticket">5.4.5 workflow-jira-ticket</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Version</strong></td><td>v1.0.5</td></tr>
+<tr><td><strong>When to use</strong></td><td>Full Jira ticket implementation</td></tr>
+<tr><td><strong>Auto-detection</strong></td><td>YES - auto-detects project_type</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Note:</strong> This is the main workflow skill. Can be called independently, but is more commonly invoked by workflow-orchestrator or @miles-expert.
+
+<strong>Inputs:</strong>
+<ul>
+<li><code>jira_ticket_id</code>: Jira ticket ID</li>
+<li><code>mode</code>: "nova" <div class="table-wrap"><table></li>
+</ul><thead>
+<tr><th>"bug"</th><th>"validar"</th></tr>
+<p></thead></p>
+<tbody>
+<p></tbody></p>
+<p></table></div> "continuar"</p>
+
+<h3 id="55-summary-how-to-invoke-skills-independently">5.5 Summary: How to Invoke Skills Independently</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Syntax</th><th>Type</th><th>Example</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><code>@agent</code></td><td>Agent (direct invocation)</td><td><code>@wiki-keeper</code></td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Important Note:</strong>
+<ul>
+<li>Skills are invoked with <code>call: skill.name</code> <strong>inside a workflow or skill</strong></li>
+<li>Agents are invoked with <code>@agent</code> <strong>directly by the user</strong></li>
+<li>The <code>code-quality-checker</code> skill can auto-detect project type when called independently</li>
+</ul>
+<h3 id="56-when-to-use-skill-vs-agent">5.6 When to Use Skill vs Agent</h3>
+
+<p>This section explains when it's preferable to invoke a <strong>skill</strong> in isolation versus an <strong>agent</strong> directly.</p>
+
+<h4 id="summary-skill-vs-agent">Summary: Skill vs Agent</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Aspect</th><th>Skill</th><th>Agent</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Context</strong></td><td>Inside workflow/skill</td><td>Direct by user</td></tr>
+<tr><td><strong>Abstraction</strong></td><td>Higher (includes guidelines)</td><td>Lower (direct prompt)</td></tr>
+<tr><td><strong>Complexity</strong></td><td>Multi-step workflows</td><td>Simple/direct tasks</td></tr>
+<tr><td><strong>Example</strong></td><td><code>call: skill.e2e-validator</code></td><td><code>@wiki-keeper</code></td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h4 id="when-to-use-skill-recommended">When to Use SKILL (Recommended)</h4>
+
+<p>Use skills when:</p>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Scenario</th><th>Recommended Skill</th><th>Reason</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>Verify code principles</td><td><code>skill.code-quality-checker</code></td><td>Auto-detects project_type, runs SonarQube</td></tr>
+<tr><td>Full Jira ticket analysis</td><td><code>skill.workflow-jira-ticket</code></td><td>Full flow with human approval</td></tr>
+<tr><td>Analyze error logs</td><td><code>skill.log-analyzer-pro</code></td><td>Automatic parsing and filtering</td></tr>
+<tr><td>Sync to Tana</td><td><code>skill.tana-jira-sync</code></td><td>Direct Jira + Tana integration</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Skill Advantages:</strong>
+<ul>
+<li>Already include guidelines and configurations</li>
+<li>Auto-detection of parameters when available</li>
+<li>Optimized workflows for specific tasks</li>
+<li>Less need to specify details in prompt</li>
+</ul>
+<h4 id="when-to-use-agent-recommended">When to Use AGENT (Recommended)</h4>
+
+<p>Use agents directly when:</p>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Scenario</th><th>Agent</th><th>Reason</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>Automotive domain questions</td><td><code>@miles-expert</code></td><td>Direct analysis, no implementation</td></tr>
+<tr><td>Administrative tasks</td><td><code>@workflow-orchestrator</code></td><td>When manual flow control is needed</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Agent Advantages:</strong>
+<ul>
+<li>More prompt flexibility</li>
+<li>Direct response without workflow overhead</li>
+<li>Ideal for quick questions or simple tasks</li>
+</ul>
+<h4 id="decision-flow">Decision Flow</h4>
+
+
+<h4 id="practical-example">Practical Example</h4>
+
+<strong>Scenario:</strong> You want to test if an AC was implemented correctly.
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Option</th><th>How to Do It</th><th>Result</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Agent</strong></td><td><code>@e2e-runner</code> with prompt</td><td>Requires specifying guidelines in prompt</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Conclusion:</strong> For testing ACs, <strong>use the skill</strong> because it already knows the guidelines (login, postal code 35309, etc). For simple wiki queries, <strong>use the agent</strong> directly.
+
+<h2 id="6-can-agents-be-invoked-individually"><span class="h2-number">§</span>6. Can Agents Be Invoked Individually?</h2>
+
+<strong>YES</strong> - All agents can be invoked directly without going through workflow-orchestrator.
+
+<h3 id="61-direct-invocation-examples">6.1 Direct Invocation Examples</h3>
+
+<strong>@wiki-keeper:</strong>
+<pre data-lang="CODE">
+<code class="language-text">
+Invoke @wiki-keeper to check if we have any knowledge about quotation API
+</code>
+</pre>
+
+<strong>@miles-expert:</strong>
+<pre data-lang="CODE">
+<code class="language-text">
+Analyze Jira ticket MMH-1435 and identify affected APIs
+</code>
+</pre>
+
+<strong>@e2e-runner:</strong>
+<pre data-lang="CODE">
+<code class="language-text">
+Validate AC: "User can see deal status as approved after credit approval"
+</code>
+</pre>
+
+<h3 id="62-example-prompts-for-individual-agents">6.2 Example Prompts for Individual Agents</h3>
+
+<h4 id="wiki-keeper-prompts">Wiki-keeper Prompts:</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Example</th><th>Prompt</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>Health check</td><td>"Run a health check on the wiki"</td></tr>
+<tr><td>Ingest new document</td><td>"Ingest the new OpenAPI spec for miles-contract-v2"</td></tr>
+<tr><td>Create ticket note</td><td>"Create a ticket note for MMH-1435 implementation"</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h4 id="miles-expert-prompts">Miles-expert Prompts:</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Example</th><th>Prompt</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>Identify APIs</td><td>"Which MMP APIs are affected by vehicle selection feature?"</td></tr>
+<tr><td>Clarifying questions</td><td>"I have questions about VAT handling for multi-country fleets"</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h4 id="e2e-runner-prompts">e2e-runner Prompts:</h4>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Example</th><th>Prompt</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>Test all ACs</td><td>"Run all ACs for ticket MMH-1435"</td></tr>
+<tr><td>Debug</td><td>"Test AC with contextId DEV-12345-67890"</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h2 id="7-can-agents-be-invoked-without-prompt"><span class="h2-number">§</span>7. Can Agents Be Invoked Without Prompt?</h2>
+
+<strong>PARTIALLY</strong> - Agents require some form of input, but can be invoked with minimal context:
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Agent</th><th>Minimum Input</th><th>Can Work Without Explicit Prompt?</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>wiki-keeper</td><td>Action type (query/ingest/health check)</td><td>YES - implicit actions</td></tr>
+<tr><td>miles-expert</td><td>Ticket ID or domain question</td><td>NEEDS context - cannot work without input</td></tr>
+<tr><td>e2e-runner</td><td>AC to test</td><td>NEEDS AC - cannot validate nothing</td></tr>
+<tr><td>workflow-jira-ticket</td><td>Jira Ticket ID</td><td>NEEDS ticket - requires structured input</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Conclusion:</strong> The workflow-orchestrator can work with just a ticket ID. Other agents need more context but the system is designed to provide context automatically through the workflow.
+
+<h2 id="8-error-handling-and-recovery"><span class="h2-number">§</span>8. Error Handling and Recovery</h2>
+
+<h3 id="81-when-an-agent-fails">8.1 When an Agent Fails:</h3>
+<ul>
+<li>Check if it's a timeout or model error</li>
+<li>If timeout: retry with same model (up to retry limit)</li>
+<li>If model error: switch to fallback model</li>
+<li>Log the error in workflow history</li>
+<li>If all retries exhausted: request human intervention</li>
+</ul>
+<h3 id="82-rate-limiting">8.2 Rate Limiting</h3>
+<ul>
+<li>Each agent has request limits per minute</li>
+<li>If rate limited: wait 30s before retry</li>
+<li>If persistent: escalate to human</li>
+</ul>
+<h3 id="83-emergency-stop">8.3 Emergency Stop</h3>
+<p>To cancel workflow at any time, user can type: <code>/stop</code> or <code>/cancel</code></p>
+<ul>
+<li>Current agent will finish gracefully</li>
+<li>Progress will be logged for later resume</li>
+<li>User will be notified of incomplete state</li>
+</ul>
+<h2 id="9-gitnexus-code-intelligence"><span class="h2-number">§</span>9. GitNexus - Code Intelligence</h2>
+
+<p>GitNexus provides deep code analysis capabilities for the workflow. It creates a knowledge graph of your codebase, enabling blast radius analysis, dependency tracking, and semantic code search.</p>
+
+<h3 id="91-installation-and-setup">9.1 Installation and Setup</h3>
+
+<pre data-lang="BASH">
+<code class="language-bash">
+# Install CLI globally
+npm install -g gitnexus
+
+# Index repositories (run from each repo root)
+cd ~/Development/teamwill/mobilize/hyperfront && npx gitnexus analyze
+cd ~/Development/teamwill/mobilize/deal-bs && npx gitnexus analyze
+
+# Start local server with web UI
+gitnexus serve
+</code>
+</pre>
+
+<strong>Web UI:</strong> http://localhost:4747
+
+<h3 id="92-mcp-configuration">9.2 MCP Configuration</h3>
+
+<p>GitNexus is configured via <code>~/.config/opencode/opencode.json</code>:</p>
+
+<pre data-lang="JSON">
+<code class="language-json">
+{
+  "mcp": {
+    "GitNexus": {
+      "type": "local",
+      "command": ["npx", "-y", "opencode-gitnexus"],
+      "enabled": true
+    }
+  }
+}
+</code>
+</pre>
+
+<h3 id="93-available-tools">9.3 Available Tools</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Tool</th><th>Purpose</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><code>gitnexus_context</code></td><td>360° symbol view with refs and process participation</td></tr>
+<tr><td><code>gitnexus_impact</code></td><td>Blast radius analysis with depth grouping</td></tr>
+<tr><td><code>gitnexus_detect_changes</code></td><td>Git-diff impact analysis</td></tr>
+<tr><td><code>gitnexus_rename</code></td><td>Multi-file coordinated rename</td></tr>
+<tr><td><code>gitnexus_cypher</code></td><td>Raw Cypher graph queries</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h3 id="94-usage-in-workflow">9.4 Usage in Workflow</h3>
+
+<p>GitNexus is <strong>OPTIONAL</strong> and is invoked by miles-expert after step 0.5 (analyze-with-miles-expert):</p>
+
+
+<h3 id="95-heuristics-for-suggestion">9.5 Heuristics for Suggestion</h3>
+
+<strong>Use GitNexus when:</strong>
+<ul>
+<li>Impact multi-module detected (affects >1 cluster)</li>
+<li>Bug with non-obvious root cause</li>
+<li>Refactoring structural changes</li>
+<li>Low familiarity with code zone</li>
+<li>Need blast radius before planning</li>
+<li>High regression risk</li>
+</ul>
+<strong>Don't use when:</strong>
+<ul>
+<li>Small, localized change</li>
+<li>Clearly known area</li>
+<li>Simple, isolated, low-risk ticket</li>
+</ul>
+<h3 id="96-gitnexus-scan-skill">9.6 gitnexus-scan Skill</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Attribute</th><th>Value</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><strong>Type</strong></td><td>Skill (optional)</td></tr>
+<tr><td><strong>Location</strong></td><td><code>workflow/skills/gitnexus-scan/SKILL.md</code></td></tr>
+<tr><td><strong>When</strong></td><td>After step 0.5, before create-plan</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<strong>Input:</strong>
+<ul>
+<li>project_type (hyperfront | deal-bs)</li>
+<li>jira_ticket_id</li>
+<li>domain_analysis (from miles-expert)</li>
+<li>risk_areas</li>
+</ul>
+<strong>Output:</strong>
+<ul>
+<li>impact_analysis (primary/secondary files, blast_radius)</li>
+<li>symbol_analysis (central symbols, call chains)</li>
+<li>recommendations (files to review, tests to verify)</li>
+</ul>
+<h3 id="97-key-directories">9.7 Key Directories</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Directory</th><th>Purpose</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><code>.gitnexus/</code> (in each repo)</td><td>Local index storage</td></tr>
+<tr><td><code>hyperfront/.gitnexus/</code></td><td>hyperfront index</td></tr>
+<tr><td><code>deal-bs/.gitnexus/</code></td><td>deal-bs index</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h3 id="98-important-notes">9.8 Important Notes</h3>
+
+<ul>
+<li><strong>ALL data is LOCAL</strong> - no cloud, no external APIs</li>
+<li>Index must be refreshed after major changes: <code>gitnexus analyze --force</code></li>
+<li>Web UI auto-detects local server at http://localhost:4747</li>
+</ul>
+<hr>
+<h2 id="10-directory-structure"><span class="h2-number">§</span>10. Directory Structure</h2>
+
+
+<h3 id="key-scripts">Key Scripts</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Script</th><th>Purpose</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td><code>docker/scan-hyperfront.sh</code></td><td>Run SonarQube for frontend projects</td></tr>
+<tr><td><code>docker/scan-deal-bs.sh</code></td><td>Run SonarQube for Java projects</td></tr>
+<tr><td><code>docker/docker-compose.yml</code></td><td>SonarQube container configuration</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h2 id="11-complete-hierarchy-summary"><span class="h2-number">§</span>11. Complete Hierarchy Summary</h2>
+
+<h3 id="agents-4">Agents (4)</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>#</th><th>Agent</th><th>Model</th><th>Version</th><th>Mode</th><th>Timeout</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>2</td><td>wiki-keeper</td><td>deepseek-v4-flash-free</td><td>v1.0.3</td><td>subagent</td><td>5min</td></tr>
+<tr><td>3</td><td>miles-expert</td><td>minimax-m2.7 / V4 Pro</td><td>v1.1.0</td><td>subagent</td><td>10min</td></tr>
+<tr><td>4</td><td>review-plan</td><td>kilo/z-ai/glm-5.1</td><td>v1.0.0</td><td>subagent</td><td>10min</td></tr>
+<tr><td>5</td><td>coherence-checker</td><td>minimax-m2.7</td><td>v1.0.0</td><td>subagent</td><td>8min</td></tr>
+<tr><td>6</td><td>e2e-runner</td><td>step-3.5-flash</td><td>v1.0.3</td><td>subagent</td><td>15min</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h3 id="skills-7">Skills (7)</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>#</th><th>Skill</th><th>Type</th><th>When Used</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>2</td><td>analyze-with-miles-expert</td><td>Step 0.5</td><td>nova/bug/continuar modes (MANDATORY)</td></tr>
+<tr><td>3</td><td>e2e-validator</td><td>Validation</td><td>Test ACs</td></tr>
+<tr><td>4</td><td>code-quality-checker</td><td>Quality</td><td>DRY, SOLID, SonarQube</td></tr>
+<tr><td>5</td><td>log-analyzer-pro</td><td>Debugging</td><td>Log analysis</td></tr>
+<tr><td>6</td><td>tana-jira-sync</td><td>Integration</td><td>Jira → Tana</td></tr>
+<tr><td>7</td><td>gitnexus-scan</td><td>Optional</td><td>After step 0.5 (OPTIONAL)</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h3 id="workflow-jira-ticket-steps">workflow-jira-ticket Steps</h3>
+
+<pre data-lang="CODE">
+<code class="language-text">
+0.  mode-selection
+0.1 check-project-guidelines
+0.2 check-app-running (validar only)
+0.3 extract-jira-ticket
+0.4 check-all-done
+0.5 analyze-with-miles-expert (MANDATORY - nova/bug/continuar)
+    → Optional: gitnexus-scan (if miles-expert suggests + user accepts)
+
+1.  validate-branch (validar mode)
+
+2.  check-existing-plan
+3.  create-plan
+4.  validate-plan
+5.  request-human-approval (REQUIRED)
+6.  execute-plan
+7.  e2e-validator
+7.5 generate-regression-test
+8.  review-implementation
+8b. code-quality-checker
+8c. run-regression-tests
+8d. log-history
+</code>
+</pre>
+
+<h3 id="domain-tags-for-email">Domain Tags for Email</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Tag</th><th>Domain</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>#party</td><td>Customer, driver, fleet</td></tr>
+<tr><td>#offer</td><td>Quotation, pricing</td></tr>
+<tr><td>#stipulations</td><td>Contract terms</td></tr>
+<tr><td>#contract</td><td>Contracts, agreements</td></tr>
+<tr><td>#delivery</td><td>Vehicle delivery</td></tr>
+<tr><td>#catalog</td><td>Vehicle catalog</td></tr>
+<tr><td>#general</td><td>No specific domain</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<hr>
+<h2 id="12-diagnostics-and-troubleshooting"><span class="h2-number">§</span>12. Diagnostics and Troubleshooting</h2>
+
+<h3 id="121-quick-health-check">12.1 Quick Health Check</h3>
+
+<p>Run to validate the entire harness:</p>
+<pre data-lang="BASH">
+<code class="language-bash">
+python3 ~/Development/teamwill/mobilize/workflow/scripts/harness-health-check.py
+</code>
+</pre>
+
+<p>Expected output: ~66/67 checks passed (only SonarQube fails if Docker not running).</p>
+
+<h3 id="122-common-failure-scenarios">12.2 Common Failure Scenarios</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Symptom</th><th>Likely Cause</th><th>Solution</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>"MCP not found"</td><td>MCP server not running</td><td>Check with <code>harness-health-check.py</code>. Start with <code>npx gitnexus mcp</code> (GitNexus) or <code>docker compose up</code> (SonarQube).</td></tr>
+<tr><td>Plan rejected by review-plan</td><td>Incomplete/incoherent plan</td><td>miles-expert revises with review-plan feedback (max 2 iterations). If rejected 2x → human decides.</td></tr>
+<tr><td>coherence-checker incoherent</td><td>Implementation doesn't follow patterns</td><td>Workflow <strong>stops</strong>. Issues listed to human for decision (manual fix / continue).</td></tr>
+<tr><td>SonarQube quality gate failed</td><td>Blocker or critical issue</td><td>Auto-fix attempted; if impossible → reported to human.</td></tr>
+<tr><td>E2E tests failed 3x in a row</td><td>Bug not caught in analysis</td><td>Workflow <strong>escalates to human</strong>. No infinite loop.</td></tr>
+<tr><td><code>step-log.py</code> not writing</td><td><code>logs/</code> dir doesn't exist</td><td><code>mkdir -p ~/Development/teamwill/mobilize/workflow/logs/</code></td></tr>
+<tr><td>Orchestrator not advancing</td><td>Exit gate not passed</td><td>Check <code>step-log.py status <workflow_id></code> to see which gate is blocked.</td></tr>
+<tr><td>Wiki not syncing to Obsidian</td><td>sync-obsidian.sh didn't run</td><td>Run manually: <code>bash ~/Development/teamwill/mobilize/workflow/scripts/sync-obsidian.sh</code></td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h3 id="123-check-workflow-state">12.3 Check Workflow State</h3>
+
+<pre data-lang="BASH">
+<code class="language-bash">
+# View current step of a specific workflow
+python3 ~/Development/teamwill/mobilize/workflow/scripts/step-log.py status MMH-1234
+
+# View last 20 log entries
+python3 ~/Development/teamwill/mobilize/workflow/scripts/step-log.py view --tail 20
+
+# View only failures
+python3 ~/Development/teamwill/mobilize/workflow/scripts/step-log.py view --status failure
+
+# View stats for last 7 days
+python3 ~/Development/teamwill/mobilize/workflow/scripts/step-log.py stats --days 7
+
+# Update Excel dashboard with real metrics
+python3 ~/Development/teamwill/mobilize/workflow/scripts/log-metrics.py --update-excel
+</code>
+</pre>
+
+<h3 id="124-preventive-maintenance">12.4 Preventive Maintenance</h3>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Task</th><th>Frequency</th><th>Command</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>Re-index GitNexus</td><td>After major changes</td><td><code>npx gitnexus analyze --force</code> in hyperfront/ and deal-bs/</td></tr>
+<tr><td>Check wiki integrity</td><td>Monthly</td><td>Invoke <code>@wiki-keeper</code> with "Run a health check on the wiki"</td></tr>
+<tr><td>Update skills dashboard</td><td>After every prompt change</td><td>Add row in <code>ai-skills-dashboard.xlsx</code></td></tr>
+<tr><td>Check failure logs</td><td>Daily (if workflow active)</td><td><code>python3 scripts/step-log.py view --status failure</code></td></tr>
+<tr><td>Sync global skills → workflow</td><td>After any skill change</td><td><code>cp ~/.config/opencode/skills/* ~/workflow/skills/ -r</code></td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<h3 id="125-workflow-reset">12.5 Workflow Reset</h3>
+
+<p>If a workflow gets stuck or fails:</p>
+
+<ul>
+<li>Check current state:</li>
+</ul>   <pre data-lang="BASH">
+<code class="language-bash">
+   python3 ~/Development/teamwill/mobilize/workflow/scripts/step-log.py status <workflow_id>
+</code>
+</pre>
+<ul>
+<li>If workflow is running but not advancing → use <code>/stop</code> in chat</li>
+<li>To restart from scratch:</li>
+</ul>   - Remove entry from <code>_running.json</code>:
+   <pre data-lang="BASH">
+<code class="language-bash">
+   python3 -c "import json; d=json.load(open('~/Development/teamwill/mobilize/workflow/logs/_running.json')); d.pop('<workflow_id>', None); json.dump(d, open('~/Development/teamwill/mobilize/workflow/logs/_running.json', 'w'))"
+</code>
+</pre>
+<ul>
+<li>Restart the workflow normally in chat</li>
+</ul>
+<hr>
+<h2 id="13-model-pricing-summary"><span class="h2-number">§</span>13. Model Pricing Summary</h2>
+
+<div class="table-wrap"><table>
+<thead>
+<tr><th>Agent</th><th>Model</th><th>Cost (per 1M tokens)</th><th>Retry</th><th>Timeout</th></tr>
+<p></thead></p>
+<tbody>
+<tr><td>wiki-keeper</td><td>kilo/qwen/qwen3.5-flash-02-23</td><td>~$0.33</td><td>3</td><td>5min</td></tr>
+<tr><td>miles-expert</td><td>kilo/deepseek/deepseek-v4-pro</td><td>~$0.70</td><td>2</td><td>15min</td></tr>
+<tr><td>e2e-runner</td><td>kilo/stepfun/step-3.5-flash:free</td><td>FREE</td><td>2</td><td>15min</td></tr>
+<p></tbody></p>
+<p></table></div></p>
+<hr>
+<em>Changes v2.2: Added GitNexus (code intelligence with knowledge graph). Added email (.eml) reading to wiki-keeper. Updated models: workflow-orchestrator → deepseek-v4-flash-free, miles-expert → deepseek-v4-pro (mode: all). Added gitnexus-scan and analyze-with-miles-expert skills.</em>
+
+<p>*Changes v2.1: Wiki-keeper can read PDFs (text and image via OCR). Requires poppler and tesseract.</p>
+
+<p>*Changes v2.0: Workflow Orchestrator with 3 operation modes (auto/plan/build). PLAN mode for planning only, BUILD mode to execute from existing plan.</p>
+
+<em>Changes v1.9: New code-quality-checker skill (v1.0.1) with automatic SonarQube integration. Auto-detect project when called independently.</em>
+
+<em>Changes v1.8: Automatic code principles verification (DRY, KISS, YAGNI, SOLID, SoC) in review-implementation step. New AGENTS.md for deal-bs.</em>
+
+<em>Changes v1.7: Auto-detect project type (frontend/backend Java/backend Node). Dynamic steps for testing and validation.</em>
+
+<em>Changes v1.6: Removed Hyperfront project references - workflow is project-agnostic.</em>
+
+<em>Changes v1.5: Auto-generate regression tests after validation (step 7.5 generate-regression-test). Template at playwright/tests/regression/template.spec.ts</em>
+
+<em>Changes v1.4: 4 operation modes (nova/bug/validar/continuar). request-human-approval required before execute-plan. Branch validation flow.</em>
+
+<em>Changes v1.3: Centralized workflow folder with agents/, skills/, and plans/ directories. validator → Step-3.5 Flash (256K context, free)</em>
+            </div>
+
+            <footer class="footer">
+                <p style="margin: 0;">Generated: 2026-05-17 • Workflow Automation System</p>
+            </footer>
+        </main>
+    </div>
+    <style>
+    .search-bar {
+        position: relative;
+        margin: 0 0 20px;
+    }
+    .search-bar input {
+        width: 100%;
+        padding: 12px 16px 12px 40px;
+        background: var(--bg-deep);
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+        transition: all 0.2s;
+    }
+    .search-bar input:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px var(--glow-blue);
+    }
+    .search-bar input::placeholder {
+        color: var(--text-muted);
+    }
+    .search-bar .icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: var(--text-muted);
+        pointer-events: none;
+    }
+    .search-bar .count {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: var(--text-muted);
+        pointer-events: none;
+    }
+    .search-results {
+        display: none;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-default);
+        border-radius: 10px;
+        max-height: 300px;
+        overflow-y: auto;
+        margin-top: 4px;
+        position: absolute;
+        width: 100%;
+        z-index: 50;
+    }
+    .search-results.visible {
+        display: block;
+    }
+    .search-result-item {
+        padding: 10px 14px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 13px;
+        color: var(--text-secondary);
+        transition: all 0.15s;
+    }
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+    .search-result-item:hover {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+    .search-result-item .sr-title {
+        color: var(--accent-blue);
+        font-weight: 600;
+        font-size: 12px;
+        margin-bottom: 2px;
+    }
+    .search-result-item .sr-snippet {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 12px;
+        color: var(--text-tertiary);
+    }
+    .search-result-item mark {
+        background: rgba(210, 153, 34, 0.3);
+        color: var(--text-primary);
+        border-radius: 2px;
+    }
+    .search-highlight {
+        background: rgba(210, 153, 34, 0.3);
+        border-radius: 3px;
+        padding: 1px 2px;
+    }
+    .search-hide {
+        display: none;
+    }
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('h2[id], h3[id]');
+        function updateActive() {
+            let current = '';
+            sections.forEach(s => {
+                if (window.scrollY >= s.offsetTop - 120) {
+                    current = s.id;
+                }
+            });
+            links.forEach(l => {
+                l.classList.remove('active');
+                if (l.getAttribute('href') === '#' + current) {
+                    l.classList.add('active');
+                }
+            });
+        }
+        window.addEventListener('scroll', updateActive);
+        updateActive();
+
+        // Search
+        const searchInput = document.getElementById('search-input');
+        const resultsPanel = document.getElementById('search-results');
+        if (searchInput) {
+            const content = document.querySelector('.content');
+            const count = searchInput.nextElementSibling;
+            let allElements = [];
+
+            searchInput.addEventListener('input', function() {
+                const q = this.value.toLowerCase().trim();
+                const all = content.querySelectorAll('h2, h3, h4, p, li, td');
+                const matches = [];
+
+                // Reset highlights
+                all.forEach(el => {
+                    el.innerHTML = el.innerHTML.replace(/<span class="search-highlight">(.*?)<\/span>/g, '$1');
+                });
+
+                if (!q) {
+                    resultsPanel.classList.remove('visible');
+                    resultsPanel.innerHTML = '';
+                    count.textContent = '';
+                    return;
+                }
+
+                // Collect matching elements with context
+                all.forEach(el => {
+                    const text = el.textContent.toLowerCase();
+                    if (text.includes(q) && el.offsetParent !== null) {
+                        // Find the closest heading above for context
+                        let heading = '';
+                        let sibling = el.previousElementSibling;
+                        while (sibling) {
+                            if (['H2','H3','H4'].includes(sibling.tagName)) {
+                                heading = sibling.textContent;
+                                break;
+                            }
+                            sibling = sibling.previousElementSibling;
+                        }
+                        if (!heading) {
+                            let parent = el.parentElement;
+                            while (parent) {
+                                let ps = parent.previousElementSibling;
+                                while (ps) {
+                                    if (['H2','H3','H4'].includes(ps.tagName)) {
+                                        heading = ps.textContent;
+                                        break;
+                                    }
+                                    ps = ps.previousElementSibling;
+                                }
+                                if (heading) break;
+                                parent = parent.parentElement;
+                            }
+                        }
+
+                        // Highlight
+                        const html = el.innerHTML;
+                        const idx = html.toLowerCase().indexOf(q);
+                        if (idx >= 0 && !html.includes('search-highlight')) {
+                            const orig = html.substring(idx, idx + q.length);
+                            el.innerHTML = html.substring(0, idx) +
+                                '<span class="search-highlight">' + orig + '</span>' +
+                                html.substring(idx + q.length);
+                        }
+
+                        matches.push({ el, text: text.substring(0, 120), heading });
+                    }
+                });
+
+                count.textContent = matches.length + ' resultado' + (matches.length !== 1 ? 's' : '');
+
+                // Show results panel
+                if (matches.length > 0) {
+                    resultsPanel.innerHTML = '';
+                    const maxResults = Math.min(matches.length, 20);
+                    for (let i = 0; i < maxResults; i++) {
+                        const m = matches[i];
+                        const div = document.createElement('div');
+                        div.className = 'search-result-item';
+                        const snippet = m.el.textContent.trim().substring(0, 120);
+                        const markedSnippet = snippet.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>');
+                        div.innerHTML = '<div class="sr-title">' + (m.heading || 'Documento') + '</div><div class="sr-snippet">' + markedSnippet + '</div>';
+                        div.addEventListener('click', function() {
+                            searchInput.value = q;
+                            resultsPanel.classList.remove('visible');
+                            m.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // Flash effect
+                            m.el.style.transition = 'background 0.5s';
+                            m.el.style.background = 'rgba(56, 139, 253, 0.15)';
+                            setTimeout(() => { m.el.style.background = ''; }, 1500);
+                        });
+                        resultsPanel.appendChild(div);
+                    }
+                    resultsPanel.classList.add('visible');
+                } else {
+                    resultsPanel.classList.remove('visible');
+                }
+            });
+
+            // Hide results on blur (with delay for click)
+            searchInput.addEventListener('blur', function() {
+                setTimeout(() => resultsPanel.classList.remove('visible'), 200);
+            });
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim()) {
+                    this.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

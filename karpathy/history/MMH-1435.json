@@ -1,0 +1,71 @@
+{
+  "ticket_id": "MMH-1435",
+  "title": "CLONE - Review the Asset tab during Simulation",
+  "completed_acs": [
+    {
+      "ac_index": 0,
+      "ac_id": "AC1",
+      "ac_title": "Power (kW) display",
+      "ac_description": "Given a vehicle is selected in the Simulation step\nWhen the Asset tab is displayed\nThen the Power (kW) value is automatically populated from the vehicle catalogue\nAnd The field is read-only if pre-populated. If not it can be edited",
+      "completed_at": "2026-04-15T09:57:08+01:00",
+      "implementation_summary": "Added Power (kW) field to Filter.vue alongside Trim Code dropdown. Field is read-only when value comes from Miles catalogue, editable otherwise. Added powerKWFromCatalogue flag to AssetDealState and asset store."
+    },
+    {
+      "ac_index": 1,
+      "ac_id": "AC2",
+      "ac_title": "VAT percentage display",
+      "ac_description": "Given a simulation is displayed\nWhen the Asset tab is opened\nThen the VAT percentage provided by Miles is displayed\nAnd the value is not editable",
+      "completed_at": "2026-04-16T21:45:53Z",
+      "implementation_summary": "Created VatSettings MongoDB model (with explicit collection name 'vat_settings') and seed script to store VAT rates by country/enumId. Modified mappingResponse.ts to lookup VAT percentage from MongoDB using catalogVatCode.enumId + GATEWAY_COUNTRY. Added CORE to COUNTRY_CODE_MAP. Added vatPercentage field to PricingDetails type. Fixed missing vatPercentage mapping in assetService.ts (mapToAssetPricingDetails) and useInit.ts (pricingDetails construction). Fixed hardcoded vatEnumId in assets.ts to use this.pricingDetails?.vat. Added VAT percentage display row to AssetSummary.vue showing formatted percentage (e.g., '20%'). Added i18n translations for en-US and fr-FR. Made mappingCreateDealResponse and buildCalculateResponse async to support MongoDB lookup.",
+      "bug_fix": {
+        "title": "VAT percentage not persisted to MongoDB",
+        "discovered_at": "2026-04-17T15:00:00Z",
+        "fixed_at": "2026-04-17T16:30:00Z",
+        "root_cause": "When a deal is created, buildDealPayload() saved quote_calculation with only { options: [...] } — no vatPercentage, no vatPercent. The mappingCreateDealResponse() correctly computed vatPercentage and returned it to the frontend, but this value was never written to the MongoDB quote_calculation document. Additionally, dealService.ts updateDealCalculation() saved vat_percent (enumId) as a top-level field but NOT vat_percentage (the actual number). When populateAssetFromDeal() loaded the deal, quoteCalc.vatPercentage was always null, and there was no fallback to a top-level field.",
+        "symptoms": "VAT percentage showed '-' for ALL deals in the Summary section, even newly created ones.",
+        "fix": [
+          "1. dealPayloadBuilder.ts: Made buildDealPayload() async, imported getVatPercentageFromMongo(), added vatEnumId lookup from carConfig, computed vatPercentage at creation time, added vatPercentage + vatPercent to quote_calculation object, and added vat_percentage as top-level field on deal document",
+          "2. mappingResponse.ts: Exported getVatPercentageFromMongo so it can be imported by dealPayloadBuilder.ts",
+          "3. dealService.ts: Added vat_percentage: calculationData?.vatPercentage to the $set in updateDealCalculation()",
+          "4. useInit.ts: Added fallback chain quoteCalc?.vatPercentage ?? dealData.vat_percentage ?? null in populateAssetFromDeal()",
+          "5. index.post.tsx: Changed buildDealPayload() call to await since function is now async",
+          "6. duplications.post.tsx: Changed buildDealPayload() call to await and converted positional args to named object args"
+        ],
+        "files_changed": [
+          "server/services/dealPayloadBuilder.ts",
+          "server/utils/mappingResponse.ts",
+          "server/services/dealService.ts",
+          "composables/useInit.ts",
+          "server/api/deals/index.post.tsx",
+          "server/api/deals/duplications.post.tsx"
+        ]
+      }
+    },
+    {
+      "ac_index": 2,
+      "ac_id": "AC3",
+      "ac_title": "Summary price computation applies the defined formulas",
+      "ac_description": "Given all asset price components are available\nWhen the system displays the Summary section\nThen the following formulas must be applied:\n\nTotal exc. VAT = Catalogue Price + Options + Transport cost + Car tax (if any) + Exempt quote (if any) – Discounts (OEM + Other discounts)\nAccessories = Accessories Price inc VAT + Transform accessories inc VAT\nRegistration tax = Price of registration tax - Discount registration tax\nTotal incl. VAT = Total exc. VAT + VAT amount + OEM services + Accessories + Registration tax + Free fee inc VAT\nTotal Invoice Price = Total incl. VAT – Ecobonus - Trade in",
+      "completed_at": "2026-04-17T14:10:00Z",
+      "implementation_summary": "Rewrote AssetSummary.vue with all 5 AC3 formulas. Added new fields to PricingDetails (exemptQuote, transformAccessoriesIncVat) and wired up existing dead-code fields (transportCost, accessoriesIncVat, oemServices, registrationTax, registrationTaxDiscount, freeFeeIncVat). Updated mappingResponse.ts, assets.ts (normalizePricingDetails, _applyCalcResponse, calculateDeal), assetService.ts (mapToAssetPricingDetails), and useInit.ts. New Summary row order: Catalogue Price, Options, Transport cost (-), Car tax, Exempt quote (-), Discount, Total exc. VAT, VAT%, VAT, OEM Services (-), Accessories (excl VAT), Registration tax (-), Free fee inc. VAT (-), Total incl. VAT, Trade in, Eco Bonus, Total Invoice Price. Placeholders (-) for MFSCC-338 fields."
+    },
+    {
+      "ac_index": 3,
+      "ac_id": "AC4",
+      "ac_title": "Editing Total Invoice Price recalculates discounts using delta excl. VAT",
+      "ac_description": "Given the Summary is displayed\nAnd a calculated Total Invoice Price is shown\nWhen the dealer edits the Total Invoice Price manually\nThen the system must:\n1. Compute the delta between the original and the new Total Invoice Price (delta TTC)\n2. Convert this delta to an excl. VAT value using: delta excl. VAT = delta incl. VAT / (1 + VAT%)\n3. Add the delta excl. VAT to the \"Other Discounts\" field and update the discounts value on the summary section\n4. Recalculate the new Total exc. VAT\n5. Recalculate VAT amount and Total incl. VAT\n6. Update all Summary fields accordingly\n7. Display the new Total Invoice Price entered by the user",
+      "completed_at": "2026-04-21T14:45:10+01:00",
+      "implementation_summary": "Added originalTotalInvoicePrice field to AssetDealState to preserve the first calculated Total Invoice Price. Modified setPricingDetails to initialize this value on first valid calculation. Created applyDeltaToOtherDiscount async action in assets.ts that computes deltaTTC, converts to deltaExclVAT using vatPercentage, converts current Other Discount to euros (handling both € and % modes), adds the absolute delta to Other Discounts, forces symbol to €, and triggers calculateDeal() for backend recalculation. Modified AssetSummary.vue to make Total Invoice Price clickable with dashed underline; clicking reveals a q-input for editing. On confirm, validates that new value is not negative and does not exceed original; shows Quasar Notify error if it does. Calls applyDeltaToOtherDiscount which updates Other Discounts and recalculates all Summary fields. Added cannotIncreaseError i18n keys for en-US and fr-FR. Build passes successfully.",
+      "files_changed": [
+        "types/types.ts",
+        "features/asset/stores/assets.ts",
+        "features/asset/components/demandAssetDetails/AssetSummary.vue",
+        "locales/en-US.json",
+        "locales/fr-FR.json"
+      ]
+    }
+  ],
+  "current_ac_index": 4,
+  "total_ac_count": 4,
+  "completion_percentage": 100
+}

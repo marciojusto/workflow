@@ -1,0 +1,1159 @@
+Received: from VI1PR09MB3968.eurprd09.prod.outlook.com (2603:10a6:800:123::19)
+ by DBBPR09MB3143.eurprd09.prod.outlook.com with HTTPS; Thu, 30 Apr 2026
+ 15:54:45 +0000
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=fail;
+ b=Q6znDCMrCWTfI6oOd1HUSIDkAWCYy866BCpa0O7yuaiOJW8gGf3vC5wSIrK6TV5s3E81XOF97QGakEzgh1WV4omAsHVZivii0XMYcVhvaibacqfa8w2be5SOeCTsksH7TXd2Z3BlsUhC7UWmJcWL6cQJzc2uJOf6gZPydbfcIUmQ9xhuoUlleocbyLW92chPGTWI4F0w0fKYSqYdFV2ly9nX03RwxGes2aq66wJnu9Xls55rxfwT2Uq15WR6HvWMPi4pznDfANXB+jMq9qiM8DA1wC/27koovl1E0UBfJU8iGz5LrP6ShdOxqFt1I3hSFnG1fjK132EGHkztgdXGSQ==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xAbHfhHxHJ2awd+E3zWnb+uA1cH61awv8IB8mMCgM4Y=;
+ b=E2bfCe5lwmqmMLxaBHxs6PcKCJjOtSgg04SxECADyWZNaFMZRWgu5P2G3pm2yi8Ks5F+McPiv5FdkRxMl0uhcDO9QuRSGA9ksin+Z9uSnBervjcLfYdJH2mapwyVoZIRnsJVD5GWkpbIvqwQwykbBh7O/JQJgOVnUJpGZ6LqNCk07tkhbG4FLn9/jeI/wri3bI3MXbfkgpZkxxTmnVj1eKvlQW6Ktk/K4wPKm+e0Un/K9YszJME/uJo0IKSM5ncXKeB5UN2G7I9APmBqp1JQk1YichtjRV+0yUKc9vyvwEbtt/5eeISDvRjoW8x6ZZAE1lrUkqXmJknQ71S/PGqMvA==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 23.90.119.215) smtp.rcpttodomain=teamwillgroup.com
+ smtp.mailfrom=mobilize-fs.com; dmarc=pass (p=quarantine sp=quarantine
+ pct=100) action=none header.from=mobilize-fs.com; dkim=pass (signature was
+ verified) header.d=mobilize-fs.com; arc=fail (47)
+Received: from AS4P189CA0004.EURP189.PROD.OUTLOOK.COM (2603:10a6:20b:5d7::7)
+ by VI1PR09MB3968.eurprd09.prod.outlook.com (2603:10a6:800:123::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.20; Thu, 30 Apr
+ 2026 15:54:41 +0000
+Received: from AMS0EPF000001A7.eurprd05.prod.outlook.com
+ (2603:10a6:20b:5d7:cafe::3f) by AS4P189CA0004.outlook.office365.com
+ (2603:10a6:20b:5d7::7) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9846.30 via Frontend Transport; Thu,
+ 30 Apr 2026 15:54:41 +0000
+Authentication-Results: spf=pass (sender IP is 23.90.119.215)
+ smtp.mailfrom=mobilize-fs.com; dkim=pass (signature was verified)
+ header.d=mobilize-fs.com;dmarc=pass action=none
+ header.from=mobilize-fs.com;compauth=pass reason=100
+Received-SPF: Pass (protection.outlook.com: domain of mobilize-fs.com
+ designates 23.90.119.215 as permitted sender)
+ receiver=protection.outlook.com; client-ip=23.90.119.215;
+ helo=esa.hc1506-8.eu.iphmx.com; pr=E
+Received: from esa.hc1506-8.eu.iphmx.com (23.90.119.215) by
+ AMS0EPF000001A7.mail.protection.outlook.com (10.167.16.234) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9846.18 via Frontend Transport; Thu, 30 Apr 2026 15:54:40 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=mobilize-fs.com; i=@mobilize-fs.com; q=dns/txt;
+  s=DKIMCES1506-mobilize-fs-com; t=1777564481;
+  x=1809100481;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:mime-version;
+  bh=Hoxif6fQfOpR4viAJS5w5E2+nVZFNMj/ztt8sKZS/sE=;
+  b=GiVgxKuokdo7koBa7lobYz7IJ3uZxAFNAnVkrdN/v2mVUbwTS6WMGcX1
+   6yZoP89j2W7vz6M+K5bumjqRy92f1OxFxQBeswsZTGW0SKbe4aHERVTz2
+   2hj2riCc/KSKnCj6vJ/WnPus4zna/W3DysNJtkQdPYa5lwUEsfsYHX8Rh
+   dAveF+FbumWDT9aSAGI6D+g4LisWyPIRcz9oThbev9X1JtMj9XFvBIPRq
+   Ssl8tVIktp/pOukrB1JtAjWqX0RN31Z3m0dWN5PIkszR7LMyEKDvGo3xE
+   LeVQymN1vAA60ylJrSspn0uLcJBCykUc9eQuV+2zwbnJf4sSMId/K5oXg
+   Q==;
+X-CSE-ConnectionGUID: gQyHg2AuQAaSahx5YEvuog==
+X-CSE-MsgGUID: eZ9f3M4oSmSUzF42qeeoGA==
+X-IronPort-RemoteIP: 52.101.83.71
+X-IronPort-MID: 91981551
+X-IronPort-Reputation: None
+X-IronPort-Listener: Outgoing
+X-IronPort-SenderGroup: RELAY_O365_RENAULT
+X-IronPort-MailFlowPolicy: $RELAYED
+Received: from mail-swedencentralazon11013071.outbound.protection.outlook.com (HELO GVXPR05CU001.outbound.protection.outlook.com) ([52.101.83.71])
+  by ob1.hc1506-8.eu.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2026 17:54:40 +0200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Te/yFDI1Wpzrkts5r9vmP2ss/O0obxA7YJ7aK9mW2NSiExXhdza6CYvkpsw2wxCLgTjAk9gBSqY4kmdCQxDiixihIJ4puMpSkxxt7G2iaw3KkSKQkWcN5XnlAMyilJCPSviKNMS9FgdTb0U0qqdJ1C7lkU/dW0tEQs0YozB4NhyiVbIrTYX3fOGVv/PCbPBEUmTwJDmD0bib2JUw32epp0yX1PfH1r7Ew98lZChVQsaI4VkNVA5YF7T6Xby8QaT5uMo+04mCiMEzOFkRCCGDejPQc/qU2K+z6ur8OZbmDBEXIAeDH8U5KLl7Y2bGb3h2wEY5fxLbIlW+DmidLW4Zng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+IARPboPnzlowBmVtk1rKM7IUEpqAWaWoA5md+KETtE=;
+ b=nk/uvyb9ciY3HXStSTCp7hVYu0k2ctglgRAwJX65UjotUP7GVw6X4LJ4nVE+BCmgrurjsUbmoIkE2SBO6IPUuVSwMFmnuwLHZtuC5GasfsQOLWtKdlwcvCPLheXk8+z3/qeFmUED8q1JRasDya3NV+Ud5M5Xq1x3Bv3gTb44aOiKQzyoiWEchHdzdN+a8Va9razoqtXIewFqiKW/mKO0r1boj+LvJ+JvIixt29mBH8f5Mx1ie38k5V2pyHkkZNnLEY0en9wDgEli7oeZhGpPAIYmcYAOphFdtr2rg5QwuvSvU8ibdH32xnkaBQLJTdKIAiDdXpuKHKc/YQx+CnEXSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mobilize-fs.com; dmarc=pass action=none
+ header.from=mobilize-fs.com; dkim=pass header.d=mobilize-fs.com; arc=none
+Received: from MATPR05MB12541.eurprd05.prod.outlook.com (2603:10a6:250:4c::17)
+ by AS8PR05MB8486.eurprd05.prod.outlook.com (2603:10a6:20b:3c3::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.20; Thu, 30 Apr
+ 2026 15:54:38 +0000
+Received: from MATPR05MB12541.eurprd05.prod.outlook.com
+ ([fe80::9d2d:4e53:7f7a:f5c7]) by MATPR05MB12541.eurprd05.prod.outlook.com
+ ([fe80::9d2d:4e53:7f7a:f5c7%6]) with mapi id 15.20.9870.020; Thu, 30 Apr 2026
+ 15:54:37 +0000
+From: "PERRET Beatrice (renexter)" <beatrice.perret-extern@mobilize-fs.com>
+To: "joachim.jacob@teamwillgroup.com" <joachim.jacob@teamwillgroup.com>,
+	"BOCENO Paul (renexter)" <paul.boceno-extern@mobilize-fs.com>, "HALOY Romance
+ (renexter)" <romance.haloy-extern@mobilize-fs.com>, "ELHILALI Youssef
+ (renexter)" <youssef.elhilali-extern@mobilize-fs.com>, Lilia GARGOURI
+	<lilia.gargouri@teamwillgroup.com>, Houssem HERMASSI
+	<houssem.hermassi@teamwillgroup.com>, Rania BEN MEFTEH
+	<rania.benmefteh@teamwillgroup.com>, MARTIN-PORTUGUES Alberto
+	<alberto.martin-portugues@mobilize-fs.com>, URIGOITIA-VILLANUEVA Regina
+	<regina.urigoitia-villanueva@mobilize-fs.com>, "RIVAS Pablo (renexter)"
+	<pablo.rivas-extern@mobilize-fs.com>
+CC: CAMPOS-DE-CELA Jorge <jorge.campos-de-cela@mobilize-fs.com>, RONZULLI
+ Sebastiano <sebastiano.ronzulli@mobilize-fs.com>, ANDRADE Sandra
+	<sandra.andrade@mobilize-fs.com>, TETI Christian-Federico
+	<christian-federico.teti@mobilize-fs.com>,
+	"bilel.bensalem-extern@rcibanque.com" <bilel.bensalem-extern@rcibanque.com>,
+	"DI-PIETRO Christian (renexter)"
+	<christian.di-pietro-extern@mobilize-fs.com>, MARTIN-GARCIA Carlos
+	<carlos.martin-garcia@mobilize-fs.com>, TEBOUL Hugo
+	<hugo.teboul@mobilize-fs.com>, DZIRI Hamza <hamza.dziri@renault.com>,
+	"hendrik.langhammer@teamwillgroup.com"
+	<hendrik.langhammer@teamwillgroup.com>, Sejaa ROUISSI
+	<sejaa.rouissi@teamwillgroup.com>, Adil MOUMNI ABDOU
+	<adil.moumniabdou@teamwill.onmicrosoft.com>, Marcio OLIVEIRA
+	<marcio.oliveira@teamwillgroup.com>, alaa.houidheg
+	<alaa.houidheg@teamwill.fr>, Heni ABDMOULEH
+	<heni.abdmouleh@teamwillgroup.com>, Malek KAZDAGHLI
+	<malek.kazdaghli@teamwillgroup.com>
+Subject: RE: Hyperfront - Release demo and sprint review
+Thread-Topic: Hyperfront - Release demo and sprint review
+Thread-Index: AQHc1iI93kry5JsdB0yHfLZC0EXYe7X3xjpw
+Date: Thu, 30 Apr 2026 15:54:37 +0000
+Message-ID: <MATPR05MB12541A9F3BB596D377784BA3586352@MATPR05MB12541.eurprd05.prod.outlook.com>
+References: <MATPR05MB12541F50230B3925C6D175DB98696A@MATPR05MB12541.eurprd05.prod.outlook.com>
+In-Reply-To: <MATPR05MB12541F50230B3925C6D175DB98696A@MATPR05MB12541.eurprd05.prod.outlook.com>
+Accept-Language: fr-FR, en-US
+Content-Language: fr-FR
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+msip_labels: MSIP_Label_fd1c0902-ed92-4fed-896d-2e7725de02d4_Enabled=True;MSIP_Label_fd1c0902-ed92-4fed-896d-2e7725de02d4_SiteId=d6b0bbee-7cd9-4d60-bce6-4a67b543e2ae;MSIP_Label_fd1c0902-ed92-4fed-896d-2e7725de02d4_SetDate=2026-04-30T15:51:46.0000000Z;MSIP_Label_fd1c0902-ed92-4fed-896d-2e7725de02d4_Name=Anyone
+ (not
+ protected);MSIP_Label_fd1c0902-ed92-4fed-896d-2e7725de02d4_ContentBits=3;MSIP_Label_fd1c0902-ed92-4fed-896d-2e7725de02d4_Method=Standard
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=mobilize-fs.com;
+x-ms-traffictypediagnostic: MATPR05MB12541:EE_|AS8PR05MB8486:EE_|AMS0EPF000001A7:EE_|VI1PR09MB3968:EE_|DBBPR09MB3143:EE_
+X-MS-Office365-Filtering-Correlation-Id: 346d1e4c-22cd-47a6-101a-08dea6d0ca64
+x-ld-processed: d6b0bbee-7cd9-4d60-bce6-4a67b543e2ae,ExtAddr
+x-connecteur: On-premise Ironport
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;ARA:13230040|366016|7416014|376014|1800799024|6049299003|38070700021|921020|13003099007|4053099003|8096899003|18002099003|22082099003|56012099003;
+X-Microsoft-Antispam-Message-Info-Original: VyhX98PMU1e5ndrF/OyeNVas7OhhwVYjNjAOcEwHqBlxNBeQLe6vVN1bDTKInzepKh1DMN42IRw1agZ/ZOhz/FfzO1OlBY3OCgs+Tq5Eb5/H5AExMRPpOwdU8Wf7Dbo7irMzvMZGtTjzVyWyR1jqcbWJSjFGENWhXgFf2uiCZubGAr7MPmNGbXeBNo5ODtD1iTa3yncVDItbTl1/F9zx2A+4I4UxTVL3rTo51W04N08or9BZWN6dleUdd7q07fFYJEwIP9W1TxDM/+DHOt2d5FkwiFJbUb0QKDuacbnoG6n+UGlmP8W0m5IvjukJPBNrCcmVcAu0xgqL/QVFFtbMcmljmhD1eBJT8N3ARkPoRkhHFhHI+XA+NnSEIx/fXzFJcdemR8vcfyg/4+nu6xjpioBlflXB54HtpyGwAKyGULgd+bhizeXvOWLIIGGgz7VEUFPWUYVbnk2dvTHNeRIqEHT3SsEXe1stRhcqvKU8norbM0wJhWkdv9mYQqOLGZYBlrbGfcmf0dLXJHzG9M2qDtmwePjSsMUDmzmm3MzdLJJ6L89J/bDdOdXaDGGtPFVDkpatr2qIzLULyzXtOxwO51kfdWkJxVW9s66/atMexCR9qQyEkRVV1Sz+DmbH7UvIKCc45/VixfglDIhANHEtUq+1HtI1DVaaU9CRMIDwetvEzMYejXCXph5hYI3bJ9ZTHVF1cj5rhp2KAyrCXQ9vlp/pv8aR9eh9uasjBQNcK+UUe2FmI2gaOFoS32qk59f9
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MATPR05MB12541.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(6049299003)(38070700021)(921020)(13003099007)(4053099003)(8096899003)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
+Content-Type: multipart/related;
+	boundary="_004_MATPR05MB12541A9F3BB596D377784BA3586352MATPR05MB12541eu_";
+	type="multipart/alternative"
+X-Exchange-RoutingPolicyChecked: JYSIMzTleDJyy/99Zv4t3ay5w51jHglAkwP5LjXPVZK+rXvdrRjIPq3BRwm9+OifTtitfLLvGTJTnESmIiKz0oFtk8D8dgJcYmGuH34mTUKkVoxsgVb0yb1FYjqXig/AP+sZ5EZu/Ya+jgaDm3wN/OVnFowVbcrOrXqctkQukLQUWrMhXtFkpbIHKvhmYsWdp1cshoot8oLbpw7aSPSuY5IkNQYTgR2+qXu1hM3UimM5469+LuQg8pku0XjEze6C78M9M0PuZYuJ6OFSDhO7tQV7ghSRyTFsdiQChQVAbyH7Iz9sktK4P30dSOro+ioTFrUE7DONqOLE3NaPeNX3lQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR05MB8486
+Return-Path: beatrice.perret-extern@mobilize-fs.com
+X-MS-Exchange-Organization-ExpirationStartTime: 30 Apr 2026 15:54:41.2152
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id: 346d1e4c-22cd-47a6-101a-08dea6d0ca64
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: c34f8dab-ff06-4970-8c69-ce12c4490de2:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: AMS0EPF000001A7.eurprd05.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Exchange-Organization-AuthSource: AMS0EPF000001A7.eurprd05.prod.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Office365-Filtering-Correlation-Id-Prvs: a0e793b8-1574-44ff-a3eb-08dea6d0c864
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-MS-Exchange-Organization-SCL: 1
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7149299003|6049299003|35042699022|8096899003|4076899003|19002099003|16102099003|22082099003|55112099003|57112099003|4053099003|13003099007|921020;
+X-Forefront-Antispam-Report: CIP:23.90.119.215;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esa.hc1506-8.eu.iphmx.com;PTR:esa.hc1506-8.eu.iphmx.com;CAT:NONE;SFS:(13230040)(7149299003)(6049299003)(35042699022)(8096899003)(4076899003)(19002099003)(16102099003)(22082099003)(55112099003)(57112099003)(4053099003)(13003099007)(921020);DIR:INB;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2026 15:54:40.9205
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 346d1e4c-22cd-47a6-101a-08dea6d0ca64
+X-MS-Exchange-CrossTenant-Id: c34f8dab-ff06-4970-8c69-ce12c4490de2
+X-MS-Exchange-CrossTenant-AuthSource: AMS0EPF000001A7.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR09MB3968
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:04.7500116
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.9870.000
+X-Microsoft-Antispam-Mailbox-Delivery:
+	ucf:0;jmr:0;auth:0;dest:I;ENG:(910005)(944506478)(944626604)(920097)(930201)(20251009189)(140003)(1420198);
+X-Microsoft-Antispam-Message-Info:
+	=?Windows-1252?Q?T/KceqDvPMs3YDspcDb0EXEOMaXZQOWifUv9b5dIiB50AwhnIXVhpMhk?=
+ =?Windows-1252?Q?I3NI9mEPf2AgXOrQnfY0aD/286N2vQJMiC8SfVO7OBohbA6beTk5UQF7?=
+ =?Windows-1252?Q?982QqcVgE67G+eAA6Mj2vWIy08EIr7dUxKbYjH9Ir9qmIIPzhKFciEEk?=
+ =?Windows-1252?Q?gv2qYNfGa/eVicl2tG5TPDZdip06h56mw9Zn/mtGb0anRhwTiD9f8wcQ?=
+ =?Windows-1252?Q?Q/L02ghpCEPxjTezvNW8oLy9fNHghoGmN6exED9lsEetUzIJBu2RMD2y?=
+ =?Windows-1252?Q?25jJAmywT5Wzy/3d6oG5pCV8VUNsmwQsSXphbcgplVYsF9vTqAEoVw1K?=
+ =?Windows-1252?Q?tG2n6T/ASoZ62FL4ccknUxnMFL2iBt7K5TzBCYAnzQSKAcROfLYjzONQ?=
+ =?Windows-1252?Q?qdV9/cdifS5kdPWoi5mcsUmxh8qOhjgUUswm1sexmrx01yyKpUCm9pDR?=
+ =?Windows-1252?Q?CmmIRyIBj/b/1uPwd9DjgijI7RcijWNPKkdyE4CL2FGBD1uG1OInt1ac?=
+ =?Windows-1252?Q?AyQd7XS+oG8XysRLWPW8bMogAZV8oJF0lCZBQlWIxwl6P9yLaNsnqvn1?=
+ =?Windows-1252?Q?tDw4sUIxftHPANxJoR4pdX6zbCr4piNKDcoOPoyYQgd65mcbimwgnp9y?=
+ =?Windows-1252?Q?2PNoiWyyLrWVlFXprYM+f5yx+TrT1cCYYUQiQxsvdURst1rl16szA5MO?=
+ =?Windows-1252?Q?93QbUXpgVfB7XqK9RezTqzKAohjRN3l8FuZnnP26dqIcGWzYrszLaDqh?=
+ =?Windows-1252?Q?kZMOXhtaGPr9TkM4FmbZiccJ2NDzFuTBqvE99BlEOIn0a8rfhGB/tMjU?=
+ =?Windows-1252?Q?JL2kLzNyaDzeqkzIR78GkmiZkpXn85fZo2ulk81XT6qezhkCjnpTT5jf?=
+ =?Windows-1252?Q?bWLjxHkLg8MgpmxEhVqtouG8CVvL+0ngjOKcWGXi7DEMRUig8v4NEE+W?=
+ =?Windows-1252?Q?V9AbNDb3tGcWIjK/YhhEqXyq9oBGOW3NRGnLS56pScWGtp2Y41v5bx3t?=
+ =?Windows-1252?Q?pjV3SGAeV9tsyvN9++TVseDHKvYfI0IlU0U+iMokDoI8Ns6P2XQh7Mb6?=
+ =?Windows-1252?Q?nZsqZb8MQ87ZopoCCWEtJGK6PIhBBnsCoSJOvQeI6peeeVXPzdMFcFCK?=
+ =?Windows-1252?Q?ELa3Xs/shemOf4Gu1KQqoWW4IpN3IjWlrR4QE4UhS7uY6ymYaoOJwj38?=
+ =?Windows-1252?Q?ZNln6gg+WNL8DbGh0MfASqfpZaliIbcaWHdDOtMIeMSy6DVmjO9cbTrr?=
+ =?Windows-1252?Q?+PQ/UrsoR2DJ9P2dqMajLNGUBCemtWJXu10yq1Ih/u7gLh/IbdTGlSUy?=
+ =?Windows-1252?Q?Qve7KcF6q6rvy9Qx8onuWN+OXVdEjzcSpFoM9ASXH3WYi+51IFjt5xFj?=
+ =?Windows-1252?Q?0RpNE1kjyCcZcJa1apnZZKE5xbSlaZ78jNIxv2nVefc1eEe2IkZh6TWu?=
+ =?Windows-1252?Q?LzA4N788rAkPl7uPGcX67JQnTV1i5gQiHPABJdZbueAXS9StgtkR0XI9?=
+ =?Windows-1252?Q?rdA2ZhM9pU4s0P7ed/CPiz+nPH+l4BrumR/w6TmEOzvvMZeBvMA9W/gs?=
+ =?Windows-1252?Q?lSYHE3Wcvh5WgBUFhTykonZaYrX/+DsqoNS3FJaijIDjNH7+8L4DHajM?=
+ =?Windows-1252?Q?Xa1BnL/TFiJMFmFSZAzjaf/AoCo4CH33X/o+TEDpxebkhH+vViueEitM?=
+ =?Windows-1252?Q?zmzpF4KSGnKu4c4TV7dN50j3uLHRGmc1YCCSGv916J+JsM9LHIPxqlxq?=
+ =?Windows-1252?Q?yyt3fAgs9g4sL51ZD6iOAkVqATJVWww0ICzAwBNtnH/BGU+0UXZc8l4t?=
+ =?Windows-1252?Q?cHGP66jy+k2Q5KD8obbqyhdwX5GfZxTA5MkITyA+p7Dvlg/QTxdQoxTI?=
+ =?Windows-1252?Q?RjhYVUPJ/i2PhKWdV7OcbBav4A/h5MjDK4vKRD++RlKZxvCL//ChrAS5?=
+ =?Windows-1252?Q?yhRkzgVvvHvDRbUZ05yANj1MR7WpLaaqg2x/p1cvR63g25BKq0avvOm1?=
+ =?Windows-1252?Q?OOXhlNyF0xHy9q9ZmAgCZgVj6fi4LPtXMnLwxQPkBfToXPC87DjXK3Zo?=
+ =?Windows-1252?Q?hs42vtSg7dQR2cGpOf3rWt/QQGLCyTrFw7+94vSmt0zb0mOaPJJgzCS6?=
+ =?Windows-1252?Q?ZRnOaLX9xXt6Muamc8WwBglY7L5vt2+f70fOiYj+R8TvoMetfjQCzgqL?=
+ =?Windows-1252?Q?Gt3S9OJ3Adqtk7mI6EEGPb+7WDwLWGkb7mUph2uhFWTgPA5OL6rQC4DY?=
+ =?Windows-1252?Q?HRSWaxS7wie8tx2Fzl2Kes9OpDu8hiKJdJdacc+gODlMkppPUhG+mxsK?=
+ =?Windows-1252?Q?RygvEAUM8UJfw+hDWJgLIHOOnTfRJ8Yhn1BUJX6sYaY5Y17v6x2T/sXC?=
+ =?Windows-1252?Q?kgVGQCly0Yc0FJLMChvN2mlpBlqEydQJX1HKaBspH2QnfW8CtTpLo2qd?=
+ =?Windows-1252?Q?GED8O6bBJFjX2LwKP3m5SJIuQe9X37QZVXktXD9yT2UjH79q/dyZjYW+?=
+ =?Windows-1252?Q?1i69oAoiGi5lHk+E5xfgtwNuOForDoSkoCAFeLmAexxXNlQKkqhGmx1v?=
+ =?Windows-1252?Q?OKnLCTr7J43ftsYfa8vAWTXq+g31aD6hl2O2r/yBYcFJGtf/YGwnMQGS?=
+ =?Windows-1252?Q?YxlfUtUVmme7Xkz0HaHbb3nH4m/N5iRaMfePhebdjxaIhjFapI+stvR3?=
+ =?Windows-1252?Q?QhoD1Ew6xDT0jzFgpGTKyAt2mJiphR/ae9T/3oPjCkFN1L6t/jR0NbHR?=
+ =?Windows-1252?Q?j7XQMNSQv5aIrmB7mmCkneO0hCJK1AcCFjWezk7GXspXWMoicug9pf06?=
+ =?Windows-1252?Q?GP0U9M3ABYufeB92eGtWmhRvHYeiDZ5q0BmMZQKuCXNbC2BmeWjGQnLH?=
+ =?Windows-1252?Q?yk9CjIKbbB9lQY+6+b+DS/grTAzhpzh2Q7+KT+AmG/rnU59KIOy3B1kU?=
+ =?Windows-1252?Q?h20yyABPMK8xwpwdE0/tKlFF7gWlAcPG5k9KFrJMvmv5ab4DxtG6CC/B?=
+ =?Windows-1252?Q?useK1/UXDyvk5kWR0gVKVDC2D4IVfD9RjyVdL4b66HZeU+zNfDc=3D?=
+MIME-Version: 1.0
+
+--_004_MATPR05MB12541A9F3BB596D377784BA3586352MATPR05MB12541eu_
+Content-Type: multipart/alternative;
+	boundary="_000_MATPR05MB12541A9F3BB596D377784BA3586352MATPR05MB12541eu_"
+
+--_000_MATPR05MB12541A9F3BB596D377784BA3586352MATPR05MB12541eu_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+ATTENTION: EXTERNAL MAIL : This email is sent from someone outside your org=
+anization. Teamwill=E2=80=99s CIO recommends not clicking on links nor open=
+ing attachments if you are not sure that the content is safe. If in doubt p=
+lease report this email to phishing@teamwillgroup.com
+Dear all,
+
+Many thanks for today=E2=80=99s demo !
+
+Please find below a recap of the shared elements :
+MFS Jira ID
+Description
+Updated status
+Actions
+MFSMP-4236
+OKTA connection
+Done
+MFS: Need to configure the correct IPN on their OKTA app
+MFSMP-19097
+Document UX Review
+Done
+TW: Bug to create =3D> Refusal reason not appearing (trouble with the attri=
+bute from the MMPs)
+MFSMP-19446
+Inputs rules
+Stand-by
+MFS: Organize an extra meeting with Anna to make sure configuration is ok, =
+do not represent an unrealistic extra task. If OK, let's create more comple=
+x tests & associated Miles configuration
+MFSMP-13241
+Fees - financial product
+Stand-by
+TW:  1. Bug to create =3D> Only fees that have the possibility to be added =
+in the financed amount should be displayed with a tickbox
+ 2. Bug to create =3D> to config team so the amount financed is correctly u=
+pdated depending on the fees is paid upfront or financed
+3. Registration tax management to demo with the user story on Asset fees
+MFSMP-4157
+[MFS request] - Manage statuses
+Done
+MFS / TW: confirm that the decision "missing data" will really be the one u=
+sed
+MFSMP-4156
+Manage rejected deal
+Done
+TW: Bug to create =3D> Validity period should not reflect the retention per=
+iod
+MFSMP-14564
+Cancel deal under study
+Done
+
+MFSMP-18015
+Access expired deals
+Done
+TW: 1.  Check the expiration date : deals should be expired the day after t=
+he end of their validity date (issue may be due to the fact that cron job w=
+as runned just before the demo, while it should be runned at night)
+2. Bug to create: Action status should be empty
+MFSMP-12352
+Search in RDV
+Done
+Following the last blueprint information, search should be forced automatic=
+ally + set of minimal data will be extended at simulation phase (among othe=
+r reasons, this would prevent from changing data impacting the offer pricin=
+g at proposal).
+Some data is not retrieved (mapping on Miles/RDV data is in progress).
+Info for testing should be added to Confluence page. Existing users in RDV =
+are indiv1, company1, soleTr1
+MFSMP-19488
+Review the asset tab
+In progress
+Not presented by TW and will be taken in next sprint
+
+@joachim.jacob@teamwillgroup.com<mailto:joachim.jacob@teamwillgroup.com>, k=
+eep us informed when the user stories will be deployed in REF Assembly plea=
+se.
+
+On our side, we will update the statuses and will share the test cases to b=
+usiness users as soon as the user stories will be deployed.
+
+Many thanks for the good work!
+
+Best regards,
+PO team
+
+
+[cid:image001.png@01DCD8CA.684F67A0]
+B=C3=A9atrice PERRET
+Product Owner Hyperfront =E2=80=93 Miles plateform Program
+
+SpinPart
+www.spinpart.fr<http://www.spinpart.fr/>
+
+
+
+Confidential C
+
+-----Rendez-vous d'origine-----
+De : Joachim Jacob <joachim.jacob@teamwillgroup.com>
+Envoy=C3=A9 : mercredi 21 janvier 2026 17:18
+=C3=80 : Joachim Jacob; BOCENO Paul (renexter); PERRET Beatrice (renexter);=
+ HALOY Romance (renexter); ELHILALI Youssef (renexter); Lilia GARGOURI; Hou=
+ssem HERMASSI; Rania BEN MEFTEH; MARTIN-PORTUGUES Alberto; URIGOITIA-VILLAN=
+UEVA Regina; RIVAS Pablo (renexter)
+Cc : CAMPOS-DE-CELA Jorge; RONZULLI Sebastiano; ANDRADE Sandra; TETI Christ=
+ian-Federico; bilel.bensalem-extern@rcibanque.com; DI-PIETRO Christian (ren=
+exter); MARTIN-GARCIA Carlos; TEBOUL Hugo; DZIRI Hamza; hendrik.langhammer@=
+teamwillgroup.com; Sejaa ROUISSI; Adil MOUMNI ABDOU; Marcio OLIVEIRA; alaa.=
+houidheg; Heni ABDMOULEH; Malek KAZDAGHLI
+Objet : Hyperfront - Release demo and sprint review
+Date : jeudi 30 avril 2026 14:30-15:30 (UTC+01:00) Bruxelles, Copenhague, M=
+adrid, Paris.
+O=C3=B9 : Microsoft Teams-vergadering
+
+External email | Be CAUTIOUS, especially with links and attachments.
+
+Three-weekly meeting. TW demoes new features (user stories) addressed by th=
+e current release on DEV environment (functional demo) at the end of the sp=
+rint, before releasing to ASY.
+
+
+___________________________________________________________________________=
+_____
+Microsoft Teams-vergadering
+Deelnemen: https://teams.microsoft.com/meet/39366293542948?p=3DoxjJpbPN7jzI=
+z0BBh1
+Vergadering-id: 393 662 935 429 48
+Wachtwoordcode: dD9z5fp9
+________________________________
+Heeft u hulp nodig?<https://aka.ms/JoinTeamsMeeting?omkt=3Dnl-NL> | Systeem=
+referentie<https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZDZlNWExY=
+jctYmQ3OC00NzExLWExNGQtNzY5NjJjNGJlYjJl%40thread.v2/0?context=3D%7b%22Tid%2=
+2%3a%22c34f8dab-ff06-4970-8c69-ce12c4490de2%22%2c%22Oid%22%3a%2285f52592-1a=
+f3-4a9a-8dfb-3d92f95f4d48%22%7d>
+Voor organisatoren: Vergaderopties<https://teams.microsoft.com/meetingOptio=
+ns/?organizerId=3D85f52592-1af3-4a9a-8dfb-3d92f95f4d48&tenantId=3Dc34f8dab-=
+ff06-4970-8c69-ce12c4490de2&threadId=3D19_meeting_ZDZlNWExYjctYmQ3OC00NzExL=
+WExNGQtNzY5NjJjNGJlYjJl@thread.v2&messageId=3D0&language=3Dnl-NL>
+TEAMWILL CONSULTING
+___________________________________________________________________________=
+_____
+This message is for the designated recipient only and may contain privilege=
+d, proprietary, or otherwise confidential information. If you have received=
+ it in error, please notify the sender immediately and delete the original.=
+ Any other use of the e-mail by you is prohibited. https://www.teamwillgrou=
+p.com/
+
+-- Disclaimer ------------------------------------
+Ce message ainsi que les eventuelles pieces jointes constituent une corresp=
+ondance privee et confidentielle a l'attention exclusive du destinataire de=
+signe ci-dessus. Si vous n'etes pas le destinataire du present message ou u=
+ne personne susceptible de pouvoir le lui delivrer, il vous est signifie qu=
+e toute divulgation, distribution ou copie de cette transmission est strict=
+ement interdite. Si vous avez recu ce message par erreur, nous vous remerci=
+ons d'en informer l'expediteur par telephone ou de lui retourner le present=
+ message, puis d'effacer immediatement ce message de votre systeme.
+
+*** This e-mail and any attachments is a confidential correspondence intend=
+ed only for use of the individual or entity named above. If you are not the=
+ intended recipient or the agent responsible for delivering the message to =
+the intended recipient, you are hereby notified that any disclosure, distri=
+bution or copying of this communication is strictly prohibited. If you have=
+ received this communication in error, please notify the sender by phone or=
+ by replying this message, and then delete this message from your system.
+
+--_000_MATPR05MB12541A9F3BB596D377784BA3586352MATPR05MB12541eu_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8"><m=
+eta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<!--[if !mso]><style>v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Aptos;}
+@font-face
+	{font-family:MBLZ;
+	panose-1:0 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Segoe UI";
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+span.me-email-text
+	{mso-style-name:me-email-text;}
+span.me-email-text-secondary
+	{mso-style-name:me-email-text-secondary;}
+span.EmailStyle22
+	{mso-style-type:personal-reply;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;
+	mso-ligatures:none;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"FR" link=3D"blue" vlink=3D"purple" style=3D"word-wrap:break-w=
+ord">
+<div style=3D"border:solid #9C6500 1.0pt;padding:2.0pt 2.0pt 2.0pt 2.0pt">
+<p class=3D"MsoNormal" style=3D"line-height:12.0pt;background:#FFEB9C"><spa=
+n style=3D"font-size:10.0pt;color:#FF0000;mso-fareast-language:FR">ATTENTIO=
+N: EXTERNAL MAIL :
+</span><span style=3D"font-size:10.0pt;color:black;mso-fareast-language:EN"=
+>This email is sent from someone outside your organization. Teamwill=E2=80=
+=99s CIO recommends not clicking on links nor opening attachments if you ar=
+e not sure that the content is safe. If in
+ doubt please report this email to phishing@teamwillgroup.com</span><o:p></=
+o:p></p>
+</div>
+<p class=3D"MsoNormal"></p>
+<div>
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Dear all,=
+<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">&nbsp;<o:=
+p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Many than=
+ks for today=E2=80=99s demo !<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">&nbsp;<o:=
+p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Please fi=
+nd below a recap of the shared elements :<o:p></o:p></span></p>
+<table class=3D"MsoNormalTable" border=3D"1" cellspacing=3D"3" cellpadding=
+=3D"0" style=3D"border:solid windowtext 1.0pt">
+<tbody>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:11.0pt;font-family:&quot=
+;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">MFS Jira ID</span></b=
+><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif=
+;mso-fareast-language:EN-US"><o:p></o:p></span></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><b><span style=3D"font-size:11.0pt;font-family:&quot=
+;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Description</span></b=
+><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif=
+;mso-fareast-language:EN-US"><o:p></o:p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><b><span style=3D"font-size:11.0pt;font-family:&quot=
+;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Updated status</span>=
+</b><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-se=
+rif;mso-fareast-language:EN-US"><o:p></o:p></span></p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:11.0pt;font-family:&quot=
+;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Actions</span></b><sp=
+an style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;mso=
+-fareast-language:EN-US"><o:p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-4236<o:p></o:p></s=
+pan></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">OKTA connection<o:p></o:=
+p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Done<o:p></o:p></span></=
+p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;background:yellow;mso-highlight:yello=
+w;mso-fareast-language:EN-US">MFS</span><span lang=3D"EN-US" style=3D"font-=
+size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;mso-fareast-language=
+:EN-US">:
+ Need to configure the correct IPN on their OKTA app<o:p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-19097<o:p></o:p></=
+span></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Document UX Review<o:p><=
+/o:p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Done<o:p></o:p></span></=
+p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;background:lime;mso-highlight:lime;ms=
+o-fareast-language:EN-US">TW</span><span lang=3D"EN-US" style=3D"font-size:=
+11.0pt;font-family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-U=
+S">:
+ Bug to create =3D&gt; Refusal reason not appearing (trouble with the attri=
+bute from the MMPs)<o:p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-19446<o:p></o:p></=
+span></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Inputs rules<o:p></o:p><=
+/span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Stand-by<o:p></o:p></spa=
+n></p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;background:yellow;mso-highlight:yello=
+w;mso-fareast-language:EN-US">MFS</span><span lang=3D"EN-US" style=3D"font-=
+size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;mso-fareast-language=
+:EN-US">:
+ Organize an extra meeting with Anna to make sure configuration is ok, do n=
+ot represent an unrealistic extra task. If OK, let's create more complex te=
+sts &amp; associated Miles configuration<o:p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-13241<o:p></o:p></=
+span></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Fees - financial product=
+<o:p></o:p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Stand-by<o:p></o:p></spa=
+n></p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;background:lime;mso-highlight:lime;ms=
+o-fareast-language:EN-US">TW</span><span lang=3D"EN-US" style=3D"font-size:=
+11.0pt;font-family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-U=
+S">:&nbsp;
+ 1. Bug to create =3D&gt; Only fees that have the possibility to be added i=
+n the financed amount should be displayed with a tickbox<br>
+&nbsp;2. Bug to create =3D&gt; to config team so the amount financed is cor=
+rectly updated depending on the fees is paid upfront or financed<br>
+3. Registration tax management to demo with the user story on Asset fees<o:=
+p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-4157<o:p></o:p></s=
+pan></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">[MFS request] - Manage s=
+tatuses<o:p></o:p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Done<o:p></o:p></span></=
+p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;background:yellow;mso-highlight:yello=
+w;mso-fareast-language:EN-US">MFS</span><span lang=3D"EN-US" style=3D"font-=
+size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;mso-fareast-language=
+:EN-US">
+ / <span style=3D"background:lime;mso-highlight:lime">TW</span>: confirm th=
+at the decision &quot;missing data&quot; will really be the one used&nbsp;<=
+o:p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-4156<o:p></o:p></s=
+pan></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Manage rejected deal<o:p=
+></o:p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Done<o:p></o:p></span></=
+p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;background:lime;mso-highlight:lime;ms=
+o-fareast-language:EN-US">TW</span><span lang=3D"EN-US" style=3D"font-size:=
+11.0pt;font-family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-U=
+S">:
+ Bug to create =3D&gt; Validity period should not reflect the retention per=
+iod<o:p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-14564<o:p></o:p></=
+span></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Cancel deal under study<=
+o:p></o:p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Done<o:p></o:p></span></=
+p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">&nbsp;<o:p></o:p></span>=
+</p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-18015<o:p></o:p></=
+span></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Access expired deals<o:p=
+></o:p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Done<o:p></o:p></span></=
+p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;background:lime;mso-highlight:lime;ms=
+o-fareast-language:EN-US">TW</span><span lang=3D"EN-US" style=3D"font-size:=
+11.0pt;font-family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-U=
+S">:
+ 1.&nbsp; Check the expiration date : deals should be expired the day after=
+ the end of their validity date (issue may be due to the fact that cron job=
+ was runned just before the demo, while it should be runned at night)<br>
+2.&nbsp;</span><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&qu=
+ot;,sans-serif;mso-fareast-language:EN-US">Bug to create: Action status sho=
+uld be empty<o:p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-12352<o:p></o:p></=
+span></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Search in RDV<o:p></o:p>=
+</span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Done<o:p></o:p></span></=
+p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Following=
+ the last blueprint information, search should be forced automatically + se=
+t of minimal data will be extended at simulation
+ phase (among other reasons, this would prevent from changing data impactin=
+g the offer pricing at proposal).&nbsp;<br>
+Some data is not retrieved (mapping on Miles/RDV data is in progress).<br>
+Info for testing should be added to Confluence page. Existing users in RDV =
+are indiv1, company1, soleTr1<o:p></o:p></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">MFSMP-19488<o:p></o:p></=
+span></p>
+</td>
+<td width=3D"209" style=3D"width:156.65pt;border:solid windowtext 1.0pt;pad=
+ding:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Review the asset tab<o:p=
+></o:p></span></p>
+</td>
+<td width=3D"74" style=3D"width:55.2pt;border:solid windowtext 1.0pt;paddin=
+g:.75pt .75pt .75pt .75pt">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">In progress<o:p></o:p></=
+span></p>
+</td>
+<td style=3D"border:solid windowtext 1.0pt;padding:.75pt .75pt .75pt .75pt"=
+>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Not prese=
+nted by TW and will be taken in next sprint<o:p></o:p></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">&nbsp;<o:=
+p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US"><a href=3D"mailto:joachi=
+m.jacob@teamwillgroup.com" target=3D"_blank" title=3D"mailto:joachim.jacob@=
+teamwillgroup.com"><span lang=3D"EN-US">@joachim.jacob@teamwillgroup.com</s=
+pan></a></span><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-family:&=
+quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">,
+ keep us informed when the user stories will be deployed in REF Assembly pl=
+ease.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">&nbsp;<o:=
+p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">On our si=
+de, we will update the statuses and will share the test cases to business u=
+sers as soon as the user stories will be deployed.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">&nbsp;<o:=
+p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">Many than=
+ks for the good work!<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-size:11.0pt;font-=
+family:&quot;Calibri&quot;,sans-serif;mso-fareast-language:EN-US">&nbsp;<o:=
+p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">Best regards,<o:p></o:p>=
+</span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US">PO team<o:p></o:p></span=
+></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US"><o:p>&nbsp;</o:p></span>=
+</p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US"><o:p>&nbsp;</o:p></span>=
+</p>
+<div>
+<p class=3D"MsoNormal" style=3D"background:white"><span lang=3D"IT" style=
+=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black;mso-fareast-lang=
+uage:IT"><img border=3D"0" width=3D"40" height=3D"59" style=3D"width:.4166i=
+n;height:.618in" id=3D"Immagine_x0020_1" src=3D"cid:image001.png@01DCD8CA.6=
+84F67A0"></span><b><span lang=3D"EN-US" style=3D"font-size:10.0pt;font-fami=
+ly:MBLZ;color:#EA4832"><o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"background:white"><b><span lang=3D"EN-US" s=
+tyle=3D"font-size:10.0pt;font-family:MBLZ;color:#EA4832">B=C3=A9atrice PERR=
+ET<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"background:white"><b><span lang=3D"EN-US" s=
+tyle=3D"font-size:10.0pt;font-family:MBLZ;color:black">Product Owner Hyperf=
+ront =E2=80=93 Miles plateform Program<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"background:white"><b><span lang=3D"EN-US" s=
+tyle=3D"font-size:10.0pt;font-family:MBLZ;color:black"><o:p>&nbsp;</o:p></s=
+pan></b></p>
+<p class=3D"MsoNormal" style=3D"background:white"><b><span lang=3D"EN-US" s=
+tyle=3D"font-size:9.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:#2=
+42424">SpinPart</span></b><b><span lang=3D"EN-US" style=3D"font-size:9.0pt;=
+color:#242424"><o:p></o:p></span></b></p>
+<p class=3D"MsoNormal" style=3D"background:white"><span style=3D"font-size:=
+11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:#4F52B2"><a href=3D=
+"https://eur02.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fwww.spi=
+npart.fr%2F&amp;data=3D05%7C02%7Cmarcio.oliveira%40teamwillgroup.com%7C346d=
+1e4c22cd47a6101a08dea6d0ca64%7Cc34f8dabff0649708c69ce12c4490de2%7C0%7C0%7C6=
+39131612860584356%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwL=
+jAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&am=
+p;sdata=3Dz42nOAA2q5PYQevtnrgwGeFgSo96Ac19bQlodYb8x48%3D&amp;reserved=3D0" =
+originalsrc=3D"http://www.spinpart.fr/" target=3D"_blank" title=3D"http://w=
+ww.spinpart.fr/"><span style=3D"color:#4F52B2">www.spinpart.fr</span></a></=
+span><span style=3D"font-family:&quot;Calibri&quot;,sans-serif;mso-ligature=
+s:standardcontextual"><o:p></o:p></span></p>
+</div>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;mso-fareast-language:EN-US"><o:p>&nbsp;</o:p></span>=
+</p>
+<div>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif"><br>
+</p>
+<p style=3D"font-family:Arial;font-size:10pt;color:#000000;margin:5pt;font-=
+style:normal;font-weight:normal;text-decoration:none;" align=3D"Right">
+Confidential C<br>
+</p>
+-----Rendez-vous d'origine-----<br>
+<b>De&nbsp;:</b> Joachim Jacob &lt;joachim.jacob@teamwillgroup.com&gt; <br>
+<b>Envoy=C3=A9&nbsp;:</b> mercredi 21 janvier 2026 17:18<br>
+<b>=C3=80&nbsp;:</b> Joachim Jacob; BOCENO Paul (renexter); PERRET Beatrice=
+ (renexter); HALOY Romance (renexter); ELHILALI Youssef (renexter); Lilia G=
+ARGOURI; Houssem HERMASSI; Rania BEN MEFTEH; MARTIN-PORTUGUES Alberto; URIG=
+OITIA-VILLANUEVA Regina; RIVAS Pablo (renexter)<br>
+<b>Cc&nbsp;:</b> CAMPOS-DE-CELA Jorge; RONZULLI Sebastiano; ANDRADE Sandra;=
+ TETI Christian-Federico; bilel.bensalem-extern@rcibanque.com; DI-PIETRO Ch=
+ristian (renexter); MARTIN-GARCIA Carlos; TEBOUL Hugo; DZIRI Hamza; hendrik=
+.langhammer@teamwillgroup.com; Sejaa
+ ROUISSI; Adil MOUMNI ABDOU; Marcio OLIVEIRA; alaa.houidheg; Heni ABDMOULEH=
+; Malek KAZDAGHLI<br>
+<b>Objet&nbsp;:</b> Hyperfront - Release demo and sprint review<br>
+<b>Date&nbsp;:</b> jeudi 30 avril 2026 14:30-15:30 (UTC+01:00) Bruxelles, C=
+openhague, Madrid, Paris.<br>
+<b>O=C3=B9&nbsp;:</b> Microsoft Teams-vergadering<o:p></o:p></span>
+<p></p>
+</div>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<table class=3D"MsoNormalTable" border=3D"1" cellspacing=3D"0" cellpadding=
+=3D"0" width=3D"100%" style=3D"width:100.0%;background:#F4F4F4;border:none;=
+border-left:solid gold 4.5pt">
+<tbody>
+<tr>
+<td style=3D"border:none;padding:8.25pt 10.5pt 8.25pt 10.5pt">
+<table class=3D"MsoNormalTable" border=3D"0" cellspacing=3D"0" cellpadding=
+=3D"0" width=3D"100%" style=3D"width:100.0%">
+<tbody>
+<tr>
+<td width=3D"60" style=3D"width:45.0pt;padding:0cm 6.0pt 0cm 0cm">
+<p class=3D"MsoNormal"><strong><span style=3D"font-size:10.5pt;font-family:=
+&quot;Aptos&quot;,sans-serif">External email</span></strong><span style=3D"=
+font-size:10.5pt"> | Be
+<strong><span style=3D"font-family:&quot;Aptos&quot;,sans-serif;color:#CC00=
+00">CAUTIOUS</span></strong>, especially with links and attachments.
+<o:p></o:p></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<div>
+<p class=3D"MsoNormal"><span style=3D"color:black">Three-weekly meeting. TW=
+ demoes new features (user stories) addressed by the current release on DEV=
+ environment (functional demo) at the end of the sprint, before releasing t=
+o ASY.<o:p></o:p></span></p>
+</div>
+<div>
+<p class=3D"MsoNormal"><span style=3D"color:black">&nbsp;<o:p></o:p></span>=
+</p>
+</div>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<div>
+<div style=3D"margin-bottom:18.0pt;overflow:hidden">
+<p class=3D"MsoNormal"><span lang=3D"NL" style=3D"font-family:&quot;Segoe U=
+I&quot;,sans-serif;color:#242424">_________________________________________=
+_______________________________________<o:p></o:p></span></p>
+</div>
+<div style=3D"margin-bottom:9.0pt">
+<p class=3D"MsoNormal"><span class=3D"me-email-text"><b><span lang=3D"NL" s=
+tyle=3D"font-size:15.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;color:=
+#242424">Microsoft Teams-vergadering</span></b></span><span lang=3D"NL" sty=
+le=3D"font-family:&quot;Segoe UI&quot;,sans-serif;color:#242424">
+<o:p></o:p></span></p>
+</div>
+<div style=3D"margin-bottom:4.5pt;overflow-wrap: break-word">
+<p class=3D"MsoNormal"><span class=3D"me-email-text"><b><span lang=3D"NL" s=
+tyle=3D"font-size:15.0pt;font-family:&quot;Segoe UI&quot;,sans-serif;color:=
+#242424">Deelnemen:
+</span></b></span><span lang=3D"NL" style=3D"font-family:&quot;Segoe UI&quo=
+t;,sans-serif;color:#242424"><a href=3D"https://eur02.safelinks.protection.=
+outlook.com/ap/t-59584e83/?url=3Dhttps%3A%2F%2Fteams.microsoft.com%2Fmeet%2=
+F39366293542948%3Fp%3DoxjJpbPN7jzIz0BBh1&amp;data=3D05%7C02%7Cmarcio.olivei=
+ra%40teamwillgroup.com%7C346d1e4c22cd47a6101a08dea6d0ca64%7Cc34f8dabff06497=
+08c69ce12c4490de2%7C0%7C0%7C639131612860611560%7CUnknown%7CTWFpbGZsb3d8eyJF=
+bXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIld=
+UIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=3DMJYcgxzb7M%2BDArizV4gUmUDNAzdWga7Mb5=
+vt1B349HU%3D&amp;reserved=3D0" originalsrc=3D"https://teams.microsoft.com/m=
+eet/39366293542948?p=3DoxjJpbPN7jzIz0BBh1" title=3D"Meeting join"><span sty=
+le=3D"font-size:15.0pt;color:#5B5FC7">https://teams.microsoft.com/meet/3936=
+6293542948?p=3DoxjJpbPN7jzIz0BBh1</span></a>
+<o:p></o:p></span></p>
+</div>
+<div style=3D"margin-bottom:4.5pt">
+<p class=3D"MsoNormal"><span class=3D"me-email-text-secondary"><span lang=
+=3D"NL" style=3D"font-size:10.5pt;font-family:&quot;Segoe UI&quot;,sans-ser=
+if;color:#616161">Vergadering-id:
+</span></span><span class=3D"me-email-text"><span lang=3D"NL" style=3D"font=
+-size:10.5pt;font-family:&quot;Segoe UI&quot;,sans-serif;color:#242424">393=
+ 662 935 429 48</span></span><span lang=3D"NL" style=3D"font-family:&quot;S=
+egoe UI&quot;,sans-serif;color:#242424">
+<o:p></o:p></span></p>
+</div>
+<div style=3D"margin-bottom:24.0pt">
+<p class=3D"MsoNormal"><span class=3D"me-email-text-secondary"><span lang=
+=3D"NL" style=3D"font-size:10.5pt;font-family:&quot;Segoe UI&quot;,sans-ser=
+if;color:#616161">Wachtwoordcode:
+</span></span><span class=3D"me-email-text"><span lang=3D"NL" style=3D"font=
+-size:10.5pt;font-family:&quot;Segoe UI&quot;,sans-serif;color:#242424">dD9=
+z5fp9</span></span><span lang=3D"NL" style=3D"font-family:&quot;Segoe UI&qu=
+ot;,sans-serif;color:#242424">
+<o:p></o:p></span></p>
+</div>
+<div style=3D"margin-bottom:9.0pt">
+<div class=3D"MsoNormal" align=3D"center" style=3D"text-align:center"><span=
+ lang=3D"NL" style=3D"font-family:&quot;Segoe UI&quot;,sans-serif;color:#24=
+2424">
+<hr size=3D"1" width=3D"100%" align=3D"center">
+</span></div>
+</div>
+<div style=3D"margin-bottom:18.0pt">
+<p class=3D"MsoNormal"><span lang=3D"NL" style=3D"font-family:&quot;Segoe U=
+I&quot;,sans-serif;color:#242424"><a href=3D"https://eur02.safelinks.protec=
+tion.outlook.com/?url=3Dhttps%3A%2F%2Faka.ms%2FJoinTeamsMeeting%3Fomkt%3Dnl=
+-NL&amp;data=3D05%7C02%7Cmarcio.oliveira%40teamwillgroup.com%7C346d1e4c22cd=
+47a6101a08dea6d0ca64%7Cc34f8dabff0649708c69ce12c4490de2%7C0%7C0%7C639131612=
+860633137%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwM=
+CIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=
+=3Dp1gQfkAJFhfvISFnSCZerPN3HWXucw39czPR%2BJusVx8%3D&amp;reserved=3D0" origi=
+nalsrc=3D"https://aka.ms/JoinTeamsMeeting?omkt=3Dnl-NL"><span style=3D"font=
+-size:10.5pt;color:#5B5FC7">Heeft u hulp nodig?</span></a>
+</span><span lang=3D"NL" style=3D"font-family:&quot;Segoe UI&quot;,sans-ser=
+if;color:#616161">|</span><span lang=3D"NL" style=3D"font-family:&quot;Sego=
+e UI&quot;,sans-serif;color:#242424">
+<a href=3D"https://eur02.safelinks.protection.outlook.com/ap/t-59584e83/?ur=
+l=3Dhttps%3A%2F%2Fteams.microsoft.com%2Fl%2Fmeetup-join%2F19%253ameeting_ZD=
+ZlNWExYjctYmQ3OC00NzExLWExNGQtNzY5NjJjNGJlYjJl%2540thread.v2%2F0%3Fcontext%=
+3D%257b%2522Tid%2522%253a%2522c34f8dab-ff06-4970-8c69-ce12c4490de2%2522%252=
+c%2522Oid%2522%253a%252285f52592-1af3-4a9a-8dfb-3d92f95f4d48%2522%257d&amp;=
+data=3D05%7C02%7Cmarcio.oliveira%40teamwillgroup.com%7C346d1e4c22cd47a6101a=
+08dea6d0ca64%7Cc34f8dabff0649708c69ce12c4490de2%7C0%7C0%7C63913161286065492=
+0%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiO=
+iJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=3D3QoB2u=
+pmVmzxPPomOAcl1Cv7kkP%2BKriyrDOHAKDr3T4%3D&amp;reserved=3D0" originalsrc=3D=
+"https://teams.microsoft.com/l/meetup-join/19%3ameeting_ZDZlNWExYjctYmQ3OC0=
+0NzExLWExNGQtNzY5NjJjNGJlYjJl%40thread.v2/0?context=3D%7b%22Tid%22%3a%22c34=
+f8dab-ff06-4970-8c69-ce12c4490de2%22%2c%22Oid%22%3a%2285f52592-1af3-4a9a-8d=
+fb-3d92f95f4d48%22%7d">
+<span style=3D"font-size:10.5pt;color:#5B5FC7">Systeemreferentie</span></a>=
+ <o:p></o:p></span></p>
+</div>
+<div>
+<p class=3D"MsoNormal"><span class=3D"me-email-text-secondary"><span lang=
+=3D"NL" style=3D"font-size:10.5pt;font-family:&quot;Segoe UI&quot;,sans-ser=
+if;color:#616161">Voor organisatoren:
+</span></span><span lang=3D"NL" style=3D"font-family:&quot;Segoe UI&quot;,s=
+ans-serif;color:#242424"><a href=3D"https://eur02.safelinks.protection.outl=
+ook.com/?url=3Dhttps%3A%2F%2Fteams.microsoft.com%2FmeetingOptions%2F%3Forga=
+nizerId%3D85f52592-1af3-4a9a-8dfb-3d92f95f4d48%26tenantId%3Dc34f8dab-ff06-4=
+970-8c69-ce12c4490de2%26threadId%3D19_meeting_ZDZlNWExYjctYmQ3OC00NzExLWExN=
+GQtNzY5NjJjNGJlYjJl%40thread.v2%26messageId%3D0%26language%3Dnl-NL&amp;data=
+=3D05%7C02%7Cmarcio.oliveira%40teamwillgroup.com%7C346d1e4c22cd47a6101a08de=
+a6d0ca64%7Cc34f8dabff0649708c69ce12c4490de2%7C0%7C0%7C639131612860677080%7C=
+Unknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXa=
+W4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=3D%2FM7FLf2l=
+v8tL4tlDY2KTyfUGKBScRJU20VUzybwZfAs%3D&amp;reserved=3D0" originalsrc=3D"htt=
+ps://teams.microsoft.com/meetingOptions/?organizerId=3D85f52592-1af3-4a9a-8=
+dfb-3d92f95f4d48&amp;tenantId=3Dc34f8dab-ff06-4970-8c69-ce12c4490de2&amp;th=
+readId=3D19_meeting_ZDZlNWExYjctYmQ3OC00NzExLWExNGQtNzY5NjJjNGJlYjJl@thread=
+.v2&amp;messageId=3D0&amp;language=3Dnl-NL" target=3D"_blank"><span style=
+=3D"font-size:10.5pt;color:#5B5FC7">Vergaderopties</span></a>
+<o:p></o:p></span></p>
+</div>
+<div style=3D"margin-top:18.0pt;margin-bottom:4.5pt">
+<div>
+<p class=3D"MsoNormal"><span lang=3D"NL" style=3D"font-size:10.5pt;font-fam=
+ily:&quot;Segoe UI&quot;,sans-serif;color:#616161">TEAMWILL CONSULTING<o:p>=
+</o:p></span></p>
+</div>
+</div>
+<div style=3D"margin-bottom:18.0pt;overflow:hidden">
+<p class=3D"MsoNormal"><span lang=3D"NL" style=3D"font-family:&quot;Segoe U=
+I&quot;,sans-serif;color:#242424">_________________________________________=
+_______________________________________<o:p></o:p></span></p>
+</div>
+</div>
+<p class=3D"MsoNormal">This message is for the designated recipient only an=
+d may contain privileged, proprietary, or otherwise confidential informatio=
+n. If you have received it in error, please notify the sender immediately a=
+nd delete the original. Any other
+ use of the e-mail by you is prohibited. <a href=3D"https://eur02.safelinks=
+.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwww.teamwillgroup.com%2F&amp;d=
+ata=3D05%7C02%7Cmarcio.oliveira%40teamwillgroup.com%7C346d1e4c22cd47a6101a0=
+8dea6d0ca64%7Cc34f8dabff0649708c69ce12c4490de2%7C0%7C0%7C639131612860699099=
+%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOi=
+JXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=3D2LtJtv%=
+2Bt5i75QpUrByA3f2IplfggTQ9APKr2%2BqV7d9c%3D&amp;reserved=3D0" originalsrc=
+=3D"https://www.teamwillgroup.com/">
+https://www.teamwillgroup.com/</a> <o:p></o:p></p>
+</div>
+<p>-- Disclaimer ------------------------------------<br>
+Ce message ainsi que les eventuelles pieces jointes constituent une corresp=
+ondance privee et confidentielle a l'attention exclusive du destinataire de=
+signe ci-dessus. Si vous n'etes pas le destinataire du present message ou u=
+ne personne susceptible de pouvoir
+ le lui delivrer, il vous est signifie que toute divulgation, distribution =
+ou copie de cette transmission est strictement interdite. Si vous avez recu=
+ ce message par erreur, nous vous remercions d'en informer l'expediteur par=
+ telephone ou de lui retourner le
+ present message, puis d'effacer immediatement ce message de votre systeme.=
+</p>
+<p>*** This e-mail and any attachments is a confidential correspondence int=
+ended only for use of the individual or entity named above. If you are not =
+the intended recipient or the agent responsible for delivering the message =
+to the intended recipient, you are
+ hereby notified that any disclosure, distribution or copying of this commu=
+nication is strictly prohibited. If you have received this communication in=
+ error, please notify the sender by phone or by replying this message, and =
+then delete this message from your
+ system.</p>
+</div>
+</body>
+</html>
+
+--_000_MATPR05MB12541A9F3BB596D377784BA3586352MATPR05MB12541eu_--
+
+--_004_MATPR05MB12541A9F3BB596D377784BA3586352MATPR05MB12541eu_
+Content-Type: image/png; name="image001.png"
+Content-Description: image001.png
+Content-Disposition: inline; filename="image001.png"; size=1183;
+	creation-date="Thu, 30 Apr 2026 15:54:37 GMT";
+	modification-date="Thu, 30 Apr 2026 15:54:37 GMT"
+Content-ID: <image001.png@01DCD8CA.684F67A0>
+Content-Transfer-Encoding: base64
+
+iVBORw0KGgoAAAANSUhEUgAAACgAAAA7CAMAAAA+YjhqAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+jwv8YQUAAAGJUExURQAAAP8AAP9AAMwzAP8zAP9AAP85AP9AAP9EAAAAAPA8APJDAPJAAP9AAPVF
+AP9AAPZGAAAAAPdAAPhAAPlAAPlBAPRBAAAAAPpCAPpBAPVFAPpCAPZDAPdDAPtCAAAAAPdEAPdC
+APhEAPhEAPhBAPhDAPhCAPhFAAAAAPZBAPlCAPlDAPZCAPlDAAAAAPdCAPdDAPdCAPhDAPpCAPhE
+APhCAPhEAPhDAAAAAPZCAPhEAPhCAPlCAPdCAPlEAPdCAPlCAPdCAPlCAAAAAPlDAPdCAPhEAPlD
+APhDAPhCAAAAAPhEAPhDAPhCAPhEAPhDAPhDAPlEAAAAAPlDAPdEAPdCAPdCAPlDAPhCAAAAAPhD
+APhDAPhDAPhDAPhDAPhDAAAAAPhDAPhDAPdCAPdDAPlEAPhEAAAAAPhDAPhDAPhCAPhDAPhDAPhD
+APdDAAAAAPhDAPhDAPdDAPdDAPhDAPhDAPhCAAAAAPhDAPhDAPlDAPhDAPlDAPhDAPhDAPhDAPhD
+AAAAAPhDANbqrMEAAACBdFJOUwABBAUFCAkMDxARExQUGhwdICAkKCsvMDIzNDY5PT5AQEJER0pM
+TU5QUlVYWVxgYWNkZ2hpbG1vcHBxdHd4eHt7f3+AgoOIiY2Oj4+UlpeYmZ6foaKlqaytr7Czt7i7
+vr/Bw8THyMzPz9LT1trd3t/h4ubo6evu7/Hy8vP0+fv8/YZG2isAAAAJcEhZcwAAFxEAABcRAcom
+8z8AAAISSURBVEhL7ZRpU9RAEIZHBDQe6CoaRSTeBo8o9wAiaryIdxQ1ihoPWDxgRY6Igpj8cma6
+39nNUlt8p2qfL5nufmrScySiTp3NsBwZxFEU+jYStXHCJDWEyNXADuAQESfP7uFnDlmZTcPi4L9P
+TTSoUDWdQovbb65m2ZNdLICNnhZ33ss0d6EQEuU0lrYlCq6vxJaH5GXZCCSFjf4SDwm1AwefwVsZ
+3YacEDF7cQGx4vBLeAsDyChc9vJb1/4W3mwXMpqIvMRCqDj1Ad7Xi8hoLPLSSn/i/CS8L+eQITzy
+cBSaS9/gvT+JDMNvdhEJcXUG3ptjntSYnnjN5RX3z8MbP4RzkKiUKEIgrv+B9/SA2k0q+SiRWOJx
+0+3/8Mb2qpDXadonMaHh7vvQ1u40U4KOrEhD06PueP9jeL+vcYknMSJ3rC5/6wt4v/pQ4hljBD6J
+vjjyCt6PK6gIm0rmbAuuxjk+AW/6Agrm+plVM6c/wvt8BhkFt+8gIjqn4L3rQEbBE/KGgMvf4b0+
+ioyiwPc5QKjp/gnveSsyCotfnOR+BkOL8B7tQ0bh8NHmJxyElj1okOZuWAG+o1LuPvcuk7Z6q1EU
+08j3HFdG0NKkask3tLc0rEZF1MuYK8Y0jmXZXI8ebRBz3y/TMPH3BA2qxaRy7Q072viZF5PyN1AD
+/n40RT/3O6iB5flhFAZy819una2IEOvhhy13tZ9STQAAAABJRU5ErkJggg==
+
+--_004_MATPR05MB12541A9F3BB596D377784BA3586352MATPR05MB12541eu_--

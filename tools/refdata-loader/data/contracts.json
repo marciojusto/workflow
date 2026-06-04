@@ -1,0 +1,1006 @@
+{
+  "pendingContracts": [
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000958",
+        "reference": "004295/001CA",
+        "status": {
+          "id": "400015",
+          "description": "Pre-Accepted"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000074",
+        "reference": "004295",
+        "pendingContractStatus": {
+          "enumId": "565",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "23724",
+          "translation": "Initialized"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10005411",
+        "originatingQuoteReference": "004295/001"
+      },
+      "customer": {
+        "customerId": "10003093",
+        "legalName": ", 6a0438ee1546fa3a34c6264c",
+        "tradingName": ", rania",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "sejee/78919"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000434",
+        "identification": ", Fernandez"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "1000036",
+        "name": {
+          "multiLanguageId": "1022832",
+          "translation": "HF - Classic Credit - Dummy"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 48.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 12500.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000614",
+        "reference": "002984/001CA",
+        "status": {
+          "id": "3422",
+          "description": "Ready For Payout"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000057",
+        "reference": "002984",
+        "pendingContractStatus": {
+          "enumId": "3492",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "70944",
+          "translation": "Payout prepared"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10004011",
+        "originatingQuoteReference": "002984/001"
+      },
+      "customer": {
+        "customerId": "10002475",
+        "legalName": ", 69e78d4e56dcc9bbf6147a5a",
+        "tradingName": ", RANI",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "214214A"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000434",
+        "identification": ", Fernandez"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "1000036",
+        "name": {
+          "multiLanguageId": "1022832",
+          "translation": "HF - Classic Credit - Dummy"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 48.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 12500.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000585",
+        "reference": "002916/001CA",
+        "status": {
+          "id": "3422",
+          "description": "Ready For Payout"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000054",
+        "reference": "002916",
+        "pendingContractStatus": {
+          "enumId": "3492",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "70944",
+          "translation": "Payout prepared"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10003942",
+        "originatingQuoteReference": "002916/001"
+      },
+      "customer": {
+        "customerId": "10002419",
+        "legalName": ", 69e726f456dcc9bbf6147a2e",
+        "tradingName": ", lilia",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "aaaa"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000435",
+        "identification": ", Mariana"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "1000036",
+        "name": {
+          "multiLanguageId": "1022832",
+          "translation": "HF - Classic Credit - Dummy"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 48.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 12500.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000534",
+        "reference": "002758/001CA",
+        "status": {
+          "id": "3422",
+          "description": "Ready For Payout"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000053",
+        "reference": "002758",
+        "pendingContractStatus": {
+          "enumId": "3492",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "70944",
+          "translation": "Payout prepared"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10003778",
+        "originatingQuoteReference": "002758/001"
+      },
+      "customer": {
+        "customerId": "10002313",
+        "legalName": ", 69e5da1e56dcc9bbf61479ff",
+        "tradingName": ", Rania",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "Rania/1597"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000434",
+        "identification": ", Fernandez"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "1000036",
+        "name": {
+          "multiLanguageId": "1022832",
+          "translation": "HF - Classic Credit - Dummy"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 36.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 30000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 10000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000468",
+        "reference": "002428/001CA",
+        "status": {
+          "id": "400015",
+          "description": "Pre-Accepted"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000049",
+        "reference": "002428",
+        "pendingContractStatus": {
+          "enumId": "565",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "23724",
+          "translation": "Initialized"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10003441",
+        "originatingQuoteReference": "002428/001"
+      },
+      "customer": {
+        "customerId": "10002224",
+        "legalName": ", 69df5622bc03583f161d16f1",
+        "tradingName": ", 69df5622bc03583f161d16f1",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "69df5622bc03583f161d16f1"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000435",
+        "identification": ", Mariana"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "1000036",
+        "name": {
+          "multiLanguageId": "1022832",
+          "translation": "HF - Classic Credit - Dummy"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 48.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 12500.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000285",
+        "reference": "001365/001CA",
+        "status": {
+          "id": "400015",
+          "description": "Pre-Accepted"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000043",
+        "reference": "001365",
+        "pendingContractStatus": {
+          "enumId": "565",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "23724",
+          "translation": "Initialized"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10002262",
+        "originatingQuoteReference": "001365/001"
+      },
+      "customer": {
+        "customerId": "10001792",
+        "legalName": ", 69c117d41590a7477606de82",
+        "tradingName": ", test444",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "test/011"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000434",
+        "identification": ", Fernandez"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "10000001",
+        "name": {
+          "multiLanguageId": "10000015",
+          "translation": "HF - Classic Credit - Dummy (Test)"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 60.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 10000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000210",
+        "reference": "001093/001CA",
+        "status": {
+          "id": "400015",
+          "description": "Pre-Accepted"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000037",
+        "reference": "001093",
+        "pendingContractStatus": {
+          "enumId": "565",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "23724",
+          "translation": "Initialized"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10001979",
+        "originatingQuoteReference": "001093/001"
+      },
+      "customer": {
+        "customerId": "10001697",
+        "legalName": ", mary",
+        "tradingName": ", mary",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "tn/023"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000434",
+        "identification": ", Fernandez"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "10000001",
+        "name": {
+          "multiLanguageId": "10000015",
+          "translation": "HF - Classic Credit - Dummy (Test)"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 54.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 11111.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000178",
+        "reference": "000986/001CA",
+        "status": {
+          "id": "400015",
+          "description": "Pre-Accepted"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000031",
+        "reference": "000986",
+        "pendingContractStatus": {
+          "enumId": "3492",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "70944",
+          "translation": "Payout prepared"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10001823",
+        "originatingQuoteReference": "000986/001"
+      },
+      "customer": {
+        "customerId": "10001644",
+        "legalName": ", 69b2a668fcc2f8d059d085e7",
+        "tradingName": ", rania",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "rania/789"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000435",
+        "identification": ", Mariana"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "10000001",
+        "name": {
+          "multiLanguageId": "10000015",
+          "translation": "HF - Classic Credit - Dummy (Test)"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 60.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 10000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000168",
+        "reference": "000731/001CA",
+        "status": {
+          "id": "400015",
+          "description": "Pre-Accepted"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000026",
+        "reference": "000731",
+        "pendingContractStatus": {
+          "enumId": "3492",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "70944",
+          "translation": "Payout prepared"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10001562",
+        "originatingQuoteReference": "000731/001"
+      },
+      "customer": {
+        "customerId": "10001548",
+        "legalName": ", 69affc8afcc2f8d059d085c5",
+        "tradingName": ", testt",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "123yteet"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000435",
+        "identification": ", Mariana"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "10000001",
+        "name": {
+          "multiLanguageId": "10000015",
+          "translation": "HF - Classic Credit - Dummy (Test)"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 60.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 10000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000164",
+        "reference": "000629/001CA",
+        "status": {
+          "id": "400015",
+          "description": "Pre-Accepted"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000025",
+        "reference": "000629",
+        "pendingContractStatus": {
+          "enumId": "3492",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "70944",
+          "translation": "Payout prepared"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10001263",
+        "originatingQuoteReference": "000629/001"
+      },
+      "customer": {
+        "customerId": "10001323",
+        "legalName": ", 69aac4c9fcc2f8d059d0858c",
+        "tradingName": ", RANIA",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "RANIA/753"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000435",
+        "identification": ", Mariana"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "10000001",
+        "name": {
+          "multiLanguageId": "10000015",
+          "translation": "HF - Classic Credit - Dummy (Test)"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 42.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 14286.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    },
+    {
+      "creditApplication": {
+        "creditApplicationId": "10000148",
+        "reference": "000489/001CA",
+        "status": {
+          "id": "400015",
+          "description": "Pre-Accepted"
+        },
+        "decision": {
+          "id": "400089",
+          "description": "🟢 Green 🟢"
+        }
+      },
+      "contract": {
+        "pendingContractId": "10000021",
+        "reference": "000489",
+        "pendingContractStatus": {
+          "enumId": "565",
+          "attributeTypeId": "185",
+          "enumGroupId": "1093",
+          "multiLanguageId": "23724",
+          "translation": "Initialized"
+        },
+        "pendingContractType": {
+          "enumId": "3430",
+          "attributeTypeId": "239",
+          "enumGroupId": "3429",
+          "multiLanguageId": "70426",
+          "translation": "Long Term (Retail)"
+        }
+      },
+      "originatingQuote": {
+        "originatingQuoteId": "10001114",
+        "originatingQuoteReference": "000489/001"
+      },
+      "customer": {
+        "customerId": "10001201",
+        "legalName": ", 69a93f5d6679b38b98671553",
+        "tradingName": ", aaa",
+        "legalEntity": {
+          "id": "700",
+          "description": "Private Person"
+        },
+        "officialRegistration": "abcd"
+      },
+      "brokerContact": {
+        "brokerContactId": "10000434",
+        "identification": ", Fernandez"
+      },
+      "productCategory": {
+        "enumId": "1681",
+        "attributeTypeId": "220",
+        "enumGroupId": "1680",
+        "multiLanguageId": "34043",
+        "translation": "Lease Purchase"
+      },
+      "hasCases": false,
+      "quotationTemplate": {
+        "quotationTemplateId": "10000001",
+        "name": {
+          "multiLanguageId": "10000015",
+          "translation": "HF - Classic Credit - Dummy (Test)"
+        }
+      },
+      "product": {
+        "term": {
+          "value": 60.0,
+          "unit": {
+            "enumId": "72",
+            "multiLanguageId": "23528",
+            "translation": "Months"
+          }
+        },
+        "totalMileage": {
+          "value": 50000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        },
+        "annualMileage": {
+          "value": 10000.0,
+          "unit": {
+            "enumId": "165",
+            "multiLanguageId": "23569",
+            "translation": "Km"
+          }
+        }
+      }
+    }
+  ],
+  "totalCount": 11
+}

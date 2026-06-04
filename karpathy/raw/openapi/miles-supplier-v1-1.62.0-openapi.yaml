@@ -1,0 +1,3908 @@
+openapi: 3.0.1
+info:
+  title: miles-supplier
+  description: "This service is used to retrieve data about brokers, dealers, suppliers, make activities, documents,\n\t\t\tsendings and their corresponding relations. In the context of retail customers, it is also possible to\n\t\t\tretrieve information on dealerships, which are specific suppliers whose data is made available to retail\n\t\t\tcustomers."
+  contact:
+    url: https://www.sofico.global
+  license:
+    name: Sofico
+    url: https://www.sofico.global
+  version: 1.62.0
+  x-milesServiceType: functional
+  x-logo:
+    url: https://www.sofico.global/sofico.svg
+    altText: Sofico logo
+paths:
+  /m2m/users/sign-ons/{sign_on_id}/broker-contacts:
+    get:
+      tags:
+        - M2MSupplierResource
+      summary: Get broker contacts
+      description: This endpoint retrieves broker contacts linked to a user based on the sign-on ID of that user.
+      operationId: findBrokerContactsForUserM2M
+      parameters:
+        - name: sign_on_id
+          in: path
+          description: The sign-on ID of the user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/M2MFindBrokerContactsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - Broker contacts not found
+            - User not found
+            - Enterprise not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - m2m_relation_management
+      x-miles-m2m: true
+  /m2m/suppliers:
+    get:
+      tags:
+        - M2MSupplierResource
+      summary: Find suppliers
+      description: This endpoint retrieves suppliers based on a set of filters.
+      operationId: findSuppliersM2M
+      parameters:
+        - name: count
+          in: query
+          description: The maximum number of elements to be returned
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 10
+        - name: offset
+          in: query
+          description: The number of elements to skip before returning the requested list of elements
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 50
+        - name: sort_by
+          in: query
+          description: Order clause in which the elements will be returned, deprecated since 1.221.0 on 2023-02-22 in favor of a list of sortBy
+          deprecated: true
+          schema:
+            $ref: '#/components/schemas/SortBy'
+        - name: sorting
+          in: query
+          description: List of order clauses in which the elements will be returned
+          schema:
+            type: array
+            items:
+              type: string
+        - name: supplier_id
+          in: query
+          description: The ID(s) of the supplier(s). Either 'supplier_id' or 'references' must be provided.
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '123456'
+        - name: references
+          in: query
+          description: The references of the supplier(s). Either 'supplier_id' or 'references' must be provided.
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: Company
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindSuppliersResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - m2m_relation_management
+      x-miles-m2m: true
+  /m2m/suppliers/{supplier_id}/bank-accounts:
+    get:
+      tags:
+        - M2MSupplierResource
+      summary: Get supplier bank accounts
+      description: This endpoint retrieves a given supplier's bank accounts by using the supplier ID. It is intended for machine-to-machine integrations.
+      operationId: getSupplierBankAccountsForM2M
+      parameters:
+        - name: supplier_id
+          in: path
+          description: The ID of the supplier
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/M2MFindBankAccountsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Supplier not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - m2m_relation_management
+      x-miles-m2m: true
+  /m2m/suppliers/{supplier_id}:
+    get:
+      tags:
+        - M2MSupplierResource
+      summary: Get supplier
+      description: This endpoint gets a supplier by its ID. It is intended for machine-to-machine integrations.
+      operationId: getSupplierForM2M
+      parameters:
+        - name: supplier_id
+          in: path
+          description: The ID of the supplier
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/M2MSupplier'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Supplier not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - m2m_relation_management
+      x-miles-m2m: true
+  /broker-contacts/{broker_contact_id}/activations:
+    post:
+      summary: Activate the broker contact
+      description: This endpoint activates the user of the broker contact by its ID.
+      operationId: activateBrokerContact
+      parameters:
+        - name: broker_contact_id
+          in: path
+          description: ID of the broker contact
+          required: true
+          schema:
+            type: string
+          example: '2147484130'
+      responses:
+        '204':
+          description: The activation of the user was successful
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Broker contact not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: 'Activating the user linked to the broker contact (ID: ''%s'') failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - dealer_manager
+  /broker-contact/current/password:
+    put:
+      summary: Change password of authenticated broker contact
+      description: This endpoint changes the password of the authenticated broker contact.
+      operationId: changePassword
+      parameters:
+        - name: ignore_warnings
+          in: query
+          description: If set to true, (interactive) warnings will be ignored.
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBrokerContactPasswordRequest'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Changing the broker password failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - bike_dealer_manager
+            - bike_dealer_manager_assistant
+  /broker-contacts:
+    get:
+      summary: Find broker contacts
+      description: This endpoint retrieves broker contacts based on a set of filters.
+      operationId: findBrokerContacts
+      parameters:
+        - name: count
+          in: query
+          description: The maximum number of elements to be returned
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 10
+        - name: offset
+          in: query
+          description: The number of elements to skip before returning the requested list of elements
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 50
+        - name: sort_by
+          in: query
+          description: Order clause in which the elements will be returned, deprecated since 1.221.0 on 2023-02-22 in favor of a list of sortBy
+          deprecated: true
+          schema:
+            $ref: '#/components/schemas/SortBy'
+        - name: sorting
+          in: query
+          description: List of order clauses in which the elements will be returned
+          schema:
+            type: array
+            items:
+              type: string
+        - name: broker_contact_id
+          in: query
+          description: The ID(s) of the broker contact(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '5000001'
+        - name: identification
+          in: query
+          description: Wildcard for the identification
+          schema:
+            type: string
+          example: John doe Inc
+        - name: sign_on
+          in: query
+          description: Wildcard for the sign-on of the broker contact
+          schema:
+            type: string
+          example: '123456'
+        - name: supplier_id
+          in: query
+          description: The ID(s) of the broker supplier(s). Deprecated since 2022-06-20 and version 1.25.0 in favor of broker_company_id
+          deprecated: true
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: broker_company_id
+          in: query
+          description: The ID(s) of the broker company(ies)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '123456'
+        - name: contact_role_id
+          in: query
+          description: The ID(s) of the contact role(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '123457'
+        - name: account_expired
+          in: query
+          description: Indicates whether the account is expired
+          schema:
+            type: boolean
+        - name: broker_contact_has_left
+          in: query
+          description: 'Indicates whether broker contacts who have left should be fetched (depending on the leave date) (default: all)'
+          schema:
+            type: boolean
+        - name: official_registration
+          in: query
+          description: Indicates whether to filter by a list of official registrations of the person
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindBrokerContactsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - customer_support
+            - promotion_manager
+            - promotion_user
+            - bike_dealer_manager
+            - broker_manager
+            - broker_salesperson
+            - dealer_manager
+            - dealer_salesperson
+    post:
+      summary: Create a new broker contact
+      description: This endpoint creates a new broker contact.
+      operationId: createBrokerContact
+      parameters:
+        - name: ignore_warnings
+          in: query
+          description: If set to true, (interactive) warnings will be ignored.
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        description: The data needed to create new broker contact.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBrokerContactRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrokerContact'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Failed to create a new the broker contact.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - dealer_manager
+  /broker-contacts/{broker_contact_id}/deactivations:
+    post:
+      summary: Deactivate the broker contact
+      description: This endpoint deactivates the user of the broker contact by its ID.
+      operationId: deactivateBrokerContact
+      parameters:
+        - name: broker_contact_id
+          in: path
+          description: ID of the broker contact
+          required: true
+          schema:
+            type: string
+          example: '2147484130'
+      responses:
+        '204':
+          description: The deactivation of the user was successful
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Broker contact not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: 'Deactivating the user linked to the broker contact (ID: ''%s'') failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - dealer_manager
+  /broker-contacts/{broker_contact_id}:
+    get:
+      summary: Get broker contact
+      description: This endpoint retrieves a broker contact by its ID.
+      operationId: getBrokerContact
+      parameters:
+        - name: broker_contact_id
+          in: path
+          description: ID of the broker contact
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrokerContact'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Broker contact not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - bike_dealer_manager
+            - bike_dealer_manager_assistant
+    put:
+      summary: Update broker contact
+      description: This endpoint updates the data of the broker contact by its ID.
+      operationId: updateGivenBrokerContact
+      parameters:
+        - name: broker_contact_id
+          in: path
+          description: ID of the broker contact
+          required: true
+          schema:
+            type: string
+        - name: ignore_warnings
+          in: query
+          description: If set to true, (interactive) warnings will be ignored.
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        description: The information of the broker contact that must be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGivenBrokerContactRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrokerContact'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Broker contact not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Updating the broker contact information failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - dealer_manager
+            - dealer_salesperson
+    delete:
+      summary: Detach the broker contact
+      description: This endpoint detaches the broker contact by its ID. This means that the User and Web User contact roles + link to the user account are removed. The leave date will be set on the contact to today.
+      operationId: detachBrokerContact
+      parameters:
+        - name: broker_contact_id
+          in: path
+          description: ID of the broker contact
+          required: true
+          schema:
+            type: string
+          example: '2147484130'
+      responses:
+        '204':
+          description: The broker contact was successfully detached.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Broker contact not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: 'Detaching the user linked to the broker contact (ID: ''%s'') failed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - dealer_manager
+  /broker-companies/{broker_company_id}/documents/{document_id}:
+    get:
+      summary: Download a specific broker company document
+      description: This endpoint download a specific document attached to a broker company.
+      operationId: downloadBrokerCompanyDocuments
+      parameters:
+        - name: broker_company_id
+          in: path
+          description: The ID of the broker company
+          required: true
+          schema:
+            type: string
+          example: '123456'
+        - name: document_id
+          in: path
+          description: The ID of the document
+          required: true
+          schema:
+            type: string
+          example: '456123'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - dealer_salesperson
+            - dealer_manager
+            - broker_salesperson
+            - broker_manager
+  /broker-companies/{broker_company_id}/documents:
+    get:
+      summary: Find broker company documents
+      description: This endpoint retrieves a list of documents attached to a broker company.
+      operationId: findBrokerCompanyDocuments
+      parameters:
+        - name: broker_company_id
+          in: path
+          description: The ID of the broker company
+          required: true
+          schema:
+            type: string
+          example: '123456'
+        - name: count
+          in: query
+          description: The maximum number of elements to be returned
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 10
+        - name: offset
+          in: query
+          description: The number of elements to skip before returning the requested list of elements
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 50
+        - name: sort_by
+          in: query
+          description: List of order clauses in which the elements will be returned, deprecated since 2022-09-06 and version 1.184.0 in favor of sorting
+          deprecated: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: sorting
+          in: query
+          description: List of order clauses in which the elements will be returned
+          schema:
+            type: array
+            items:
+              type: string
+        - name: created_from
+          in: query
+          description: The date after which the document was created. If neither the `created_from` nor `created_to` parameter is provided, a default limit for `created_from` of 30 days less than the current date will be applied.
+          schema:
+            type: string
+            format: date
+            example: '2026-01-12'
+        - name: created_to
+          in: query
+          description: The date before which the document was created. If neither the `created_from` nor `created_to` parameter is provided, a default limit for `created_from` of 30 days less than the current date will be applied.
+          schema:
+            type: string
+            format: date
+            example: '2026-01-12'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindBrokerCompanyDocumentsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - dealer_salesperson
+            - dealer_manager
+            - broker_salesperson
+            - broker_manager
+  /broker-contact/current/broker-company-clusters:
+    get:
+      summary: Get all broker companies within the dealer cluster of the current broker contact
+      description: This endpoint retrieves the broker companies which are part of the current broker contacts' dealer cluster.
+      operationId: findCurrentClusterBrokerCompanies
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindCurrentClusterBrokerCompaniesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - dealer_manager
+            - dealer_salesperson
+  /suppliers/nearby:
+    get:
+      summary: Find nearby suppliers
+      description: This endpoint retrieves a list of nearby suppliers.
+      operationId: findNearbySuppliers
+      parameters:
+        - name: latitude
+          in: query
+          description: Latitude of the current position
+          required: true
+          schema:
+            type: number
+            format: double
+          example: 12
+        - name: longitude
+          in: query
+          description: Longitude of the current position
+          required: true
+          schema:
+            type: number
+            format: double
+          example: 126
+        - name: role_id
+          in: query
+          description: The ID of the role
+          required: true
+          schema:
+            type: string
+          example: '123456'
+        - name: make_id
+          in: query
+          description: The make ID of the vehicle a supplier is entitled to
+          schema:
+            type: string
+          example: '123336'
+        - name: radius
+          in: query
+          description: Radius to search within
+          schema:
+            type: number
+            format: double
+            default: 20
+          example: 20
+        - name: radius_unit
+          in: query
+          description: The unit for the radius, can be 165 (kilometer) or 166 (miles)
+          schema:
+            type: string
+            default: '165'
+          example: '165'
+        - name: count
+          in: query
+          description: The number of suppliers to be displayed
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 10
+        - name: offset
+          in: query
+          description: The number of elements to exclude before returning the collection
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: sort_by
+          in: query
+          description: Sorting to be applied applied on the results list
+          schema:
+            $ref: '#/components/schemas/SortBy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindNearbySuppliersResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+            - mobility_manager
+            - mobility_manager_assistant
+  /suppliers:
+    get:
+      summary: Find suppliers
+      description: This endpoint retrieves suppliers based on a set of filters.
+      operationId: findSuppliers
+      parameters:
+        - name: count
+          in: query
+          description: The maximum number of elements to be returned
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 10
+        - name: offset
+          in: query
+          description: The number of elements to skip before returning the requested list of elements
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 50
+        - name: sort_by
+          in: query
+          description: Order clause in which the elements will be returned, deprecated since 1.221.0 on 2023-02-22 in favor of a list of sortBy
+          deprecated: true
+          schema:
+            $ref: '#/components/schemas/SortBy'
+        - name: sorting
+          in: query
+          description: List of order clauses in which the elements will be returned
+          schema:
+            type: array
+            items:
+              type: string
+        - name: supplier_id
+          in: query
+          description: The ID(s) of the supplier(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '123456'
+        - name: references
+          in: query
+          description: The references of the supplier(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: Company
+        - name: supplier_state_id
+          in: query
+          description: The ID(s) of the supplier state(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '123458'
+        - name: make_id
+          in: query
+          description: The ID(s) of the make(s) for which the supplier is allowed to perform activities
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '123459'
+        - name: leasing_company_id
+          in: query
+          description: The ID(s) of the leasing company(ies)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '1234510'
+        - name: supplier_make_activity_service_type_id
+          in: query
+          description: The ID(s) of the service type(s) for which the supplier is allowed to perform make-specific activities
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '1234511'
+        - name: supplier_make_activity_service_type_group_id
+          in: query
+          description: The ID(s) of the service type group(s) for which the supplier is allowed to perform make-specific activities
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '1234512'
+        - name: supplier_make_activity_type_id
+          in: query
+          description: The ID(s) of the activity type(s) of the make-specific activities the supplier is allowed to perform
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '123413'
+        - name: partner_roles
+          in: query
+          description: The partner roles of the supplier(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: supplier
+        - name: trading_name
+          in: query
+          description: Wildcard for the trading description
+          schema:
+            type: string
+          example: Company Inc
+        - name: reference
+          in: query
+          description: Wildcard for the reference
+          schema:
+            type: string
+          example: '123456'
+        - name: dynamic_attribute_filters
+          in: query
+          description: The dynamic attributes to filter by
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+              example: 300123|Criterium,400123|123
+            x-miles-extra-description:
+              Will be ignored when using a search_query: 'true'
+        - name: detail_level
+          in: query
+          description: The detail level of the response. Used to reduce or expand the fields in the response.
+          schema:
+            type: string
+            default: HIGH
+            enum:
+              - ID_ONLY
+              - LOW
+              - MEDIUM
+              - HIGH
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindSuppliersResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - customer_support
+            - mobility_user
+            - mobility_manager
+            - mobility_manager_assistant
+            - promotion_manager
+            - promotion_user
+  /unit-accounts:
+    get:
+      summary: Find unit accounts
+      description: This endpoint retrieves a list of unit accounts based on the filters.
+      operationId: findUnitAccounts
+      parameters:
+        - name: supplier_id
+          in: query
+          description: ID(s) of the supplier(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+          example: '100888'
+        - name: count
+          in: query
+          description: The number of unit accounts to be displayed
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+        - name: offset
+          in: query
+          description: The number of elements to exclude before returning the collection
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: sort_by
+          in: query
+          description: Sorting to be applied applied on the results list
+          schema:
+            $ref: '#/components/schemas/SortBy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindUnitAccountsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - dealer_manager
+  /broker-contact/current/allowed-broker-companies:
+    get:
+      summary: Get allowed broker companies
+      description: This endpoint retrieves a list of broker companies that are allowed for the current broker contact.
+      operationId: getAllowedBrokerCompaniesForCurrentBrokerContact
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllowedBrokerCompaniesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - dealer_manager
+            - dealer_salesperson
+  /broker-contact/current/allowed-leasing-companies:
+    get:
+      summary: Get leasing companies that the user is allowed to switch to.
+      description: This endpoint retrieves a list of the leasing companies that the user is allowed to switch to.
+      operationId: getAllowedLeasingCompaniesForCurrentBroker
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllowedLeasingCompaniesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Updating the broker contact information failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+  /broker-companies/{broker_company_id}:
+    get:
+      summary: Get broker company
+      description: This endpoint retrieves the details of the broker company by the broker company ID.
+      operationId: getBrokerCompany
+      parameters:
+        - name: broker_company_id
+          in: path
+          description: The ID of the broker company to fetch
+          required: true
+          schema:
+            type: string
+          example: '600021'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrokerCompany'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Broker company ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - dealer_manager
+            - dealer_salesperson
+  /broker-contact/current:
+    get:
+      summary: Get authenticated broker contact
+      description: This endpoint retrieves the authenticated broker contact.
+      operationId: getCurrentBrokerContact
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentBrokerContact'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Broker contact not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - bike_dealer_manager
+            - bike_dealer_manager_assistant
+    put:
+      summary: Update authenticated broker contact
+      description: This endpoint updates the data of the authenticated broker contact.
+      operationId: updateBrokerContact
+      requestBody:
+        description: The information needed to update the authenticated broker contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBrokerContactRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentBrokerContact'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Updating the authenticated broker contact failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - bike_dealer_manager
+            - bike_dealer_manager_assistant
+  /dealerships/{dealership_id}:
+    get:
+      summary: Get dealership
+      description: This endpoint retrieves a dealership by its dealership ID. The dealership ID is actually a supplier ID.
+      operationId: getDealership
+      parameters:
+        - name: dealership_id
+          in: path
+          description: The dealership ID of the dealership. This is actually a supplier ID.
+          required: true
+          schema:
+            type: string
+          example: '1008193'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dealership'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Dealership not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - retail_customer
+  /suppliers/{supplier_id}/redirect-link:
+    get:
+      summary: Get redirect link with a new token for a given supplier
+      description: This endpoint allows users to authorize themselves as another entity with an appropriate token from Keycloak and generate a redirect link with a new token for a given supplier.
+      operationId: getRedirectLink
+      parameters:
+        - name: supplier_id
+          in: path
+          description: The ID of the supplier
+          required: true
+          schema:
+            type: string
+          example: '123456'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OneTimeTokenUrlResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Supplier not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+  /suppliers/{supplier_id}:
+    get:
+      summary: Get supplier
+      description: This endpoint retrieves a supplier by its ID.
+      operationId: getSupplier
+      parameters:
+        - name: supplier_id
+          in: path
+          description: The ID of the supplier
+          required: true
+          schema:
+            type: string
+          example: '123456'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Supplier not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - customer_support
+            - mobility_user
+            - mobility_manager
+            - mobility_manager_assistant
+  /filters:
+    get:
+      summary: List filters
+      description: This endpoint retrieves a list of filters with their possible values.
+      operationId: listFilters
+      parameters:
+        - name: filter_id
+          in: query
+          description: ID(s) of the filter(s)
+          schema:
+            type: array
+            items:
+              type: string
+          example: '1008115'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListFiltersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - broker_manager
+            - broker_salesperson
+            - bike_dealer_manager
+            - bike_dealer_manager_assistant
+components:
+  schemas:
+    M2MBrokerCompanyReference:
+      type: object
+      properties:
+        brokerCompanyId:
+          type: string
+          description: The ID of the broker company
+          example: '600021'
+        reference:
+          type: string
+          description: The company reference
+          example: '15568845'
+        tradingName:
+          type: string
+          description: The company trading name
+          example: Company trading name Inc
+        externalReference:
+          type: string
+          description: The external reference
+          example: '100002'
+      description: A broker company reference
+    M2MFindBrokerContact:
+      type: object
+      properties:
+        brokerContactId:
+          type: string
+          description: The ID of the broker contact
+          example: '2147483967'
+        identification:
+          type: string
+          description: The identification of the broker contact
+          example: Smith, John
+        brokerCompanies:
+          type: array
+          description: The list of broker company references
+          items:
+            $ref: '#/components/schemas/M2MBrokerCompanyReference'
+      description: Broker contact
+    M2MFindBrokerContactsResponse:
+      type: object
+      properties:
+        brokerContacts:
+          type: array
+          description: The list of broker contacts found
+          items:
+            $ref: '#/components/schemas/M2MFindBrokerContact'
+        defaultLeasingCompany:
+          description: The default leasing company of the user
+          $ref: '#/components/schemas/M2MLeasingCompanyReference'
+    M2MLeasingCompanyReference:
+      type: object
+      properties:
+        leasingCompanyId:
+          type: string
+          description: The ID of the leasing company
+          example: '123456'
+        name:
+          description: The name of the leasing company
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The default leasing company of the user
+    MultiLanguageValue:
+      title: MultiLanguageValue
+      type: object
+      properties:
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '170392'
+        translation:
+          type: string
+          description: The translation of the multi-language ID in human-readable format
+          example: Hatchback
+      description: Miles API v1 representation of a translated string value.
+    ExceptionInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/problems/microservices/service-unavailable
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Service Unavailable
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: The requested service is not available.
+        message:
+          description: Message objects containing translation information
+          $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '34898219'
+    AbstractValue:
+      type: object
+      description: An object that contains the actual value
+    Address:
+      type: object
+      properties:
+        addressId:
+          type: string
+          description: The ID of the address
+        formattedAddress:
+          type: string
+          description: The formatted address
+        postalCode:
+          type: string
+          description: Postal Code
+        city:
+          description: City
+          $ref: '#/components/schemas/MultiLanguageValue'
+        state:
+          description: State
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1:
+          description: Street name
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1Nr:
+          description: Deprecated since 2022-12-12 and version '1.29.0' in favor of 'addressLine1Number'
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1Number:
+          description: House number
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine2:
+          description: Street name 2
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine3:
+          description: Street name 3
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine4:
+          description: Street name 4
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine5:
+          description: Street name 5
+          $ref: '#/components/schemas/MultiLanguageValue'
+        locationIdentification:
+          description: The identification of the location
+          $ref: '#/components/schemas/MultiLanguageValue'
+        country:
+          description: Country
+          $ref: '#/components/schemas/Country'
+        deleted:
+          type: boolean
+          description: Is deleted
+        streetType:
+          type: string
+          description: The type of the street. This string needs to belong to the `StreetType` enumeration.
+          example: street
+      description: Address
+    ContactAddress:
+      type: object
+      properties:
+        label:
+          description: This enum value indicates the label(Primary, Invoice, General....) of the address
+          $ref: '#/components/schemas/EnumValue'
+        address:
+          description: Address
+          $ref: '#/components/schemas/Address'
+      description: An address
+    Country:
+      type: object
+      properties:
+        countryId:
+          type: string
+          description: The ID of the country
+        countryName:
+          description: The name of the country
+          $ref: '#/components/schemas/MultiLanguageValue'
+        countryCodeIso2:
+          type: string
+          description: The ISO2 code of the country
+          example: BE
+      description: Country
+    DynamicAttributeValue:
+      title: DynamicAttributeValue
+      type: object
+      properties:
+        valueType:
+          type: integer
+          description: |
+            Based on this integer the 'value' will consist of a value matching these types: 
+             * 1  = MultiLanguageValue 
+             * 2  = EnumValue 
+             * 3  = MultiCurrencyValue 
+             * 4  = DoubleUnitValue 
+             * 5  = IntegerUnitValue 
+             * 6  = StringValue 
+             * 7  = IntegerValue 
+             * 8  = DoubleValue 
+             * 9  = BooleanValue 
+             * 10 = UnnamedValue 
+             * 11 = DateValue 
+             * 12 = TimeValue 
+             * 13 = DateTimeValue 
+             * 14 = ZonedDateTimeValue 
+             * 15 = LongValue 
+          format: int32
+          example: 7
+        value:
+          description: An object that contains the actual value
+          $ref: '#/components/schemas/AbstractValue'
+        sysRepAttributeId:
+          type: string
+          description: The Miles back-office application ID that describes the attribute
+      description: Miles API v1 representation of a dynamic attribute value.It has a 'valueType' as a discriminator for the actual 'value'.The 'sysRepAttributeId' identifies which attribute value is represented.
+    EnumValue:
+      title: EnumValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID
+          example: '100002'
+        attributeTypeId:
+          type: string
+          description: ' The ID of the attribute type'
+          example: '237'
+        enumGroupId:
+          type: string
+          description: This will be represented as a separate attribute value
+          example: '1350'
+          deprecated: true
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '24379'
+        translation:
+          type: string
+          description: The translation of the enumeration ID in human-readable format
+          example: Request
+        enabled:
+          type: boolean
+          description: Indicates whether this object can still be used
+          example: true
+      description: Miles API v1 representation of an enum value. It contains additional values representing the attribute type and multi-language context.
+    FindSupplier:
+      type: object
+      properties:
+        supplierId:
+          type: string
+          description: The ID of the supplier
+          example: '123456'
+        legalName:
+          type: string
+          description: Legal Name
+          example: ACME inc.
+        tradingName:
+          type: string
+          description: Trading Name
+          example: ACME
+        businessUnitId:
+          type: string
+          description: The ID of the business unit
+          example: '987654'
+        reference:
+          type: string
+          description: Reference
+          example: supplierRef
+        supplierState:
+          description: The supplier state
+          $ref: '#/components/schemas/EnumValue'
+        leasingCompanies:
+          type: array
+          description: The list of the leasing companies
+          items:
+            $ref: '#/components/schemas/LeasingCompany'
+          x-Included in response from Detail Level: MEDIUM
+        addresses:
+          type: array
+          description: The list of the contact addresses
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+          x-Included in response from Detail Level: MEDIUM
+        roles:
+          type: array
+          description: List of supplier role IDs
+          items:
+            $ref: '#/components/schemas/Role'
+          x-Included in response from Detail Level: MEDIUM
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: The map of the dynamic attributes
+          x-Included in response from Detail Level: MEDIUM
+      description: Supplier
+    FindSuppliersResponse:
+      type: object
+      properties:
+        suppliers:
+          type: array
+          description: The list of suppliers found
+          items:
+            $ref: '#/components/schemas/FindSupplier'
+        totalCount:
+          type: integer
+          description: The total count of suppliers found
+          format: int64
+    LeasingCompany:
+      type: object
+      properties:
+        leasingCompanyId:
+          type: string
+          description: The ID of the leasing company
+          example: '100001'
+        country:
+          description: The country of a leasing company
+          $ref: '#/components/schemas/Country'
+      description: Not implemented
+    Role:
+      type: object
+      properties:
+        roleId:
+          type: string
+          description: Supplier role ID
+        description:
+          description: Supplier role description with multilanguage ID
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: Supplier role ID
+    SortBy:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The key used for sorting
+          example: name
+        order:
+          description: The sorting order, by default it is ascending
+          $ref: '#/components/schemas/SortOrder'
+    SortOrder:
+      type: string
+      description: The sorting order, by default it is ascending
+      example: ASC
+      default: ASC
+      enum:
+        - ASC
+        - DESC
+    DoubleUnitValue:
+      title: DoubleUnitValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value contains a decimal number
+          format: double
+          example: 3.9
+        unit:
+          description: The unit of the value
+          $ref: '#/components/schemas/UnitValue'
+      description: Miles API v1 representation of a double with an additional unit value.
+    InternetReference:
+      type: object
+      properties:
+        internetReferenceId:
+          type: string
+          description: The ID of the internet reference
+        url:
+          type: string
+          description: The url of the internet reference
+        internetReferenceType:
+          description: The type of the internet reference
+          $ref: '#/components/schemas/EnumValue'
+        deleted:
+          type: boolean
+          description: Is deleted
+      description: An internet reference
+    Label:
+      type: object
+      properties:
+        labelId:
+          type: string
+          description: The ID of a label
+          example: '123'
+        labelGroupIds:
+          type: array
+          description: A list of label group IDs
+          items:
+            type: string
+            description: A label's group ID
+      description: A label of a supplier
+    M2MBank:
+      type: object
+      properties:
+        supplierId:
+          type: string
+          description: The ID of the supplier
+          example: '41199698'
+        tradingName:
+          type: string
+          description: Trading Name
+          example: John Doe Inc
+        reference:
+          type: string
+          description: Reference
+          example: '15568845'
+        supplierState:
+          description: The status of the supplier
+          $ref: '#/components/schemas/EnumValue'
+        addresses:
+          type: array
+          description: A list of supplier contact addresses
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+        internetReferences:
+          type: array
+          description: A list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        establishmentDate:
+          type: string
+          description: Not implemented
+          format: date
+          example: '2026-01-12'
+        reviewDate:
+          type: string
+          description: Not implemented
+          format: date
+          example: '2026-01-12'
+        reviewPeriodicity:
+          description: Not implemented
+          $ref: '#/components/schemas/DoubleUnitValue'
+        supplierMakeActivites:
+          type: array
+          description: Not implemented, name has typo
+          items:
+            $ref: '#/components/schemas/SupplierMakeActivity'
+        unitAccounts:
+          type: array
+          description: Not implemented
+          items:
+            $ref: '#/components/schemas/UnitAccount'
+        leasingCompanies:
+          type: array
+          description: Not implemented
+          items:
+            $ref: '#/components/schemas/LeasingCompany'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        labels:
+          type: array
+          description: A list of supplier labels
+          items:
+            $ref: '#/components/schemas/Label'
+        companyGroupReference:
+          type: string
+          description: Internal company code
+          example: '1234'
+        bankId:
+          type: string
+          description: Bank ID
+          example: '100005'
+        identifier:
+          type: string
+          description: Bank Identifier
+          example: RESERVE BANK
+      description: Bank
+    M2MBankAccount:
+      type: object
+      properties:
+        bankAccountId:
+          type: string
+          description: Bank account ID
+          example: '100001'
+        supplierId:
+          type: string
+          description: Supplier ID
+          example: '1'
+        accountNumber:
+          type: string
+          description: Bank account number
+          example: BE61199373268217
+        checkType:
+          description: Check type
+          $ref: '#/components/schemas/EnumValue'
+        description:
+          description: Description
+          $ref: '#/components/schemas/MultiLanguageValue'
+        bankAccountState:
+          description: Bank account state
+          $ref: '#/components/schemas/EnumValue'
+        bankAccountType:
+          description: Bank account type
+          $ref: '#/components/schemas/EnumValue'
+        bankCode:
+          type: string
+          description: Bank code
+          example: ABNANL2A
+        customerAccount:
+          type: string
+          description: Customer account
+          example: Customer
+        holderIdentification:
+          type: string
+          description: Holder identification
+          example: '00147585472'
+        bank:
+          description: Bank
+          $ref: '#/components/schemas/M2MBank'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: The map of the dynamic attributes
+      description: Bank account
+    M2MFindBankAccountsResponse:
+      type: object
+      properties:
+        bankAccounts:
+          type: array
+          description: A list of bank accounts
+          items:
+            $ref: '#/components/schemas/M2MBankAccount'
+        totalCount:
+          type: integer
+          description: The number of bank accounts that qualify for the filters
+          format: int64
+    Make:
+      type: object
+      properties:
+        makeId:
+          type: string
+          description: The ID of the make
+        name:
+          description: The name of the make
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The list of the makes
+    PhoneNumber:
+      type: object
+      properties:
+        phoneNumberId:
+          type: string
+          description: The ID of the phone number
+        countryPhoneCode:
+          type: string
+          description: The phone country code
+        formattedPhoneNumber:
+          type: string
+          description: The formatted phone number
+        zonalPhoneNumber:
+          type: string
+          description: The zonal phone number
+        localPhoneNumber:
+          type: string
+          description: The local phone number
+        deleted:
+          type: boolean
+          description: Is deleted
+        phoneType:
+          description: The type of the phone
+          $ref: '#/components/schemas/EnumValue'
+        country:
+          description: Country
+          $ref: '#/components/schemas/Country'
+      description: A phone number
+    SupplierMakeActivity:
+      type: object
+      properties:
+        supplierMakeActivityId:
+          type: string
+          description: The ID of the supplier make activity
+        isAllowed:
+          type: boolean
+          description: The isAllowed property indicates whether this activity is allowed
+        serviceType:
+          description: The service type
+          $ref: '#/components/schemas/EnumValue'
+        supplierMakeActivityType:
+          description: The type of the supplier make activity
+          $ref: '#/components/schemas/EnumValue'
+        leasingCompanies:
+          type: array
+          description: The list of the leasing companies
+          items:
+            $ref: '#/components/schemas/LeasingCompany'
+        makes:
+          type: array
+          description: The list of the makes
+          items:
+            $ref: '#/components/schemas/Make'
+      description: Not implemented, name has typo
+    UnitAccount:
+      type: object
+      properties:
+        unitAccountId:
+          type: string
+          description: The ID of the unit account
+        reference:
+          type: string
+          description: Reference
+        name:
+          type: string
+          description: The name of the unit account
+        unitAccountType:
+          description: The type of the unit account
+          $ref: '#/components/schemas/EnumValue'
+      description: The unit account
+    UnitValue:
+      title: UnitValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID of the unit
+          example: '1605'
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '33284'
+        translation:
+          type: string
+          description: The translation of the unit in human-readable format
+          example: L/100km
+      description: Miles API v1 representation of a unit value. It typically is part of a DoubleUnitValue or IntegerUnitValue.
+    M2MIndividualPerson:
+      type: object
+      properties:
+        personId:
+          type: string
+          description: ID of the person
+          example: '100099'
+        firstName:
+          type: string
+          description: First name
+          example: Jane
+        middleName:
+          type: string
+          description: Middle name
+          example: Fraser
+        lastName:
+          type: string
+          description: Last name
+          example: Doe
+        maidenName:
+          type: string
+          description: Maiden name
+          example: Dane
+        initials:
+          type: string
+          description: Initials
+          example: J.D.
+        gender:
+          description: Gender
+          $ref: '#/components/schemas/EnumValue'
+        birthDate:
+          type: string
+          description: Birth date
+          format: date
+          example: '2026-01-12'
+        personTitle:
+          description: Person title
+          $ref: '#/components/schemas/EnumValue'
+        secondLastName:
+          type: string
+          description: Second last name
+          example: Doedoe
+        communicationMeduim:
+          description: Communication medium
+          $ref: '#/components/schemas/EnumValue'
+        countryId:
+          type: string
+          description: Country ID
+          example: '159'
+        placeOfBirth:
+          type: string
+          description: Place of birth
+          example: Canada
+        deathDate:
+          type: string
+          description: Death date
+          format: date
+          example: '2026-01-12'
+        fullName:
+          type: string
+          description: Full name
+          example: Jane Miles Dane Doe Doedoe
+      description: Individual person of customer
+    M2MSupplier:
+      type: object
+      properties:
+        supplierId:
+          type: string
+          description: The ID of the supplier
+          example: '41199698'
+        tradingName:
+          type: string
+          description: Trading Name
+          example: John Doe Inc
+        reference:
+          type: string
+          description: Reference
+          example: '15568845'
+        supplierState:
+          description: The status of the supplier
+          $ref: '#/components/schemas/EnumValue'
+        addresses:
+          type: array
+          description: A list of supplier contact addresses
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+        internetReferences:
+          type: array
+          description: A list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        establishmentDate:
+          type: string
+          description: Not implemented
+          format: date
+          example: '2026-01-12'
+        reviewDate:
+          type: string
+          description: Not implemented
+          format: date
+          example: '2026-01-12'
+        reviewPeriodicity:
+          description: Not implemented
+          $ref: '#/components/schemas/DoubleUnitValue'
+        supplierMakeActivites:
+          type: array
+          description: Not implemented, name has typo
+          items:
+            $ref: '#/components/schemas/SupplierMakeActivity'
+        unitAccounts:
+          type: array
+          description: Not implemented
+          items:
+            $ref: '#/components/schemas/UnitAccount'
+        leasingCompanies:
+          type: array
+          description: The list of the leasing companies
+          items:
+            $ref: '#/components/schemas/LeasingCompany'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        labels:
+          type: array
+          description: A list of supplier labels
+          items:
+            $ref: '#/components/schemas/Label'
+        companyGroupReference:
+          type: string
+          description: Internal company code
+          example: '1234'
+        supplierReference:
+          type: string
+          description: Supplier reference
+          example: '15568846'
+        legalEntity:
+          description: Legal entity
+          $ref: '#/components/schemas/EnumValue'
+        paymentPeriod:
+          description: Payment period
+          $ref: '#/components/schemas/DoubleUnitValue'
+        paymentMethod:
+          description: Payment method
+          $ref: '#/components/schemas/EnumValue'
+        individualPerson:
+          description: Individual person of customer
+          $ref: '#/components/schemas/M2MIndividualPerson'
+        primaryContactLanguageId:
+          type: string
+          description: ID of the language of the primary contact
+          example: '568'
+        lastModified:
+          type: string
+          description: Last modified date
+          format: date-time
+          example: '2026-01-12T09:28:35.117Z'
+    WarningsInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/warnings/microservices/unprocessable-entity
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Unprocessable Entity
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Unable to process payload due to invalid data.
+        messages:
+          type: array
+          description: An array of message objects containing translation information
+          items:
+            $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '23121434'
+        isInteractiveWarning:
+          type: boolean
+          description: Indicates whether this error requires user interaction
+          example: false
+    UpdateBrokerContactPasswordRequest:
+      type: object
+      properties:
+        newPassword:
+          type: string
+          description: The new password
+        oldPassword:
+          type: string
+          description: The old password
+    BrokerCompanyReference:
+      type: object
+      properties:
+        brokerCompanyId:
+          type: string
+          description: The ID of the broker company
+          example: '600021'
+        reference:
+          type: string
+          description: Reference
+          example: '15568845'
+        tradingName:
+          type: string
+          description: Trading Name
+          example: Company trading name Inc
+        externalReference:
+          type: string
+          description: The external reference
+          example: '100002'
+      description: A broker company
+    BrokerContact:
+      type: object
+      properties:
+        brokerContactId:
+          type: string
+          description: The ID of the broker contact
+          example: '1'
+        comments:
+          type: string
+          description: Comments
+          example: Comment
+        identification:
+          type: string
+          description: Identification
+          example: Smith, John
+        officialRegistration:
+          type: string
+          description: The official registration of the broker contact
+          example: BE0864785880
+        dateOfBirth:
+          type: string
+          description: Date of birth
+          format: date
+          example: '2026-01-12'
+        firstName:
+          type: string
+          description: First Name
+          example: John
+        lastName:
+          type: string
+          description: Last Name
+          example: Smith
+        middleName:
+          type: string
+          description: Middle Name
+          example: Paul
+        searchKey:
+          type: string
+          description: Person search key
+          example: '4212'
+        employeeNumber:
+          type: string
+          description: Employee Number
+          example: '002'
+        jobTitle:
+          type: string
+          description: Job Title
+          example: Sales
+        joinDate:
+          type: string
+          description: Leave Date
+          format: date
+          example: '2026-01-12'
+        leaveDate:
+          type: string
+          description: Leave Date
+          format: date
+          example: '2026-01-12'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: The dynamic attributes of the broker contact
+        phoneNumbers:
+          type: array
+          description: List of the phone numbers of the broker contact
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          description: List of the internet references of the broker contact
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        addresses:
+          type: array
+          description: List of the addresses of the broker contact
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+        suppliers:
+          type: array
+          description: Use brokerCompanies instead
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/SupplierReference'
+        brokerCompanies:
+          type: array
+          description: List of the broker companies of the broker contact
+          items:
+            $ref: '#/components/schemas/BrokerCompanyReference'
+        contactRoles:
+          type: array
+          description: List of the contact roles of the broker contact
+          items:
+            $ref: '#/components/schemas/ContactRole'
+        personTitle:
+          description: Person Title
+          $ref: '#/components/schemas/EnumValue'
+        communicationMedium:
+          description: The communication medium
+          $ref: '#/components/schemas/EnumValue'
+        gender:
+          description: Gender
+          $ref: '#/components/schemas/EnumValue'
+        country:
+          description: Country
+          $ref: '#/components/schemas/Country'
+        language:
+          description: Language
+          $ref: '#/components/schemas/Language'
+        unitAccount:
+          description: The unit account
+          $ref: '#/components/schemas/UnitAccount'
+        userAccount:
+          description: The user account
+          $ref: '#/components/schemas/UserAccount'
+        defaultLeasingCompany:
+          description: This property should not longer be used
+          $ref: '#/components/schemas/LeasingCompanyReference'
+    ContactRole:
+      type: object
+      properties:
+        contactRoleId:
+          type: string
+          description: The ID of the contact role
+        description:
+          description: The description of the contact role
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: A contact role
+    Language:
+      type: object
+      properties:
+        languageId:
+          type: string
+          description: The ID of the language
+        reference:
+          type: string
+          description: Reference
+        description:
+          type: string
+          description: Description
+      description: Language
+    LeasingCompanyReference:
+      type: object
+      properties:
+        leasingCompanyId:
+          type: string
+          description: The ID of the leasing company
+          example: '600021'
+        name:
+          description: The name of the leasing company
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: This property should not longer be used
+    SupplierReference:
+      type: object
+      properties:
+        supplierId:
+          type: string
+          description: The ID of the supplier
+        reference:
+          type: string
+          description: Reference
+        tradingName:
+          type: string
+          description: Trading Name
+      description: Use brokerCompanies instead
+      deprecated: true
+    UserAccount:
+      type: object
+      properties:
+        userAccountId:
+          type: string
+          description: The ID of the user account
+          example: '600019'
+        expired:
+          type: boolean
+          description: The expired property indicates whether the account has expired
+          example: false
+        signOn:
+          type: string
+          description: The sign on ID of the user
+          example: UserSignOn
+      description: The user account
+    AddressCreateRequest:
+      type: object
+      properties:
+        addressLine1:
+          description: The first address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1Number:
+          description: The number of the first address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine2:
+          description: The second address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine3:
+          description: The third address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine4:
+          description: The fourth address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine5:
+          description: The fifth address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressType:
+          description: The type of the address
+          $ref: '#/components/schemas/SimpleEnumValue'
+        city:
+          description: The city where the address is located
+          $ref: '#/components/schemas/MultiLanguageValue'
+        country:
+          maxLength: 3
+          minLength: 2
+          type: string
+          description: The country where the city of the address is located
+          format: ISO 3166-1 alpha-2 or ISO 3166-1 alpha-3
+          example: BE
+        postalCode:
+          type: string
+          description: The postal code of the city of the address is located
+          example: '9000'
+        state:
+          description: The state of the city of the address is located
+          $ref: '#/components/schemas/MultiLanguageValue'
+        streetType:
+          type: string
+          description: The type of the street. This string needs to belong to the `StreetType` enumeration.
+          example: street
+        locationIdentification:
+          type: string
+          description: An identifier providing contextual details about a location
+          example: The neighbours
+      description: A contact address
+    CreateBrokerContactRequest:
+      required:
+        - firstName
+        - lastName
+        - personTitle
+      type: object
+      properties:
+        firstName:
+          minLength: 1
+          type: string
+          description: First name of the broker contact
+          example: Jaak
+        middleName:
+          type: string
+          description: Middle name of the broker contact
+          example: R.
+        lastName:
+          minLength: 1
+          type: string
+          description: Last name of the broker contact
+          example: Bonenstaak
+        dateOfBirth:
+          type: string
+          description: Date of birth of the broker contact
+          format: date
+          example: '2026-01-12'
+        joinDate:
+          type: string
+          description: Join date of the broker contact
+          format: date
+          example: '2026-01-12'
+        leaveDate:
+          type: string
+          description: Leave date of the broker contact
+          format: date
+          example: '2026-01-12'
+        identification:
+          type: string
+          description: Identification of the broker contact
+          example: Bonenstaak, Jaak (R.)
+        officialRegistration:
+          type: string
+          description: The official registration of the broker contact
+          example: BE0864785880
+        jobTitle:
+          type: string
+          description: Job title of the broker contact
+          example: Developer
+        employeeNumber:
+          type: string
+          description: Employee number of the broker contact
+          example: '007'
+        language:
+          maxLength: 3
+          minLength: 2
+          type: string
+          description: Primary language of the broker contact
+          format: ISO 639-1 alpha-2 or ISO 639-1 alpha-3
+          example: nl
+        comments:
+          type: string
+          description: Additional comments for the broker contact
+          example: Important client
+        brokerCompanyId:
+          type: string
+          description: The ID of the broker company to which the salesperson needs to be linked
+          example: '500000'
+        personTitle:
+          description: Person title of the broker contact
+          $ref: '#/components/schemas/SimpleEnumValue'
+        gender:
+          description: Gender of the broker contact
+          $ref: '#/components/schemas/SimpleEnumValue'
+        communicationMedium:
+          description: Preferred communication medium of the broker contact
+          $ref: '#/components/schemas/SimpleEnumValue'
+        unitAccount:
+          description: Unit account of the broker contact
+          $ref: '#/components/schemas/UnitAccountID'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SimpleDynamicAttributeValue'
+          description: The dynamic attributes of the broker contact to be created
+        addresses:
+          type: array
+          description: List of the contact addresses of the broker contact
+          items:
+            $ref: '#/components/schemas/AddressCreateRequest'
+        internetReferences:
+          type: array
+          description: List of the internet references of the broker contact
+          items:
+            $ref: '#/components/schemas/InternetReferenceCreateRequest'
+        phoneNumbers:
+          type: array
+          description: List of the phone numbers of the broker contact
+          items:
+            $ref: '#/components/schemas/PhoneNumberCreateRequest'
+    InternetReferenceCreateRequest:
+      type: object
+      properties:
+        internetReferenceType:
+          description: The type of the internet reference
+          $ref: '#/components/schemas/SimpleEnumValue'
+        url:
+          type: string
+          description: The url of the internet reference
+          example: sofico@sofico.be
+      description: An internet reference
+    PhoneNumberCreateRequest:
+      type: object
+      properties:
+        country:
+          maxLength: 3
+          minLength: 2
+          type: string
+          description: The country of the phone number
+          format: ISO 3166-1 alpha-2 or ISO 3166-1 alpha-3
+          example: BE
+        number:
+          type: string
+          description: The phone number itself
+          example: '0474002342'
+        phoneType:
+          description: The type of the phone number
+          $ref: '#/components/schemas/SimpleEnumValue'
+      description: A phone number
+    SimpleDynamicAttributeValue:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The value of the dynamic attribute
+          example: '5'
+      description: _
+    SimpleEnumValue:
+      title: SimpleEnumValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID
+          example: '100002'
+      description: Miles API v1 representation of a simple enumeration value
+    UnitAccountID:
+      type: object
+      properties:
+        unitAccountId:
+          type: string
+          description: The ID of the unit account
+          example: '600014'
+        isDeleted:
+          type: boolean
+          description: The unit account can be deleted, only when the unit account ID is given
+          example: true
+          default: false
+      description: Unit account of the broker contact
+    BrokerCompanyDocumentResponse:
+      type: object
+      properties:
+        documentId:
+          type: string
+          description: The ID of the document
+          example: '123456'
+        description:
+          description: The description of the report
+          $ref: '#/components/schemas/MultiLanguageValue'
+        name:
+          description: The name of the report
+          $ref: '#/components/schemas/MultiLanguageValue'
+        status:
+          description: The status of the document
+          $ref: '#/components/schemas/EnumValue'
+        documentTemplate:
+          description: The document template
+          $ref: '#/components/schemas/DocumentTemplateReference'
+        documentType:
+          description: The document type
+          $ref: '#/components/schemas/DocumentTypeReference'
+      description: The report
+    DocumentTemplateReference:
+      type: object
+      properties:
+        documentTemplateId:
+          type: string
+          description: The ID of the document template
+          example: '729059'
+        name:
+          description: The name of the document template
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The document template
+    DocumentTypeReference:
+      type: object
+      properties:
+        documentTypeId:
+          type: string
+          description: The ID of the document type
+          example: '3'
+        name:
+          description: The name of the document type
+          $ref: '#/components/schemas/MultiLanguageValue'
+        description:
+          description: The description of the document type
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The document type
+    FindBrokerCompanyDocumentsResponse:
+      type: object
+      properties:
+        documents:
+          type: array
+          description: A list of reports
+          items:
+            $ref: '#/components/schemas/BrokerCompanyDocumentResponse'
+        totalCount:
+          type: integer
+          description: The number of reports in the response
+          format: int64
+          example: 100
+    FindBrokerContact:
+      type: object
+      properties:
+        brokerContactId:
+          type: string
+          description: The ID of the broker contact
+          example: '2147483967'
+        firstName:
+          type: string
+          description: First Name
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        employeeNumber:
+          type: string
+          description: The employee number
+          example: Eugenia
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        identification:
+          type: string
+          description: Identification
+          example: Lopez, Eugenia (Maria)
+        lastName:
+          type: string
+          description: Last Name
+          example: Lopez
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        middleName:
+          type: string
+          description: Middle Name
+          example: Maria
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        officialRegistration:
+          type: string
+          description: Official registration
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        personTitle:
+          description: Person Title
+          $ref: '#/components/schemas/EnumValue'
+        leaveDate:
+          type: string
+          description: Leave Date
+          format: date
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+          example: '2026-01-12'
+        internetReferences:
+          type: array
+          description: The list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        suppliers:
+          type: array
+          description: Use brokerCompanies instead
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/SupplierReference'
+        brokerCompanies:
+          type: array
+          description: The list of broker company references
+          items:
+            $ref: '#/components/schemas/BrokerCompanyReference'
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        contactRoles:
+          type: array
+          description: The list of contact roles
+          items:
+            $ref: '#/components/schemas/ContactRole'
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        addresses:
+          type: array
+          description: The list of contact addresses
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+          x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+        unitAccount:
+          description: The unit account
+          $ref: '#/components/schemas/UnitAccountReference'
+        userAccount:
+          description: The user account
+          $ref: '#/components/schemas/UserAccount'
+      description: Broker contact
+    FindBrokerContactsResponse:
+      type: object
+      properties:
+        brokerContacts:
+          type: array
+          description: The list of broker contacts found
+          items:
+            $ref: '#/components/schemas/FindBrokerContact'
+        totalCount:
+          type: integer
+          description: The total count of broker contacts found
+          format: int64
+    UnitAccountReference:
+      type: object
+      properties:
+        unitAccountId:
+          type: string
+          description: The ID of the unit account
+        reference:
+          type: string
+          description: Reference
+        name:
+          type: string
+          description: The name of the unit account
+        unitAccountType:
+          description: The type of the unit account
+          $ref: '#/components/schemas/EnumValue'
+      description: The unit account
+      x-Only included for roles: '[customer_support, promotion_manager, promotion_user, bike_dealer_manager, broker_manager, dealer_manager]'
+    FindCurrentClusterBrokerCompaniesResponse:
+      type: object
+      properties:
+        brokerCompanies:
+          type: array
+          description: The list of broker companies in the cluster
+          items:
+            $ref: '#/components/schemas/FindCurrentClusterBrokerCompany'
+        totalCount:
+          type: integer
+          description: The total count of broker companies in the cluster
+          format: int64
+    FindCurrentClusterBrokerCompany:
+      type: object
+      properties:
+        brokerCompanyId:
+          type: string
+          description: The ID of the broker company
+          example: '123456'
+        legalName:
+          type: string
+          description: Legal Name
+          example: ACME inc.
+        tradingName:
+          type: string
+          description: Trading Name
+          example: ACME
+        reference:
+          type: string
+          description: Reference
+          example: Ref. broker company
+      description: Broker company within the cluster
+    FindNearbySupplier:
+      type: object
+      properties:
+        supplierId:
+          type: string
+          description: The ID of the supplier
+        tradingName:
+          type: string
+          description: Trading Name
+        formattedAddress:
+          type: string
+          description: The formatted address
+        city:
+          type: string
+          description: city
+        postalCode:
+          type: string
+          description: Postal Code
+      description: A nearby supplier
+    FindNearbySuppliersResponse:
+      type: object
+      properties:
+        suppliers:
+          type: array
+          description: The list of nearby suppliers found
+          items:
+            $ref: '#/components/schemas/FindNearbySupplier'
+        totalCount:
+          type: integer
+          description: The total count of nearby suppliers found
+          format: int64
+    FindUnitAccount:
+      type: object
+      properties:
+        unitAccountId:
+          type: string
+          description: The ID of the unit account
+        reference:
+          type: string
+          description: Reference
+        name:
+          type: string
+          description: The name of the unit account
+        unitAccountType:
+          description: The type of the unit account
+          $ref: '#/components/schemas/EnumValue'
+        suppliers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupplierReference'
+      description: A unit account
+    FindUnitAccountsResponse:
+      type: object
+      properties:
+        unitAccounts:
+          type: array
+          description: The pagined list of unit accounts.
+          items:
+            $ref: '#/components/schemas/FindUnitAccount'
+        totalCount:
+          type: integer
+          description: The total number of unit accounts that applies to the filtering
+          format: int64
+    AllowedBrokerCompaniesResponse:
+      type: object
+      properties:
+        brokerCompanies:
+          type: array
+          description: The list of broker companies allowed for the current broker contact
+          items:
+            $ref: '#/components/schemas/AllowedBrokerCompany'
+        totalCount:
+          type: integer
+          description: The total count of broker companies found
+          format: int64
+    AllowedBrokerCompany:
+      type: object
+      properties:
+        brokerCompanyId:
+          type: string
+          description: The ID of the broker company
+          example: '41199698'
+        tradingName:
+          type: string
+          description: The trading name used by the broker company
+          example: ACME
+        legalName:
+          type: string
+          description: The legal name used by the broker company
+          example: ACME inc.
+        reference:
+          type: string
+          description: The reference of the broker company
+          example: '15568845'
+        externalReference:
+          type: string
+          description: The external reference of the broker company
+          example: '15568845'
+        brokerContact:
+          description: The broker contact of the broker company
+          $ref: '#/components/schemas/AllowedBrokerContact'
+        leasingCompanies:
+          type: array
+          description: The list of the leasing companies allowed for the broker company
+          items:
+            $ref: '#/components/schemas/LeasingCompany'
+        vehicleSales:
+          type: array
+          description: The list of makes allowed for the broker company in context of vehicle sale activity
+          items:
+            $ref: '#/components/schemas/VehicleSale'
+      description: Broker company
+    AllowedBrokerContact:
+      type: object
+      properties:
+        brokerContactId:
+          type: string
+          description: The ID of the broker contact
+          example: '1'
+        identification:
+          type: string
+          description: The identification of the broker contact
+          example: Smith, John
+      description: The broker contact of the broker company
+    VehicleCondition:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the vehicle condition
+          example: '1230023'
+        description:
+          type: string
+          description: The condition of the vehicle
+          example: New
+      description: The vehicle condition
+    VehicleSale:
+      type: object
+      properties:
+        vehicleCondition:
+          description: The vehicle condition
+          $ref: '#/components/schemas/VehicleCondition'
+        makes:
+          type: array
+          description: The list of the makes
+          items:
+            $ref: '#/components/schemas/Make'
+      description: The allowed make
+    AllowedLeasingCompaniesResponse:
+      type: object
+      properties:
+        leasingCompanies:
+          type: array
+          description: List of allowed leasing companies
+          items:
+            $ref: '#/components/schemas/LeasingCompanyReference'
+    BrokerCompany:
+      type: object
+      properties:
+        brokerCompanyId:
+          type: string
+          description: The ID of the broker company
+          example: '600021'
+        tradingName:
+          type: string
+          description: Trading Name
+          example: Sofico NV
+        legalName:
+          type: string
+          description: Legal Name
+          example: Soft And Informatics Company
+        reference:
+          type: string
+          description: The reference used by the leasing company
+          example: '15568845'
+        externalReference:
+          type: string
+          description: The external reference
+          example: '15568845'
+        addresses:
+          type: array
+          description: The list of addresses that belong to the broker company
+          items:
+            $ref: '#/components/schemas/BrokerCompanyContactAddress'
+        internetReferences:
+          type: array
+          description: The list of internet references that belong to the broker company
+          items:
+            $ref: '#/components/schemas/BrokerCompanyInternetReference'
+        phoneNumbers:
+          type: array
+          description: The list of phone numbers that belong to the broker company
+          items:
+            $ref: '#/components/schemas/BrokerCompanyPhoneNumber'
+    BrokerCompanyAddress:
+      type: object
+      properties:
+        addressId:
+          type: string
+          description: The ID of the address
+          example: '78651327'
+        formattedAddress:
+          type: string
+          description: The formatted address
+          example: |
+            Technologiepark-Zwijnaarde 84
+
+            9052 Zwijnaarde
+        postalCode:
+          type: string
+          description: The postal code of the city
+          example: '9052'
+        city:
+          description: The city where the address is located
+          $ref: '#/components/schemas/MultiLanguageValue'
+        state:
+          description: The state where the address is located
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1:
+          description: Address line 1
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1Number:
+          description: Address line 1 number
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine2:
+          description: Address line 2
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine3:
+          description: Address line 3
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine4:
+          description: Address line 4
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine5:
+          description: Address line 5
+          $ref: '#/components/schemas/MultiLanguageValue'
+        country:
+          description: The country where the address is located
+          $ref: '#/components/schemas/Country'
+      description: The address
+    BrokerCompanyContactAddress:
+      type: object
+      properties:
+        label:
+          description: This enumeration value indicates the label (Primary, Invoice, General....) of the address
+          $ref: '#/components/schemas/EnumValue'
+        address:
+          description: The address
+          $ref: '#/components/schemas/BrokerCompanyAddress'
+      description: A broker company address
+    BrokerCompanyInternetReference:
+      type: object
+      properties:
+        internetReferenceId:
+          type: string
+          description: The ID of the internet reference
+          example: '6012355'
+        url:
+          type: string
+          description: The URL of the internet reference
+          example: contact_global@sofico.global
+        internetReferenceType:
+          description: The type of the internet reference
+          $ref: '#/components/schemas/EnumValue'
+      description: A broker company internet reference
+    BrokerCompanyPhoneNumber:
+      type: object
+      properties:
+        phoneNumberId:
+          type: string
+          description: The ID of the phone number
+          example: '6012354'
+        countryPhoneCode:
+          type: string
+          description: The country code of the phone number
+          example: '+32'
+        formattedPhoneNumber:
+          type: string
+          description: The formatted phone number
+          example: +32 9 210 80 40
+        zonalPhoneNumber:
+          type: string
+          description: The zonal phone number
+          example: '09'
+        localPhoneNumber:
+          type: string
+          description: The local phone number
+          example: 210 80 40
+        phoneType:
+          description: The type of the phone
+          $ref: '#/components/schemas/EnumValue'
+        country:
+          description: The country where the phone number is registrated
+          $ref: '#/components/schemas/Country'
+      description: A broker company phone number
+    CurrentBrokerContact:
+      type: object
+      properties:
+        brokerContactId:
+          type: string
+          description: The ID of the broker contact
+          example: '1'
+        comments:
+          type: string
+          description: Comments
+          example: Comment
+        identification:
+          type: string
+          description: Identification
+          example: Smith, John
+        officialRegistration:
+          type: string
+          description: The official registration of the broker contact
+          example: BE0864785880
+        dateOfBirth:
+          type: string
+          description: Date of birth
+          format: date
+          example: '2026-01-12'
+        firstName:
+          type: string
+          description: First Name
+          example: John
+        lastName:
+          type: string
+          description: Last Name
+          example: Smith
+        middleName:
+          type: string
+          description: Middle Name
+          example: Paul
+        searchKey:
+          type: string
+          description: Person search key
+          example: '4212'
+        employeeNumber:
+          type: string
+          description: Employee Number
+          example: '002'
+        jobTitle:
+          type: string
+          description: Job Title
+          example: Sales
+        joinDate:
+          type: string
+          description: Leave Date
+          format: date
+          example: '2026-01-12'
+        leaveDate:
+          type: string
+          description: Leave Date
+          format: date
+          example: '2026-01-12'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: The dynamic attributes of the broker contact
+        phoneNumbers:
+          type: array
+          description: List of the phone numbers of the broker contact
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          description: List of the internet references of the broker contact
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        addresses:
+          type: array
+          description: List of the addresses of the broker contact
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+        suppliers:
+          type: array
+          description: Use brokerCompanies instead
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/SupplierReference'
+        brokerCompanies:
+          type: array
+          description: List of the broker companies of the broker contact
+          items:
+            $ref: '#/components/schemas/BrokerCompanyReference'
+        contactRoles:
+          type: array
+          description: List of the contact roles of the broker contact
+          items:
+            $ref: '#/components/schemas/ContactRole'
+        personTitle:
+          description: Person Title
+          $ref: '#/components/schemas/EnumValue'
+        communicationMedium:
+          description: The communication medium
+          $ref: '#/components/schemas/EnumValue'
+        gender:
+          description: Gender
+          $ref: '#/components/schemas/EnumValue'
+        country:
+          description: Country
+          $ref: '#/components/schemas/Country'
+        language:
+          description: Language
+          $ref: '#/components/schemas/Language'
+        unitAccount:
+          description: The unit account
+          $ref: '#/components/schemas/UnitAccount'
+        userAccount:
+          description: The user account
+          $ref: '#/components/schemas/UserAccount'
+        defaultLeasingCompany:
+          description: This property should not longer be used
+          $ref: '#/components/schemas/LeasingCompanyReference'
+        isImpersonated:
+          type: boolean
+          description: Impersonated
+        isDealerContact:
+          type: boolean
+          description: Indicates if the current broker contact is a dealer
+          example: false
+        leasingCompany:
+          description: The leasing company used by the current broker contact used for this request
+          $ref: '#/components/schemas/LeasingCompanyReference'
+    Dealership:
+      type: object
+      properties:
+        dealershipId:
+          type: string
+          description: The dealership ID. Because a dealership is a supplier, the supplier ID is used as the dealership's unique ID.
+          example: '41199698'
+        tradingName:
+          type: string
+          description: The trading name used by the dealership
+          example: John Doe Inc
+        reference:
+          type: string
+          description: The leasing company's internal reference to the dealership
+          example: '15568845'
+        establishmentDate:
+          type: string
+          description: The establishment date of the dealership
+          format: date
+          example: '2026-01-12'
+        supplierState:
+          description: The supplier status of the dealership
+          $ref: '#/components/schemas/EnumValue'
+        addresses:
+          type: array
+          description: A list of the dealership's contact addresses
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+        internetReferences:
+          type: array
+          description: A list of the dealership's internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        phoneNumbers:
+          type: array
+          description: A list of the dealership's phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+    OneTimeTokenUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The URL to allow a user to authorize themself as another entity
+          example: https://auth.url.sofico.be
+    Supplier:
+      type: object
+      properties:
+        supplierId:
+          type: string
+          description: The ID of the supplier
+          example: '41199698'
+        tradingName:
+          type: string
+          description: Trading Name
+          example: John Doe Inc
+        reference:
+          type: string
+          description: Reference
+          example: '15568845'
+        supplierState:
+          description: The status of the supplier
+          $ref: '#/components/schemas/EnumValue'
+        addresses:
+          type: array
+          description: A list of supplier contact addresses
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+        internetReferences:
+          type: array
+          description: A list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        establishmentDate:
+          type: string
+          description: Not implemented
+          format: date
+          example: '2026-01-12'
+        reviewDate:
+          type: string
+          description: Not implemented
+          format: date
+          example: '2026-01-12'
+        reviewPeriodicity:
+          description: Not implemented
+          $ref: '#/components/schemas/DoubleUnitValue'
+        supplierMakeActivites:
+          type: array
+          description: Not implemented, name has typo
+          items:
+            $ref: '#/components/schemas/SupplierMakeActivity'
+        unitAccounts:
+          type: array
+          description: Not implemented
+          items:
+            $ref: '#/components/schemas/UnitAccount'
+        leasingCompanies:
+          type: array
+          description: Not implemented
+          items:
+            $ref: '#/components/schemas/LeasingCompany'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        labels:
+          type: array
+          description: A list of supplier labels
+          items:
+            $ref: '#/components/schemas/Label'
+        companyGroupReference:
+          type: string
+          description: Internal company code
+          example: '1234'
+    Filter:
+      type: object
+      properties:
+        filterId:
+          type: string
+          description: The ID of the filter
+        description:
+          description: The description of the filter
+          $ref: '#/components/schemas/MultiLanguageValue'
+        filterValues:
+          type: array
+          description: A list of filter values
+          items:
+            $ref: '#/components/schemas/FilterValue'
+      description: The list of filters found
+    FilterValue:
+      type: object
+      properties:
+        filterValueId:
+          type: string
+          description: The ID of the filter value
+        filterValueGroupId:
+          type: string
+          description: Not implemented
+        description:
+          description: The description of a filter value
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: A list of filter values
+    ListFiltersResponse:
+      type: object
+      properties:
+        filters:
+          type: array
+          description: The list of filters found
+          items:
+            $ref: '#/components/schemas/Filter'
+    ContactAddressUpdateRequest:
+      type: object
+      properties:
+        addressId:
+          type: string
+          description: The ID of the address
+          example: '23287213'
+        addressLine1:
+          description: The first address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1Number:
+          description: The number of the first address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine2:
+          description: The second address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine3:
+          description: The third address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine4:
+          description: The fourth address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine5:
+          description: The fifth address line of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressType:
+          description: The type of the address
+          $ref: '#/components/schemas/SimpleEnumValue'
+        city:
+          description: The city where the address is located
+          $ref: '#/components/schemas/MultiLanguageValue'
+        country:
+          maxLength: 3
+          minLength: 2
+          pattern: ^([A-Za-z]{2,3})?$
+          type: string
+          description: The country where the city of the address is located
+          format: ISO3166-1 alpha-2 or ISO3166-1 alpha-3
+          example: BE
+        postalCode:
+          type: string
+          description: The postal code of the city of the address is located
+          example: '9000'
+        state:
+          description: The state of the city of the address is located
+          $ref: '#/components/schemas/MultiLanguageValue'
+        isDeleted:
+          type: boolean
+          description: If the address must be deleted, only when the address ID is given
+          example: true
+          default: false
+        streetType:
+          type: string
+          description: The type of the street. This string needs to belong to the `StreetType` enumeration.
+          example: street
+        locationIdentification:
+          type: string
+          description: An identifier providing contextual details about a location
+          example: The neighbours
+      description: A contact address
+    UpdateBrokerContactRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: First Name
+          example: Jaak
+        middleName:
+          type: string
+          description: Middle Name
+          example: R.
+        lastName:
+          type: string
+          description: Last Name
+          example: Bonenstaak
+        dateOfBirth:
+          type: string
+          description: Date of birth
+          format: date
+          example: '2026-01-12'
+        leaveDate:
+          type: string
+          description: Leave Date
+          format: date
+          example: '2026-01-12'
+        defaultLeasingCompanyId:
+          type: string
+          description: Default leasing company ID
+          example: '1'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SimpleDynamicAttributeValue'
+          description: The dynamic attributes of the broker contact to be updated
+        addresses:
+          type: array
+          description: Deprecated since 2022-12-12 and version '1.29.0' in favor of 'updateAddresses'
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+        updateAddresses:
+          type: array
+          description: The list of the contact addresses
+          items:
+            $ref: '#/components/schemas/ContactAddressUpdateRequest'
+        internetReferences:
+          type: array
+          description: The list of the internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        phoneNumbers:
+          type: array
+          description: The list of the phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        language:
+          description: Language
+          $ref: '#/components/schemas/Language'
+        personTitle:
+          description: Person Title
+          $ref: '#/components/schemas/SimpleEnumValue'
+        address:
+          description: Deprecated since 2020-03-10 and version '1.21.2' in favor of 'updateAddresses'
+          $ref: '#/components/schemas/Address'
+    InternetReferenceUpdateRequest:
+      type: object
+      properties:
+        internetReferenceId:
+          type: string
+          description: The ID of the internet reference
+          example: '41199698'
+        internetReferenceType:
+          description: The type of the internet reference
+          $ref: '#/components/schemas/SimpleEnumValue'
+        url:
+          type: string
+          description: The url of the internet reference
+          example: sofico@sofico.be
+        isDeleted:
+          type: boolean
+          description: If the internet reference must be deleted, only when the internet reference ID is given
+          example: true
+          default: false
+      description: An internet reference
+    PhoneNumberUpdateRequest:
+      type: object
+      properties:
+        country:
+          type: string
+          description: The country of the phone number
+          format: ISO 3166-1 alpha-2 or ISO 3166-1 alpha-3
+          example: BE
+        phoneNumberId:
+          type: string
+          description: The ID of the phone number
+          example: '41199698'
+        phoneType:
+          description: The type of the phone number
+          $ref: '#/components/schemas/SimpleEnumValue'
+        number:
+          type: string
+          description: The phone number itself
+          example: '0474002342'
+        isDeleted:
+          type: boolean
+          description: If the phone number must be deleted, only when the phone number ID is given
+          example: true
+          default: false
+      description: A phone number
+    UpdateGivenBrokerContactRequest:
+      type: object
+      properties:
+        officialRegistration:
+          type: string
+          description: Official registration of the broker contact
+          example: BE0864785880
+        firstName:
+          type: string
+          description: First name of the broker contact
+          example: Jaak
+        middleName:
+          type: string
+          description: Middle name of the broker contact
+          example: R.
+        lastName:
+          type: string
+          description: Last name of the broker contact
+          example: Bonenstaak
+        dateOfBirth:
+          type: string
+          description: Date of birth of the broker contact
+          format: date
+          example: '2026-01-12'
+        leaveDate:
+          type: string
+          description: Leave Date of the broker contact
+          format: date
+          example: '2026-01-12'
+        identification:
+          type: string
+          description: Identification of the broker contact
+          example: Bonenstaak, Jaak (R.)
+        jobTitle:
+          type: string
+          description: Job title of the broker contact
+          example: Developer
+        employeeNumber:
+          type: string
+          description: Employee number of the broker contact
+          example: '007'
+        comments:
+          type: string
+          description: Additional comments for the broker contact
+          example: Important client
+        language:
+          maxLength: 3
+          minLength: 2
+          type: string
+          description: Primary language of the broker contact
+          format: ISO 639-1 alpha-2 or ISO 639-1 alpha-3
+          example: nl
+        personTitle:
+          description: Person title of the broker contact
+          $ref: '#/components/schemas/SimpleEnumValue'
+        gender:
+          description: Gender of the broker contact
+          $ref: '#/components/schemas/SimpleEnumValue'
+        communicationMedium:
+          description: Preferred communication medium of the broker contact
+          $ref: '#/components/schemas/SimpleEnumValue'
+        unitAccount:
+          description: Unit account of the broker contact
+          $ref: '#/components/schemas/UnitAccountID'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SimpleDynamicAttributeValue'
+          description: The dynamic attributes of the broker contact to be updated
+        addresses:
+          type: array
+          description: List of the contact addresses of the broker contact
+          items:
+            $ref: '#/components/schemas/ContactAddressUpdateRequest'
+        internetReferences:
+          type: array
+          description: List of the internet references of the broker contact
+          items:
+            $ref: '#/components/schemas/InternetReferenceUpdateRequest'
+        phoneNumbers:
+          type: array
+          description: List of the phone numbers of the broker contact
+          items:
+            $ref: '#/components/schemas/PhoneNumberUpdateRequest'
+  securitySchemes:
+    Roles:
+      type: openIdConnect
+      description: Users need to have certain roles to be able to access certain API endpoints. If there are no roles defined for the endpoint, * is shown. This means that every authorized user has access to the endpoint.
+      openIdConnectUrl: ''
+x-tagGroups:
+  - tags:
+      - ''
+    name: User experience-oriented endpoints
+  - tags:
+      - M2MSupplierResource
+    name: Enterprise integration-oriented endpoints (M2M)

@@ -1,0 +1,37 @@
+{
+  "jira_ticket_id": "MMH-1465",
+  "total_acs": 3,
+  "completion_percentage": 100,
+  "completed_acs": [
+    {
+      "index": 0,
+      "ac": "Save button should disable all fields.",
+      "timestamp": "2026-04-23T16:14:36+01:00",
+      "summary": "Introduced per-party lockedPartyIndices state in offer store. After saving in Proposal phase, all fields become read-only via updatePartyReadonlyFields() in Third.vue.",
+      "files_changed": [
+        "features/offers/stores/offer.ts",
+        "features/party/Third.vue",
+        "features/deal/Offer.vue"
+      ]
+    },
+    {
+      "index": 1,
+      "ac": "To edit, click 'Modify' button",
+      "timestamp": "2026-04-23T16:14:36+01:00",
+      "summary": "The existing Modify button in Offer.vue now unlocks all parties (unlockParty) via handleUnlockPartyTab, allowing fields to become editable again.",
+      "files_changed": [
+        "features/deal/Offer.vue"
+      ]
+    },
+    {
+      "index": 2,
+      "ac": "Save button should lock all fields again.",
+      "timestamp": "2026-04-23T16:14:36+01:00",
+      "summary": "After clicking Save again, dirty parties are re-locked (lockParty) both in Third.vue individual save and Offer.vue global save.",
+      "files_changed": [
+        "features/party/Third.vue",
+        "features/deal/Offer.vue"
+      ]
+    }
+  ]
+}

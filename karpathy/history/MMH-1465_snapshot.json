@@ -1,0 +1,24 @@
+{
+  "title": "[Ref Dev] Party fields Remain Editable After Saving in Proposal Phase",
+  "description": "During the Proposal phase, after completing all Party fields and clicking the Save button, the data is correctly saved. However, the fields remain editable instead of becoming greyed out and read-only as expected.\n\n1. Save button should disable all fields.\n2. To edit, click \"Modify\" button\n3. Save button should lock all fields again.",
+  "acceptance_criteria": [
+    "Save button should disable all fields.",
+    "To edit, click 'Modify' button",
+    "Save button should lock all fields again."
+  ],
+  "attachments": [
+    {
+      "filename": "image-20260422-100630.png",
+      "mimeType": "image/png",
+      "url": "https://api.atlassian.com/ex/jira/8ebf1f86-4ff1-41f8-9936-378fb68f2430/rest/api/3/attachment/content/114690"
+    }
+  ],
+  "links": [],
+  "comments": [
+    {
+      "author": "Joachim Jacob",
+      "body": "- RDV interface will influence this screen."
+    }
+  ],
+  "timestamp": "2026-04-23T15:14:08+01:00"
+}

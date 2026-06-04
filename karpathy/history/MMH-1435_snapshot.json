@@ -1,0 +1,31 @@
+{
+  "title": "CLONE - Review the Asset tab during Simulation",
+  "description": "As a Hyperfront dealer user I want the Asset tab during Simulation to display and correctly calculate key vehicle and pricing elements So that I can configure the asset accurately and update the invoice price when needed.",
+  "acceptance_criteria": [
+    "AC1 – Power (kW) display: Given a vehicle is selected in the Simulation step When the Asset tab is displayed Then the Power (kW) value is automatically populated from the vehicle catalogue And The field is read-only if pre-populated. If not it can be edited",
+    "AC2 – VAT percentage display: Given a simulation is displayed When the Asset tab is opened Then the VAT percentage provided by Miles is displayed And the value is not editable",
+    "AC3 – Summary price computation applies the defined formulas: Given all asset price components are available When the system displays the Summary section Then the following formulas must be applied: Total exc. VAT = Catalogue Price + Options + Transport cost + Car tax (if any) + Exempt quote (if any) – Discounts (OEM + Other discounts); Accessories = Accessories Price inc VAT + Transform accessories inc VAT; Registration tax = Price of registration tax - Discount registration tax; Total incl. VAT = Total exc. VAT + VAT amount + OEM services + Accessories + Registration tax + Free fee inc VAT; Total Invoice Price = Total incl. VAT – Ecobonus - Trade in",
+    "AC4 – Editing Total Invoice Price recalculates discounts using delta excl. VAT: Given the Summary is displayed And a calculated Total Invoice Price is shown When the dealer edits the Total Invoice Price manually Then the system must: 1. Compute the delta between the original and the new Total Invoice Price (delta TTC); 2. Convert this delta to an excl. VAT value using: delta excl. VAT = delta incl. VAT / (1 + VAT%); 3. Add the delta excl. VAT to the \"Other Discounts\" field and update the discounts value on the summary section; 4. Recalculate the new Total exc. VAT; 5. Recalculate VAT amount and Total incl. VAT; 6. Update all Summary fields accordingly; 7. Display the new Total Invoice Price entered by the user"
+  ],
+  "attachments": [
+    {"filename":"image-2026-02-17-11-53-54-152.png","mimeType":"image/png"},
+    {"filename":"image-2026-02-17-12-09-51-204.png","mimeType":"image/png"},
+    {"filename":"image-2026-02-18-11-52-00-190.png","mimeType":"image/png"},
+    {"filename":"image-2026-02-18-11-52-49-018.png","mimeType":"image/png"},
+    {"filename":"image-2026-02-24-16-32-29-308.png","mimeType":"image/png"},
+    {"filename":"image-2026-02-26-14-24-13-297.png","mimeType":"image/png"},
+    {"filename":"image-2026-03-18-11-01-51-118.png","mimeType":"image/png"},
+    {"filename":"image-2026-03-18-11-05-01-060.png","mimeType":"image/png"},
+    {"filename":"image-2026-03-18-15-13-19-500.png","mimeType":"image/png"}
+  ],
+  "links": [],
+  "comments": [
+    "TW : Check the miles configuration for VAT % and for the summary section",
+    "This file contains the mapping of the Asset fields. Workshop Asset Tab V1.xlsm",
+    "I reviewed the mappingwith pf08026, and there are several corrections and verifications that she still needs to complete",
+    "Marcio implemented VAT codes and settings table in mongodb after clarification of Hendrik and Joachim",
+    "AC04: adjusting total invoice price: min 0% of the total invoice price, max is the total invoice price.",
+    "do you have some response about those 3 fields related to the Asset fees US (Transport cost, Car tax, Exempt quote) regarding the ticket MFSCC-338? Thank you in advance!"
+  ],
+  "timestamp": "2026-04-21T10:34:15+01:00"
+}

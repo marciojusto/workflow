@@ -1,0 +1,19 @@
+{
+  "plugin": {
+    "enabled": true
+  },
+  "appearance": {
+    "theme": "dark",
+    "fontFamily": "System"
+  },
+  "filesAndLinks": {
+    "defaultLocationForNewNotes": "projects",
+    "newLinkFormat": "relative"
+  },
+  "editor": {
+    "defaultView": "source"
+  },
+  "sync": {
+    "enabled": false
+  }
+}

@@ -1,0 +1,3994 @@
+openapi: 3.0.1
+info:
+  title: miles-car-quote
+  description: This service is used to create and copy car quotes.
+  contact:
+    url: https://www.sofico.global
+  license:
+    name: Sofico
+    url: https://www.sofico.global
+  version: 1.106.0
+  x-milesServiceType: functional
+  x-logo:
+    url: https://www.sofico.global/sofico.svg
+    altText: Sofico logo
+tags:
+  - name: ValidationRules
+    description: This resource contains endpoints related to validation rules.
+paths:
+  /car-quotes/{quote_id}/actions/copies:
+    post:
+      summary: Copy a car quote
+      description: This endpoint creates a copy of an existing car quote.
+      operationId: copyQuote
+      parameters:
+        - name: quote_id
+          in: path
+          description: ID of the car quote to copy
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CopyQuoteResponse'
+        '400':
+          description: |-
+            - The quote status is not configured in the config file.
+            - The value for property `quote.quoteStatus`: '%s' should be a number.
+            - The quote status is not configured in the config file.
+            - A quotation template needs to be provided.
+            - The quote status is not valid for the authenticated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: '- The user does not hold any credentials for the operation.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: '- The current user is not allowed to set the catalog option prices.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No access type was found on the quotation template.
+            - The quotation template access type is not allowed.
+            - No access type was found on the quotation template.
+            - The quote could not be found.
+            - The default leasing company was not found for the authenticated user.
+            - Failed to initialize the Mobility Manager context because no customers were found.
+            - No driver could be found for the mobility user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: |-
+            - Failed to perform quote update.
+            - Copying a car quote is only possible for the broker company linked to the broker contact on the car quote you want to copy.
+            - Only a fleet manager is allowed to copy a sales quote for multiple vehicles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: |-
+            - The VAT calculation could not be performed because the customer could not be found.
+            - The VAT calculation could not be performed because no country was specified.
+            - Failed to perform VAT calculation.
+            - The VAT calculation could not be performed because no VAT code was specified.
+            - The VAT calculation could not be performed: all lists in the arguments should have the same size.
+            - Failed to retrieve the ID of the contact.
+            - Something went wrong updating the sales quote.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - retail_prospect
+  /car-quotes:
+    post:
+      summary: Create a car quote
+      description: This endpoint creates a new car quote.
+      operationId: createQuote
+      requestBody:
+        description: Data required to create a sales car quote
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCarQuoteRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCarQuoteResponse'
+        '400':
+          description: |-
+            - When the quote is linked to a list car policy, the car policy vehicle ID should be defined.
+            - More than one catalog reference was found.
+            - The quote status is not configured in the config file.
+            - The value for property `quote.quoteStatus`: '%s' should be a number.
+            - Please provide either mileage or distance, and either term or duration.
+            - The parameter `legalEntityGroupId` cannot be defined in the same request as customer ID or customer.
+            - The customer legal entity is required for creation of the customer.
+            - A quotation template needs to be provided.
+            - Catalog option ID and catalog option code cannot be used together.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: '- The user does not hold any credentials for the operation.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: |-
+            - The current user is not allowed to set the catalog price.
+            - The current user is not allowed to set the vehicle nature. The user must be either the broker or dealer.
+            - The current user is not allowed to set the catalog option prices.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - The customer ID you provided could not be found.
+            - The quotation template could not be found with the provided ID.
+            - The car policy vehicle with ID '%s' could not be found. Check if the ID is correct and associated with an existing vehicle in the policy.
+            - No access type was found on the quotation template.
+            - The quotation template access type is not allowed.
+            - The default leasing company was not found for the authenticated user.
+            - Failed to initialize the Mobility Manager context because no customers were found.
+            - The supplier ID cannot be found.
+            - No driver could be found for the mobility user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: |-
+            - When creating a quote based on a list-based car policy you should always select a driver!
+            - The provided vehicle nature ID is not allowed.
+            - The provided catalog vehicle ID is not allowed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: |-
+            - Failed to perform quote creation.
+            - No default customer has been defined for the car quote. At least the customer ID, customer or legal entity group ID is needed.
+            - The VAT calculation could not be performed because the customer could not be found.
+            - The VAT calculation could not be performed because no country was specified.
+            - Failed to perform VAT calculation.
+            - The VAT calculation could not be performed because no VAT code was specified.
+            - The VAT calculation could not be performed: all lists in the arguments should have the same size.
+            - A failure occurred while performing the create customer request.
+            - Failed to retrieve the ID of the contact.
+            - Something went wrong updating the sales quote.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - retail_prospect
+  /stock-car-quotes:
+    post:
+      summary: Create a car quote for a stock vehicle
+      description: This endpoint creates a new car quote for a stock vehicle.
+      operationId: createQuoteStockVehicle
+      requestBody:
+        description: Data required to create a sales car quote for a stock vehicle
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStockCarQuoteRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateStockCarQuoteResponse'
+        '400':
+          description: |-
+            - More than one catalog reference was found.
+            - The customer legal entity is required for creation of the customer.
+            - The quote status is not configured in the config file.
+            - The value for property `quote.quoteStatus`: '%s' should be a number.
+            - The parameter `legalEntityGroupId` cannot be defined in the same request as customer ID or customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: '- The user does not hold any credentials for the operation.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: '- The current user is not allowed to set the vehicle nature. The user must be either the broker or dealer.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - The customer ID you provided could not be found.
+            - The quotation template could not be found with the provided ID.
+            - The provided catalog vehicle could not be found.
+            - No access type was found on the quotation template.
+            - The quotation template access type is not allowed.
+            - The default leasing company was not found for the authenticated user.
+            - Failed to initialize the Mobility Manager context because no customers were found.
+            - The supplier ID cannot be found.
+            - No driver could be found for the mobility user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: '- The provided vehicle nature ID is not allowed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: |-
+            - No default customer has been defined for the car quote. At least the customer ID, customer or legal entity group ID is needed.
+            - Asynchronous task handling failed while converting the quote.
+            - The VAT calculation could not be performed because the customer could not be found.
+            - The VAT calculation could not be performed because no country was specified.
+            - Failed to perform VAT calculation.
+            - The VAT calculation could not be performed because no VAT code was specified.
+            - The VAT calculation could not be performed: all lists in the arguments should have the same size.
+            - A failure occurred while performing the create customer request.
+            - Failed to retrieve the ID of the contact.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+  /used-car-quotes:
+    post:
+      summary: Create a car quote for a used vehicle
+      description: This endpoint creates a new car quote for a used vehicle.
+      operationId: createQuoteUsedVehicle
+      requestBody:
+        description: Data required to create a sales car quote for a used vehicle
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUsedCarQuoteRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUsedCarQuoteResponse'
+        '400':
+          description: |-
+            - More than one catalog reference was found.
+            - The customer legal entity is required for creation of the customer.
+            - The quote status is not configured in the config file.
+            - The value for property `quote.quoteStatus`: '%s' should be a number.
+            - The parameter `legalEntityGroupId` cannot be defined in the same request as customer ID or customer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: '- The user does not hold any credentials for the operation.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: |-
+            - The current user is not allowed to set the vehicle nature. The user must be either the broker or dealer.
+            - The current user is not allowed to set the catalog option prices.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - The customer ID you provided could not be found.
+            - The quotation template could not be found with the provided ID.
+            - The provided catalog vehicle could not be found.
+            - No access type was found on the quotation template.
+            - The quotation template access type is not allowed.
+            - The default leasing company was not found for the authenticated user.
+            - Failed to initialize the Mobility Manager context because no customers were found.
+            - The supplier ID cannot be found.
+            - No driver could be found for the mobility user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: '- The provided vehicle nature ID is not allowed.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: |-
+            - No default customer has been defined for the car quote. At least the customer ID, customer or legal entity group ID is needed.
+            - Creating or copying the quote failed.
+            - Asynchronous task handling failed while converting the quote.
+            - The VAT calculation could not be performed because the customer could not be found.
+            - The VAT calculation could not be performed because no VAT code was specified.
+            - The VAT calculation could not be performed because no country was specified.
+            - The VAT calculation could not be performed: all lists in the arguments should have the same size.
+            - Failed to perform VAT calculation.
+            - The VAT calculation could not be performed: all lists in the arguments should have the same size.
+            - A failure occurred while performing the create customer request.
+            - Failed to retrieve the ID of the contact.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+  /validation-rules/{validation_id}:
+    get:
+      tags:
+        - ValidationRules
+      summary: Get validation rules
+      description: This endpoint retrieves the validation rules used by the requested validation category.
+      operationId: getValidationRules
+      parameters:
+        - name: validation_id
+          in: path
+          description: |
+            The ID of the validation category.
+            For now, only the following value can be provided:
+            - `CREATE_CAR_QUOTE`: Returns the validation rules that will be applied on the request when creating a new car quote,
+              using the `POST /car-quotes` endpoint.
+          required: true
+          schema:
+            $ref: '#/components/schemas/ValidationRulesCategory'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationRoot'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - retail_prospect
+components:
+  schemas:
+    AbstractValue:
+      type: object
+    Address:
+      type: object
+      properties:
+        addressId:
+          type: string
+          description: The address ID
+          example: '23287213'
+        formattedAddress:
+          type: string
+          description: The formatted address
+          example: Leasingweg 1 1000 AA AMSTERDAM
+        postalCode:
+          type: string
+          description: The postal code
+          example: '9000'
+        city:
+          description: The city of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        state:
+          description: The state of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1:
+          description: The first address line
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine2:
+          description: The second address line
+          $ref: '#/components/schemas/MultiLanguageValue'
+        locationIdentification:
+          description: The location of identification
+          $ref: '#/components/schemas/MultiLanguageValue'
+        deleted:
+          type: boolean
+          description: Indicates if the address has been deleted
+          example: true
+        country:
+          description: The country of the address
+          $ref: '#/components/schemas/Country'
+      description: The address of the supplier
+    AllocatedDriverResponse:
+      type: object
+      properties:
+        allocatedDriverId:
+          type: string
+          description: The allocated driver ID
+          example: '1012345'
+        driverId:
+          type: string
+          description: The driver ID
+          example: '2012345'
+        isMainDriver:
+          type: boolean
+          description: Indicates whether this is the main driver
+          example: true
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: Allocated driver
+    BatteryType:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the battery type
+          example: '1000341'
+        description:
+          type: string
+          description: The battery type of the vehicle
+          example: lithium-ion polymer
+      description: The battery type of the vehicle
+    BrokerCompanyReference:
+      type: object
+      properties:
+        brokerCompanyId:
+          type: string
+          description: The ID of the broker company
+          example: '100001'
+        tradingName:
+          type: string
+          description: The trading name of the broker company
+          example: Company Co
+      description: A broker company
+    BrokerContactRepresentation:
+      type: object
+      properties:
+        brokerContactId:
+          type: string
+          description: Broker contact ID
+          example: '600001'
+        brokerContactIdentification:
+          type: string
+          description: Broker contact identification
+          example: Smith, John
+      description: Broker Contact representation
+    CalculateQuoteInfo:
+      type: object
+      properties:
+        budgetDifference:
+          type: number
+          description: Difference between the budget and the lease price
+          format: double
+          example: -426.76
+        budget:
+          type: number
+          description: The budget
+          format: double
+          example: 1500
+        warningBudgetReachingMaximum:
+          type: boolean
+          description: Whether the lease price reached the maximum of the budget
+          example: false
+        fleetPolicyViolated:
+          type: boolean
+          description: Whether there are violations of the fleet policy
+          example: false
+        downPaymentAllowed:
+          type: boolean
+          description: Whether a down payment is allowed or not
+          example: false
+        accessoriesNotAllowed:
+          type: boolean
+          description: Whether accessories are allowed or not
+          example: false
+        invoicingTargetEditable:
+          type: boolean
+          description: Whether it is possible to change who will pay the down payment
+          example: true
+        invoicingTargetDefault:
+          type: string
+          description: Who will pay the invoice of the down payment
+        pricesVisible:
+          type: boolean
+          description: Whether the price is visible
+          example: true
+        budgetIsSet:
+          type: boolean
+          description: Whether a budget is set
+          example: true
+        remainingOptionalEquipmentBudget:
+          type: number
+          description: The remaining optional equipment budget
+          format: double
+          example: 7500
+        remainingOptionalEquipmentBudgetExceeded:
+          type: boolean
+          description: Whether the remaining optional equipment budget has exceeded
+          example: false
+        optionalEquipmentBudget:
+          type: number
+          description: The optional equipment budget set on the car policy
+          format: double
+          example: 7500
+        upgradeCost:
+          type: number
+          description: The upgrade cost defined in the car policy for that car
+          format: double
+          example: 2000
+        downgradeCompensation:
+          type: number
+          description: The downgrade compensation defined in the car policy for that car
+          format: double
+          example: 1000
+        maximumUpfrontPayment:
+          type: number
+          description: The maximum amount of upfront you can use
+          format: double
+          example: 2000
+        informationalUpfrontPayment:
+          type: number
+          description: 'This value will be filled as informational if you have configured upgrade cost impact to ''Internal company arrangement'' on the car policy '
+          format: double
+          example: 3000
+        isUpfrontLimitExceeded:
+          type: boolean
+          description: Whether the upfront limit has exceeded
+          example: false
+        isMandatoryTerm:
+          type: boolean
+          description: Indicates whether the term is mandatory
+          example: false
+        isMandatoryMileage:
+          type: boolean
+          description: Indicates whether the mileage is mandatory
+          example: false
+      description: The calculate sales quote info
+    CarConfiguration:
+      type: object
+      properties:
+        quoteVehicleId:
+          type: string
+          description: The ID of the quote vehicle
+          example: '123456'
+        description:
+          description: The description
+          $ref: '#/components/schemas/MultiLanguageValue'
+        catalogCarId:
+          type: string
+          description: The catalog car ID
+          example: '12345'
+        makeName:
+          description: Deprecated since 2022-12-19 and version 1.55.0 in favor of make.makeName
+          $ref: '#/components/schemas/MultiLanguageValue'
+        modelName:
+          description: Deprecated since 2022-12-19 and version 1.55.0 in favor of model.modelName
+          $ref: '#/components/schemas/MultiLanguageValue'
+        modelYear:
+          type: string
+          description: Deprecated since 2022-12-19 and version 1.55.0 in favor of model.modelYear
+          format: date
+          deprecated: true
+          example: '2026-04-02'
+        typeName:
+          type: string
+          description: The name of the type
+          example: SUV
+        consumption:
+          description: The fuel consumption of the car
+          $ref: '#/components/schemas/DoubleUnitValue'
+        co2Emission:
+          type: integer
+          description: The CO2 emission of the car
+          format: int32
+          example: 5
+        kW:
+          type: number
+          description: The kW of the vehicle
+          format: double
+        dinHp:
+          type: integer
+          description: The horsepower of the car
+          format: int32
+          example: 142
+        cc:
+          type: number
+          description: The engine capacity of the car
+          format: double
+          example: 500
+        code:
+          type: string
+          description: The code of the car
+          example: AB12CD
+        engineFuelType:
+          description: The fuel type of the engine
+          $ref: '#/components/schemas/EnumValue'
+        imagesPath:
+          type: string
+          description: The path to the image of the car
+          example: AUDI/A4/2017/5ES*
+        maximumSeatingCapacity:
+          type: integer
+          description: The maximum number of seating capacity of the car
+          format: int32
+          example: 7
+        seatingCapacity:
+          type: integer
+          description: The seating capacity of the car
+          format: int32
+          example: 5
+        transmission:
+          description: The transmission of the car
+          $ref: '#/components/schemas/EnumValue'
+        nature:
+          description: The nature of the car
+          $ref: '#/components/schemas/EnumValue'
+        catalogVATCode:
+          description: The catalog VAT code of the car
+          $ref: '#/components/schemas/EnumValue'
+        powertrain:
+          description: Kind of powertrain the car has
+          $ref: '#/components/schemas/EnumValue'
+        tax:
+          description: The tax
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        netPrice:
+          description: The net price for the car
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        netPriceInclVAT:
+          description: The net price including the VAT of the car
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        catalogPrice:
+          description: The catalog price of the car
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumerPrice:
+          description: The consumer price of the car
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        discountPercentage:
+          type: number
+          description: Discount percentage
+          format: double
+          example: 0.25
+        discountAmount:
+          description: The amount of discount
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        discountAmountInclVAT:
+          description: The amount of discount inclusive the VAT
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        isDealerImposed:
+          type: boolean
+          description: Whether it's imposed by the dealer
+          example: true
+        totalOptionPrice:
+          description: The total price of the car options
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        acceleration:
+          type: number
+          description: Acceleration from 0 to 100 km/h or from 0 to 60 mp/h
+          format: double
+          example: 10.8
+        fiscalPower:
+          type: integer
+          description: Fiscal power is used for taxation
+          format: int32
+          example: 1
+        fiscalValue:
+          description: Fiscal value
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        height:
+          type: integer
+          description: The height of the car in mm
+          format: int32
+          example: 1423
+        length:
+          type: integer
+          description: The length of the car in mm
+          format: int32
+          example: 4292
+        width:
+          type: integer
+          description: The width of the car in mm
+          format: int32
+          example: 1765
+        netWeight:
+          description: How much the car weighs
+          $ref: '#/components/schemas/DoubleUnitValue'
+        noxEmission:
+          type: integer
+          description: (NOx) emissions is the nitrogen oxides that a car emits in mg/km
+          format: int32
+          example: 151
+        numberOfCylinders:
+          type: integer
+          description: Number of cylinders the car has
+          format: int32
+          example: 4
+        tankContents:
+          type: number
+          description: The content of the tank
+          format: double
+          example: 55
+        torque:
+          type: integer
+          description: The torque of the car in Nm
+          format: int32
+          example: 175
+        wheelbase:
+          type: integer
+          description: The width of the wheelbase in mm
+          format: int32
+          example: 2578
+        tireSpecification:
+          type: string
+          description: The specification of the tire
+          example: 225 45 17 V
+        maxWeight:
+          description: The max weight of the car
+          $ref: '#/components/schemas/DoubleUnitValue'
+        maxLoad:
+          description: The max load of the car
+          $ref: '#/components/schemas/DoubleUnitValue'
+        trailerLoadBraked:
+          description: Braked weight is the maximum weight of a trailer, caravan, boat trailer or horsebox that has its own brakes
+          $ref: '#/components/schemas/DoubleUnitValue'
+        trailerLoadUnbraked:
+          description: Unbraked weight is the maximum weight of a trailer, caravan, boat trailer or horsebox that is not capable of braking independently.
+          $ref: '#/components/schemas/DoubleUnitValue'
+        bodyStyle:
+          description: Kind of body style the car has
+          $ref: '#/components/schemas/EnumValue'
+        energyLabel:
+          description: Kind of energy label the car has
+          $ref: '#/components/schemas/EnumValue'
+        emissionNorm:
+          description: Type of emission norm the car has
+          $ref: '#/components/schemas/EnumValue'
+        drive:
+          description: Kind of drive the car has
+          $ref: '#/components/schemas/EnumValue'
+        numberOfDoors:
+          description: Number of doors the car has
+          $ref: '#/components/schemas/EnumValue'
+        orderStrategy:
+          description: Strategy from where the vehicle gets ordered
+          $ref: '#/components/schemas/EnumValue'
+        vehicleCategory:
+          description: The category of the vehicle
+          $ref: '#/components/schemas/VehicleCategory'
+        configurationChangedDate:
+          type: string
+          description: The date when the configuration changed for the last time
+          format: date-time
+          example: '2026-04-02T12:05:56.492Z'
+        validationDate:
+          type: string
+          description: The date when the configuration has been validated for the last time
+          format: date-time
+          example: '2026-04-02T12:05:56.492Z'
+        vehicleOptionConfigurations:
+          type: array
+          description: A list of options for the vehicle
+          items:
+            $ref: '#/components/schemas/VehicleOptionConfiguration'
+        vehicleExtraDiscountConfigurations:
+          type: array
+          description: A list of vehicle extra discount configurations
+          items:
+            $ref: '#/components/schemas/VehicleExtraDiscountConfiguration'
+        vehicleDiscountConfigurations:
+          type: array
+          description: A list of vehicle discount configurations
+          items:
+            $ref: '#/components/schemas/VehicleDiscountConfiguration'
+        supplier:
+          description: The supplier
+          $ref: '#/components/schemas/Supplier'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        carConfigurationId:
+          type: string
+          description: Use quoteVehicleId instead
+          deprecated: true
+        maximumNumberOfPassengers:
+          type: integer
+          description: Use maximumSeatingCapacity instead
+          format: int32
+          deprecated: true
+        numberOfPassengers:
+          type: integer
+          description: Use seatingCapacity instead
+          format: int32
+          deprecated: true
+        make:
+          description: The make of the car
+          $ref: '#/components/schemas/Make'
+        model:
+          description: The model of the car
+          $ref: '#/components/schemas/Model'
+        minimumLuggageCapacity:
+          type: number
+          description: The volume of the minimum luggage capacity in liters
+          format: double
+          example: 750
+        secondaryEngineFuelType:
+          description: The fuel type of the secondary engine
+          $ref: '#/components/schemas/EngineFuelType'
+        numberOfMotors:
+          type: integer
+          description: The number of motors
+          format: int32
+          example: 4
+        electricalVehicleSpecifications:
+          description: The electrical specifications of the car
+          $ref: '#/components/schemas/ElectricalVehicleSpecifications'
+      description: The car configuration
+    ChargingPortLocation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the charging port location
+          example: '1000353'
+        description:
+          type: string
+          description: The charging port location of the vehicle
+          example: front side
+      description: The location of the DC charger port
+    ChargingPortSocketType:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the charging port socket type
+          example: '1000347'
+        description:
+          type: string
+          description: The charging port socket type of the vehicle
+          example: CCS (Combo)
+      description: The socket type of the DC charger
+    ConfigOptionViolation:
+      type: object
+      properties:
+        violations:
+          type: array
+          description: A list of option rule violations
+          items:
+            $ref: '#/components/schemas/OptionRuleViolation'
+        impactRules:
+          type: array
+          description: A list of impact rules
+          items:
+            $ref: '#/components/schemas/ImpactRule'
+      description: The config option violations that should be fixed before the quote can be successfully validated
+    ContributionType:
+      type: string
+      description: Contribution type
+      example: CONTRIBUTION
+      enum:
+        - REIMBURSEMENT
+        - CONTRIBUTION
+    Contributions:
+      type: object
+      properties:
+        contributionThreshold:
+          description: The driver contribution threshold
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        contributionMaximum:
+          description: The maximum driver contribution amount
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        reimbursementThreshold:
+          description: The driver reimbursement threshold
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        reimbursementMaximum:
+          description: The maximum driver reimbursement amount
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        type:
+          description: Contribution type
+          $ref: '#/components/schemas/ContributionType'
+        contributionAmount:
+          description: The contribution amount
+          $ref: '#/components/schemas/MultiCurrencyValue'
+      description: The driver contribution rules
+    CopyQuoteResponse:
+      type: object
+      properties:
+        quote:
+          description: The information about the quote itself
+          $ref: '#/components/schemas/RequestQuote'
+        quoteViolations:
+          description: The violations that should be fixed before the quote can be successfully validated
+          $ref: '#/components/schemas/QuoteViolation'
+        optionViolations:
+          description: The config option violations that should be fixed before the quote can be successfully validated
+          $ref: '#/components/schemas/ConfigOptionViolation'
+        calculateQuoteInfo:
+          description: The calculate sales quote info
+          $ref: '#/components/schemas/CalculateQuoteInfo'
+        allocatedDriver:
+          description: Allocated driver
+          $ref: '#/components/schemas/AllocatedDriverResponse'
+        allocatedDrivers:
+          type: array
+          description: A list of allocated drivers
+          items:
+            $ref: '#/components/schemas/AllocatedDriverResponse'
+    CostTypeComponentResponse:
+      type: object
+      properties:
+        costTypeComponentId:
+          type: string
+          description: The ID of the cost type component that was used for the calculation
+          example: 557a2b02-4997-4086-b57f-a4192c36d317
+        price:
+          description: The price
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        reference:
+          type: string
+          description: The reference of the cost type component
+          example: winter-tires
+        name:
+          type: string
+          description: The name of the cost type component
+          example: Additional cost
+      description: The cost type component price
+    Country:
+      type: object
+      properties:
+        countryId:
+          type: string
+          description: Country ID
+          example: '12'
+      description: The country of the address
+    Customer:
+      type: object
+      properties:
+        customerId:
+          type: string
+          description: The ID of the customer
+          example: '123456'
+        businessUnitLegalName:
+          type: string
+          description: The customer legal name
+          example: Customer Co
+        tradingName:
+          type: string
+          description: The customer trading name
+          example: Customer Trading Co
+        taxLiability:
+          description: Customer tax liability
+          $ref: '#/components/schemas/EnumValue'
+      description: The customer
+    DealerVehiclePrice:
+      type: object
+      properties:
+        excludingVat:
+          description: The dealer's vehicle price, excluding VAT
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        includingVat:
+          description: The dealer's vehicle price, including VAT
+          $ref: '#/components/schemas/MultiCurrencyValue'
+      description: The dealer price of the vehicle
+    DoubleUnitValue:
+      title: DoubleUnitValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value contains a decimal number
+          format: double
+          example: 3.9
+        unit:
+          description: The unit of the value
+          $ref: '#/components/schemas/UnitValue'
+      description: Miles API v1 representation of a double with an additional unit value.
+    Driver:
+      type: object
+      properties:
+        driverId:
+          type: string
+          description: The driver ID
+          example: '600001'
+        identification:
+          type: string
+          description: The driver identification
+          example: Smith, John
+        employeeNumber:
+          type: string
+          description: The employee number
+          example: '12345678'
+        jobTitle:
+          type: string
+          description: The job title
+          example: Sales Manager
+        firstName:
+          type: string
+          description: The first name
+          example: John
+        middleName:
+          type: string
+          description: The middle name
+          example: Paul
+        lastName:
+          type: string
+          description: The last name
+          example: Smith
+        dateOfBirth:
+          type: string
+          description: The date of birth of the driver
+          format: date
+          example: '2026-04-02'
+        unitAccount:
+          description: The unit account of the driver
+          $ref: '#/components/schemas/UnitAccount'
+      description: The driver
+    DynamicAttributeValue:
+      title: DynamicAttributeValue
+      type: object
+      properties:
+        valueType:
+          type: integer
+          description: |
+            Based on this integer the 'value' will consist of a value matching these types: 
+             * 1  = MultiLanguageValue 
+             * 2  = EnumValue 
+             * 3  = MultiCurrencyValue 
+             * 4  = DoubleUnitValue 
+             * 5  = IntegerUnitValue 
+             * 6  = StringValue 
+             * 7  = IntegerValue 
+             * 8  = DoubleValue 
+             * 9  = BooleanValue 
+             * 10 = UnnamedValue 
+             * 11 = DateValue 
+             * 12 = TimeValue 
+             * 13 = DateTimeValue 
+             * 14 = ZonedDateTimeValue 
+             * 15 = LongValue 
+          format: int32
+          example: 7
+        value:
+          description: An object that contains the actual value
+          $ref: '#/components/schemas/AbstractValue'
+        sysRepAttributeId:
+          type: string
+          description: The Miles back-office application ID that describes the attribute
+      description: Miles API v1 representation of a dynamic attribute value.It has a 'valueType' as a discriminator for the actual 'value'.The 'sysRepAttributeId' identifies which attribute value is represented.
+    ElectricalVehicleSpecifications:
+      type: object
+      properties:
+        batteryCapacity:
+          type: number
+          description: Battery capacity
+          format: double
+          example: 500
+        batteryRange:
+          description: Battery range
+          $ref: '#/components/schemas/DoubleUnitValue'
+        electricConsumption:
+          description: Electric consumption
+          $ref: '#/components/schemas/DoubleUnitValue'
+        maximumBatteryRange:
+          description: The maximum battery range
+          $ref: '#/components/schemas/DoubleUnitValue'
+        minimumBatteryRange:
+          description: The minimum battery range
+          $ref: '#/components/schemas/DoubleUnitValue'
+        batteryType:
+          description: The battery type of the vehicle
+          $ref: '#/components/schemas/BatteryType'
+        acMaximumChargeCapacityKw:
+          type: number
+          description: The maximum capacity of the AC charger in kW
+          format: double
+          example: 20
+        acMinimumChargeTime:
+          description: The minimum charging time with the AC charger (0-100%)
+          $ref: '#/components/schemas/DoubleUnitValue'
+        acChargingPortLocation:
+          description: The location of the AC charger port
+          $ref: '#/components/schemas/ChargingPortLocation'
+        acChargingSocketType:
+          description: The socket type of the AC charger
+          $ref: '#/components/schemas/ChargingPortSocketType'
+        acChargingSpeed:
+          description: The charging speed of the AC charger
+          $ref: '#/components/schemas/DoubleUnitValue'
+        dcMaximumChargeCapacityKw:
+          type: number
+          description: The maximum capacity of the DC charger in kW
+          format: double
+          example: 100
+        dcMinimumChargeTime:
+          description: The minimum charging time with the DC charger (20-80%)
+          $ref: '#/components/schemas/DoubleUnitValue'
+        dcChargingPortLocation:
+          description: The location of the DC charger port
+          $ref: '#/components/schemas/ChargingPortLocation'
+        dcChargingSocketType:
+          description: The socket type of the DC charger
+          $ref: '#/components/schemas/ChargingPortSocketType'
+        dcChargingSpeed:
+          description: The charging speed of the DC charger
+          $ref: '#/components/schemas/DoubleUnitValue'
+        kwElectric:
+          type: number
+          description: The engine power in kW
+          format: double
+          example: 250
+        dinHpElectric:
+          type: integer
+          description: The electrical engine power in hp
+          format: int32
+          example: 410
+      description: The electrical specifications of the car
+    EngineFuelType:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the engine fuel type
+          example: '100148'
+        description:
+          type: string
+          description: The engine fuel type of the vehicle
+          example: E85
+      description: The fuel type of the secondary engine
+    EnumValue:
+      title: EnumValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID
+          example: '100002'
+        attributeTypeId:
+          type: string
+          description: ' The ID of the attribute type'
+          example: '237'
+        enumGroupId:
+          type: string
+          description: This will be represented as a separate attribute value
+          example: '1350'
+          deprecated: true
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '24379'
+        translation:
+          type: string
+          description: The translation of the enumeration ID in human-readable format
+          example: Request
+        enabled:
+          type: boolean
+          description: Indicates whether this object can still be used
+          example: true
+      description: Miles API v1 representation of an enum value. It contains additional values representing the attribute type and multi-language context.
+    ExistingVehicleInformation:
+      type: object
+      properties:
+        firstRegistrationDate:
+          type: string
+          description: The date on which the vehicle was first registered
+          format: date
+          example: '2026-04-02'
+        currentMileage:
+          description: The current mileage that the vehicle has on the odometer
+          $ref: '#/components/schemas/DoubleUnitValue'
+        vin:
+          type: string
+          description: The VIN of the vehicle
+          example: 1HGBH41JXMN109186
+        licensePlate:
+          type: string
+          description: The license plate of the vehicle
+          example: 1-AAA-001
+      description: Information about an existing vehicle, this field is not relevant for new vehicles
+    ForeignCurrencyValue:
+      title: ForeignCurrencyValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value that holds the currency amount
+          format: double
+          example: 25.56
+        currency:
+          type: string
+          description: The ISO code of the currency
+          example: USD
+      description: Miles API v1 representation of a foreign currency value.
+    ImpactRule:
+      type: object
+      properties:
+        impactRuleId:
+          type: string
+          description: The ID of the impact rule
+          example: '232'
+        typeEnumID:
+          type: string
+          description: The type enumeration ID
+          example: '2323'
+        sysRepAttributeID:
+          type: string
+          description: The system representation attribute ID
+          example: '234'
+        incremental:
+          type: boolean
+          description: Indicates whether the rule is incremental
+          example: true
+        value:
+          type: string
+          description: The value of the impact rule
+          example: '500.0'
+        catalogOptionTypeId:
+          type: string
+          description: The catalog option type ID
+          example: '3434'
+        discountTypeId:
+          type: string
+          description: The discount type ID
+          example: '34343'
+        cause:
+          type: string
+          description: The cause of the impact rule
+          example: Price adjustment due to selected options
+      description: An impact rule
+    LabeledPrice:
+      type: object
+      properties:
+        value:
+          description: The price
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        budgetUnit:
+          description: The budget unit, deprecated since 2023-03-14 and version '1.57.0' in favor of applicable unit
+          $ref: '#/components/schemas/EnumValue'
+        applicableUnit:
+          description: The applicable unit
+          $ref: '#/components/schemas/EnumValue'
+        label:
+          type: string
+          description: The label of the price returned in this object. Reflects the displayed price like the cost type or the lease price name.
+          example: excl. VAT without fuel provision
+        costTypeId:
+          type: string
+          description: The ID of the cost type that was used for the calculation. Note that `applicableUnit` cannot be set in combination with this parameter.
+          example: 557a2b02-4997-4086-b57f-a4192c36d317
+        schemeId:
+          type: string
+          description: The ID of the salary sacrifice scheme used for the calculation. When a scheme ID is provided, the `applicableUnitPrice` is automatically adjusted to reflect the salary sacrifice `netSacrifice` value, and `applicableUnit` is no longer considered.
+          example: 557a2b02-4997-4086-b57f-a4192c36d317
+      description: Product other lease prices
+    LeasingCompany:
+      type: object
+      properties:
+        leasingCompanyId:
+          type: string
+          description: The ID of the leasing company
+          example: '100001'
+      description: The leasing company
+    Make:
+      type: object
+      properties:
+        makeId:
+          type: string
+          description: The ID of the make of the car
+          example: '600023'
+        makeName:
+          description: The name of the make of the car
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The make of the car
+    MobilityPlanPartFleetPolicy:
+      type: object
+      properties:
+        fleetPolicyId:
+          type: string
+          description: The fleet policy ID
+          example: '1000003'
+        fleetPolicyName:
+          type: string
+          description: The fleet policy name
+          example: Car policy
+        fleetPolicyType:
+          description: The fleet policy type
+          $ref: '#/components/schemas/EnumValue'
+      description: The fleet policy details and rules associated with this mobility plan part
+    Model:
+      type: object
+      properties:
+        modelId:
+          type: string
+          description: The ID of the model of the car
+          example: '600001'
+        modelName:
+          description: The name of the model of the car
+          $ref: '#/components/schemas/MultiLanguageValue'
+        modelYear:
+          type: string
+          description: The year of the model of the car
+          format: date
+          example: '2026-04-02'
+        modelReference:
+          type: string
+          description: The reference of the car model
+          example: Car-123_TOYOTA
+      description: The model of the car
+    MultiCurrencyValue:
+      title: MultiCurrencyValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value that holds the currency amount
+          format: double
+          example: 25.56
+        currencyValue:
+          type: number
+          description: The currency amount in a different currency. Deprecated since 2025-07-10 and version '3.5.0' in favor of 'foreignCurrency'.
+          format: double
+          example: 27.56
+          deprecated: true
+        currencyId:
+          type: string
+          description: The ID of the currency. Deprecated since 2025-07-10 and version '3.5.0' in favor of 'foreignCurrency'.
+          example: '2'
+          deprecated: true
+        currency:
+          type: string
+          description: The ISO code of the reference currency
+          example: EUR
+        foreignCurrency:
+          description: Foreign currency information
+          $ref: '#/components/schemas/ForeignCurrencyValue'
+      description: Miles API v1 representation of a currency value.
+    MultiLanguageValue:
+      title: MultiLanguageValue
+      type: object
+      properties:
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '170392'
+        translation:
+          type: string
+          description: The translation of the multi-language ID in human-readable format
+          example: Hatchback
+      description: Miles API v1 representation of a translated string value.
+    OptionRuleViolation:
+      type: object
+      properties:
+        ruleId:
+          type: string
+          description: The ID of the rule that was violated
+          example: '123456789'
+        automatic:
+          type: boolean
+          description: Indicates whether the rule is automatically applied
+          example: true
+        message:
+          type: string
+          description: The violation message
+          example: Option 'Option 1' is not available for this vehicle
+        causeIds:
+          type: array
+          description: List of IDs that caused the violation
+          items:
+            type: string
+            description: The ID that caused the violation
+        solutions:
+          type: array
+          description: List of possible solutions for the violation
+          items:
+            $ref: '#/components/schemas/RuleSolution'
+      description: An option rule violation
+    PhoneNumber:
+      type: object
+      properties:
+        countryPhoneCode:
+          type: string
+          description: The country phone code
+          example: '32'
+        formattedPhoneNr:
+          type: string
+          description: The formatted phone number
+          example: '0032474002342'
+        phoneType:
+          description: The type of phone number
+          $ref: '#/components/schemas/EnumValue'
+      description: The phone number of the supplier
+    Product:
+      type: object
+      properties:
+        productId:
+          type: string
+          description: Product ID
+          example: '100002'
+        description:
+          description: Product description
+          $ref: '#/components/schemas/MultiLanguageValue'
+        duration:
+          description: Product duration
+          $ref: '#/components/schemas/DoubleUnitValue'
+        distance:
+          description: Product distance
+          $ref: '#/components/schemas/DoubleUnitValue'
+        proRataDistance:
+          description: Product prorata distance
+          $ref: '#/components/schemas/DoubleUnitValue'
+        investment:
+          description: Product investment
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        applicableLeasePrice:
+          description: Product applicable lease price
+          $ref: '#/components/schemas/LabeledPrice'
+        otherLeasePrices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LabeledPrice'
+          description: Product other lease prices
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: The dynamic attributes
+        customerUpfront:
+          description: Product customer upfront
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        driverUpfront:
+          description: Product driver upfront
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        residualValue:
+          description: 'Residual value. Only returned for configured products, by default: ''Loan products'' and ''Lease Purchase'
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        residualValuePercentage:
+          type: number
+          description: 'Residual value percentage. Only returned for configured products, by default: ''Loan products'' and ''Lease Purchase'
+          format: double
+          example: 0.21
+        productConfiguration:
+          description: Product configuration
+          $ref: '#/components/schemas/ProductConfiguration'
+        productCategory:
+          description: Product category enum ID
+          $ref: '#/components/schemas/EnumValue'
+      description: Use quoteProduct instead
+      deprecated: true
+    ProductComponent:
+      type: object
+      properties:
+        productComponentId:
+          type: string
+          description: The ID of the product component
+          example: '23452'
+        name:
+          description: The name of the product component in multiple languages
+          $ref: '#/components/schemas/MultiLanguageValue'
+        description:
+          description: The description of the product component in multiple languages
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: A multiple instantiated product component
+    ProductConfiguration:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: The reference of the product configuration
+          example: Operating Lease
+        productTypeId:
+          type: string
+          description: Type ID of the product
+          example: '100002'
+        includePriceIndication:
+          type: boolean
+          description: Indicates whether a price indication of the lease price and lease VAT should be included for all choices that have not been selected (isSelected = false)
+          example: false
+          default: false
+        prodSettings:
+          type: array
+          description: A list of product settings, deprecated since 2020-08-31 and version '1.25.0' in favor of 'productSettings'
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/ProductSetting'
+        productSettings:
+          type: array
+          description: A list of product settings
+          items:
+            $ref: '#/components/schemas/ProductSetting'
+        priceDetails:
+          type: array
+          description: A list of product pricing details
+          items:
+            $ref: '#/components/schemas/ProductPricingDetail'
+      description: Product configuration
+    ProductPricingDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the product pricing
+          example: PROD_123
+        label:
+          description: The label for the product pricing
+          $ref: '#/components/schemas/MultiLanguageValue'
+        leasePrice:
+          type: number
+          description: The lease price of the product
+          format: double
+          example: 450
+        leaseVAT:
+          type: number
+          description: The VAT amount for the lease
+          format: double
+          example: 94.5
+        reference:
+          type: string
+          description: The reference identifier for the pricing
+          example: REF-2025-001
+        editable:
+          type: boolean
+          description: Indicates whether the pricing details can be edited
+          example: true
+        editValue:
+          type: string
+          description: The value used for editing purposes
+          example: EDIT_VALUE_123
+        category:
+          type: string
+          description: The category of the product pricing
+          example: VEHICLE_LEASE
+        freeText:
+          type: boolean
+          description: Indicates whether free text input is allowed
+          example: false
+        fix:
+          type: boolean
+          description: Indicates whether the pricing is fixed
+          example: true
+      description: Product pricing detail
+    ProductSetting:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: The setting reference
+          example: '123456789'
+        choices:
+          type: array
+          description: A list of setting choices
+          items:
+            $ref: '#/components/schemas/ProductSettingChoice'
+        qualSettings:
+          type: array
+          description: A list of qualifier settings
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/QualifierSetting'
+        qualifierSettings:
+          type: array
+          description: A list of qualifier settings
+          items:
+            $ref: '#/components/schemas/QualifierSetting'
+      description: A product setting
+    ProductSettingChoice:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the product setting choice
+          example: '17348946'
+        label:
+          description: The label of the product setting choice
+          $ref: '#/components/schemas/MultiLanguageValue'
+        selected:
+          type: boolean
+          description: Use isSelected instead.
+          deprecated: true
+        isSelected:
+          type: boolean
+          description: Indicates if the product setting choice is selected. Defaulted to false.
+          example: true
+        leasePrice:
+          type: number
+          description: The total lease price of the choice's lease service components, excluding VAT
+          format: double
+        leasePriceVat:
+          type: number
+          description: The total VAT price of the choice's lease service components
+          format: double
+      description: A setting choice
+    QualifierSetting:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: The reference of the qualifier setting
+          example: SUMMERTIRES_QTY_SETTING
+        condition:
+          type: array
+          description: The list of conditions when the qualifier setting can be used
+          items:
+            type: string
+            description: A condition when the qualifier setting can be used
+            example: '100331'
+        value:
+          type: string
+          description: The value of the qualifier setting
+          example: '6'
+        dataType:
+          type: string
+          description: The datatype of the qualifier setting
+          example: Integer
+        defaultValue:
+          type: string
+          description: The default value of the qualifier setting
+          example: '8'
+        minValue:
+          type: number
+          description: The minimum value of the qualifier setting
+          format: double
+          example: 4
+        maxValue:
+          type: number
+          description: The maximum value of the qualifier setting
+          format: double
+          example: 12
+        required:
+          type: boolean
+          description: If the qualifier setting is required or not
+          example: true
+          default: false
+        choices:
+          type: array
+          description: A list of qualifier setting choices
+          items:
+            $ref: '#/components/schemas/QualifierSettingChoice'
+      description: A qualifier setting
+    QualifierSettingChoice:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the qualifier setting choice
+          example: '17348946'
+        label:
+          description: The label of the qualifier setting choice
+          $ref: '#/components/schemas/MultiLanguageValue'
+        selected:
+          type: boolean
+          description: Use isSelected instead.
+          deprecated: true
+        isSelected:
+          type: boolean
+          description: Indicates if the qualifier setting choice is selected. Defaulted to false.
+          example: true
+      description: A qualifier setting choice
+    QuotationTemplate:
+      type: object
+      properties:
+        quotationTemplateId:
+          type: string
+          description: The quotation template ID
+          example: '123456'
+        status:
+          description: The quotation template status
+          $ref: '#/components/schemas/EnumValue'
+      description: The quotation template
+    QuoteMobilityPlan:
+      type: object
+      properties:
+        mobilityPlanId:
+          type: string
+          description: The mobility plan ID
+          example: '123456789'
+        name:
+          type: string
+          description: The mobility plan name
+          example: My Mobility Plan
+        mobilityPlanParts:
+          type: array
+          description: A mobility plan part
+          items:
+            $ref: '#/components/schemas/QuoteMobilityPlanPart'
+      description: The mobility plan
+    QuoteMobilityPlanPart:
+      type: object
+      properties:
+        mobilityPlanPartId:
+          type: string
+          description: The unique identifier for the mobility plan part
+          example: '123789273198'
+        mobilityPartType:
+          description: The type of the mobility part, defining the category or classification of this plan component
+          $ref: '#/components/schemas/EnumValue'
+        fleetPolicy:
+          description: The fleet policy details and rules associated with this mobility plan part
+          $ref: '#/components/schemas/MobilityPlanPartFleetPolicy'
+      description: A list of mobility plan parts
+    QuoteProduct:
+      type: object
+      properties:
+        quoteProductId:
+          type: string
+          description: The ID of the quote product
+          example: '123456'
+        description:
+          description: The description of the quote product
+          $ref: '#/components/schemas/MultiLanguageValue'
+        term:
+          description: The term of the sales quote
+          $ref: '#/components/schemas/DoubleUnitValue'
+        mileage:
+          description: The mileage of the sales quote
+          $ref: '#/components/schemas/DoubleUnitValue'
+        annualMileage:
+          description: The annual mileage of the sales quote
+          $ref: '#/components/schemas/DoubleUnitValue'
+        investment:
+          description: The investment of the car
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        applicableLeasePrice:
+          description: The applicable lease price
+          $ref: '#/components/schemas/LabeledPrice'
+        otherLeasePrices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LabeledPrice'
+          description: A map of other lease prices, the key is the enum ID of the budgetUnit and the value is a price object
+        costTypeComponents:
+          type: array
+          description: A list of cost type component prices for the sales quote
+          items:
+            $ref: '#/components/schemas/CostTypeComponentResponse'
+        customerUpfront:
+          description: Amount the customer needs to pay up front
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        driverUpfront:
+          description: Amount the driver needs to pay up front
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        productConfiguration:
+          description: The configuration of the quote product
+          $ref: '#/components/schemas/ProductConfiguration'
+        productCategory:
+          description: Product category enum ID
+          $ref: '#/components/schemas/EnumValue'
+        contributions:
+          description: The driver contribution rules
+          $ref: '#/components/schemas/Contributions'
+        residualValue:
+          description: Deprecated since 2022-11-10 and version 1.52.0 in favor of residualValueAmount
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        residualValueAmount:
+          description: 'The residual value; it will be returned for configured products only, by default: ''Loan products'' and ''Lease Purchase'''
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        residualValuePercentage:
+          type: number
+          description: 'Residual value percentage; It will be returned only for configured products, by default: ''Loan products'' and ''Lease Purchase'''
+          format: double
+          example: 0.21
+        interestRate:
+          type: number
+          description: 'The interest rate of the sales quote; It will be returned only for configured products, by default: ''Lease Purchase'' and ''Consumer Loan'''
+          format: double
+          example: 0.25
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        proRataDistance:
+          description: use annualMileage instead
+          $ref: '#/components/schemas/DoubleUnitValue'
+      description: The quote product
+    QuoteViolation:
+      type: object
+      properties:
+        missingRequiredProductComponents:
+          type: array
+          description: A list of missing required product components
+          items:
+            $ref: '#/components/schemas/ProductComponent'
+        multipleInstantiatedProductComponents:
+          type: array
+          description: A list of multiple instantiated product components
+          items:
+            $ref: '#/components/schemas/ProductComponent'
+        quotationTemplateErrorRules:
+          type: array
+          description: A list of quotation template error rules
+          items:
+            $ref: '#/components/schemas/Rule'
+        quotationTemplateWarningRules:
+          type: array
+          description: A list of quotation template warning rules
+          items:
+            $ref: '#/components/schemas/Rule'
+        serviceFilterErrorRules:
+          type: array
+          description: A list of service filter error rules
+          items:
+            $ref: '#/components/schemas/Rule'
+        serviceFilterWarningRules:
+          type: array
+          description: A list of service filter warning rules
+          items:
+            $ref: '#/components/schemas/Rule'
+      description: The violations that should be fixed before the quote can be successfully validated
+    RequestQuote:
+      type: object
+      properties:
+        salesQuoteId:
+          type: string
+          description: The ID of the sales quote
+          example: '2147594923'
+        reference:
+          type: string
+          description: The reference of the sales quote
+          example: 006741/001
+        description:
+          type: string
+          description: A description for the sales quote
+          example: A quote requested by John Doe
+        creationDate:
+          type: string
+          description: The date on which the sales quote is created
+          format: date
+          example: '2026-04-02'
+        expirationDate:
+          type: string
+          description: The date on which the sales quote will expire
+          format: date
+          example: '2026-04-02'
+        isApproved:
+          type: boolean
+          description: Whether the sales quote is approved
+          example: false
+        driverName:
+          type: string
+          description: The driver who requested the sales quote
+          example: John, Doe
+        externalReference:
+          type: string
+          description: An external reference to the request
+          example: '45653'
+        userAccountId:
+          type: string
+          description: The user account ID who requested the sales quote
+          example: '500002'
+        numberOfVehicles:
+          type: integer
+          description: The number of vehicles that will be ordered through the sales quote
+          format: int32
+          example: 2
+        quotationTemplateId:
+          type: string
+          description: Deprecated since 2023-12-08 and version 1.74.0 in favor of quotationTemplate
+          example: '123456'
+          deprecated: true
+        quotationTemplate:
+          description: The quotation template
+          $ref: '#/components/schemas/QuotationTemplate'
+        quoteReason:
+          description: The reason of the sales quote
+          $ref: '#/components/schemas/EnumValue'
+        quoteStatus:
+          description: The status of the sales quote
+          $ref: '#/components/schemas/EnumValue'
+        quoteType:
+          description: The type of the sales quote
+          $ref: '#/components/schemas/EnumValue'
+        requestType:
+          description: The type of request
+          $ref: '#/components/schemas/EnumValue'
+        vehicleCategory:
+          description: The kind of vehicle category. Deprecated since 2026-04-02 and version '1.106.0' in favor of 'carConfiguration.vehicleCategory'.
+          $ref: '#/components/schemas/EnumValue'
+        vehicleNature:
+          description: The kind of vehicle category
+          $ref: '#/components/schemas/EnumValue'
+        licensePlate:
+          type: string
+          description: Deprecated since 2025-08-13 and version '1.95.0' in favor of 'vehicle.existingVehicleInformation.licensePlate'
+          deprecated: true
+        requestedDeliveryDate:
+          type: string
+          description: The requested delivery date
+          format: date
+          example: '2026-04-02'
+        customer:
+          description: The customer
+          $ref: '#/components/schemas/Customer'
+        driver:
+          description: The driver
+          $ref: '#/components/schemas/Driver'
+        leasingCompany:
+          description: The leasing company
+          $ref: '#/components/schemas/LeasingCompany'
+        quoteProduct:
+          description: The quote product
+          $ref: '#/components/schemas/QuoteProduct'
+        carConfiguration:
+          description: The car configuration
+          $ref: '#/components/schemas/CarConfiguration'
+        vehicle:
+          description: The vehicle information
+          $ref: '#/components/schemas/VehicleResponse'
+        mobilityPlan:
+          description: The mobility plan
+          $ref: '#/components/schemas/QuoteMobilityPlan'
+        brokerContactRepresentation:
+          description: Broker Contact representation
+          $ref: '#/components/schemas/BrokerContactRepresentation'
+        brokerCompanies:
+          type: array
+          description: A list of broker companies
+          items:
+            $ref: '#/components/schemas/BrokerCompanyReference'
+        leasePricesHidden:
+          type: boolean
+          description: Whether the lease prices are hidden
+          example: false
+        discountsHidden:
+          type: boolean
+          description: Whether the discounts are hidden
+          example: false
+        catalogPricesHidden:
+          type: boolean
+          description: Whether the catalog prices are hidden
+          example: false
+        quoteId:
+          type: string
+          description: Use salesQuoteId instead
+          deprecated: true
+        quoteReference:
+          type: string
+          description: Use reference instead
+          deprecated: true
+        requestDriverName:
+          type: string
+          description: Use driverName instead
+          deprecated: true
+        requestExternalReference:
+          type: string
+          description: Use externalReference instead
+          deprecated: true
+        requestUserAccount:
+          type: string
+          description: Use userAccountId instead
+          deprecated: true
+        product:
+          description: Use quoteProduct instead
+          $ref: '#/components/schemas/Product'
+        pricesHidden:
+          type: boolean
+          description: Use leasePricesHidden, discountsHidden or catalogPricesHidden instead
+          deprecated: true
+      description: The information about the quote itself
+    Rule:
+      type: object
+      properties:
+        ruleId:
+          type: string
+          description: The ID of the rule
+          example: '123456'
+        name:
+          description: The name of the rule in multiple languages
+          $ref: '#/components/schemas/MultiLanguageValue'
+        ruleType:
+          description: The type of the rule
+          $ref: '#/components/schemas/EnumValue'
+        message:
+          description: The message of the rule in multiple languages
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: A service filter warning rule
+    RuleSolution:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The solution message
+          example: Include option 'Option 1'
+        includeOptionIds:
+          type: array
+          description: A list of option IDs to include
+          items:
+            type: string
+            description: An option ID to include
+        excludeOptionIds:
+          type: array
+          description: A list of option IDs to exclude
+          items:
+            type: string
+            description: An option ID to exclude
+        impactRules:
+          type: array
+          description: A list of impact rules
+          items:
+            $ref: '#/components/schemas/ImpactRule'
+      description: Solution for a rule violation
+    Supplier:
+      type: object
+      properties:
+        supplierId:
+          type: string
+          description: The ID of the supplier
+          example: '600253'
+        emailAddress:
+          type: string
+          description: The email address of the supplier
+          example: sofico@sofico.be
+        address:
+          description: The address of the supplier
+          $ref: '#/components/schemas/Address'
+        phoneNumber:
+          description: The phone number of the supplier
+          $ref: '#/components/schemas/PhoneNumber'
+        name:
+          type: string
+          description: The name of the supplier
+          example: Hedin Automotive
+      description: The supplier
+    UnitAccount:
+      type: object
+      properties:
+        unitAccountId:
+          type: string
+          description: The unique identifier of the unit account
+          example: '4534534'
+        name:
+          type: string
+          description: The name of the unit account
+          example: Corporate Fleet Account
+        unitAccountType:
+          description: The type of the unit account, represented as an enumeration value
+          $ref: '#/components/schemas/EnumValue'
+      description: The unit account of the driver
+    UnitValue:
+      title: UnitValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID of the unit
+          example: '1605'
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '33284'
+        translation:
+          type: string
+          description: The translation of the unit in human-readable format
+          example: L/100km
+      description: Miles API v1 representation of a unit value. It typically is part of a DoubleUnitValue or IntegerUnitValue.
+    UnnamedValue:
+      type: object
+      properties:
+        qualifier:
+          type: string
+        qualifierMultiLanguageId:
+          type: string
+        qualifierType:
+          type: string
+        qualifierDefaultValue:
+          type: string
+        value:
+          $ref: '#/components/schemas/AbstractValue'
+        valueType:
+          type: integer
+          format: int32
+        multiLanguageId:
+          type: string
+        translation:
+          type: string
+      description: The third qualifier value for the configuration
+    VehicleCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the vehicle category
+          example: '100587'
+        description:
+          type: string
+          description: The category of the vehicle
+          example: E1 - executive
+      description: The category of the vehicle
+    VehicleDiscountConfiguration:
+      type: object
+      properties:
+        vehicleDiscountConfigurationId:
+          type: string
+          description: The unique identifier for the vehicle discount configuration
+          example: '234234'
+        discountTypeId:
+          type: string
+          description: The identifier of the discount type
+          example: '23423'
+        amount:
+          description: The amount of the discount in multiple currencies
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        percentage:
+          type: number
+          description: The discount percentage value
+          format: double
+          example: 15.55
+      description: Vehicle discount configurations
+    VehicleExtraDiscountConfiguration:
+      type: object
+      properties:
+        vehicleExtraDiscountConfigurationId:
+          type: string
+          description: The unique identifier for the vehicle extra discount configuration
+          example: '657567'
+        catalogPrice:
+          description: The catalog price in multiple currencies
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumerPrice:
+          description: The consumer price in multiple currencies
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        tax:
+          description: The tax amount in multiple currencies
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        description:
+          description: The multi-language description of the discount
+          $ref: '#/components/schemas/MultiLanguageValue'
+        isStandard:
+          type: boolean
+          description: Indicates whether this is a standard configuration
+          example: true
+        isSelected:
+          type: boolean
+          description: Indicates whether this configuration is selected
+          example: false
+        isMandatory:
+          type: boolean
+          description: Indicates whether this configuration is mandatory
+          example: false
+        optionCode:
+          type: string
+          description: The code identifying the option
+          example: '3242323'
+        qualifier1:
+          description: The first qualifier value for the configuration
+          $ref: '#/components/schemas/UnnamedValue'
+        qualifier2:
+          description: The second qualifier value for the configuration
+          $ref: '#/components/schemas/UnnamedValue'
+        qualifier3:
+          description: The third qualifier value for the configuration
+          $ref: '#/components/schemas/UnnamedValue'
+        vehicleConfigurationId:
+          type: string
+          description: The identifier of the associated vehicle configuration
+          example: '234'
+        catalogVATCode:
+          description: The VAT code for catalog pricing
+          $ref: '#/components/schemas/EnumValue'
+        optionType:
+          description: The type of the option
+          $ref: '#/components/schemas/EnumValue'
+        supplierId:
+          type: string
+          description: The identifier of the supplier
+          example: '34324'
+        catalogOptionTypeId:
+          type: string
+          description: The identifier of the catalog option type
+          example: '2342'
+        genericOptionId:
+          type: string
+          description: The identifier for the generic option
+          example: '234234'
+      description: Vehicle extra discount configuration
+    VehicleOptionConfiguration:
+      type: object
+      properties:
+        vehicleOptionConfigurationId:
+          type: string
+          description: The vehicle configuration ID
+          example: '86963016'
+        catalogPrice:
+          description: The catalog price of the option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumerPrice:
+          description: The consumer price of the option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        tax:
+          description: The tax
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        description:
+          description: The description of the option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        isStandard:
+          type: boolean
+          description: Whether the option is standard
+          example: false
+        isSelected:
+          type: boolean
+          description: Whether the option is selected
+          example: false
+        isMandatoryAccessory:
+          type: boolean
+          description: Whether the option is mandatory
+          example: false
+        optionCode:
+          type: string
+          description: The option code
+          example: BATTERYPOWERUNIT
+        qualifier1:
+          description: The first qualifier value
+          $ref: '#/components/schemas/UnnamedValue'
+        qualifier2:
+          description: The second qualifier value
+          $ref: '#/components/schemas/UnnamedValue'
+        qualifier3:
+          description: The third qualifier value
+          $ref: '#/components/schemas/UnnamedValue'
+        catalogVATCode:
+          description: The catalog VAT code
+          $ref: '#/components/schemas/EnumValue'
+        optionType:
+          description: The option type
+          $ref: '#/components/schemas/EnumValue'
+        supplierId:
+          type: string
+          description: The ID of the supplier
+          example: '600253'
+        catalogOptionTypeId:
+          type: string
+          description: The catalog option type ID
+          example: '60024129'
+        genericOptionId:
+          type: string
+          description: The generic option ID
+          example: '7'
+        vehicleConfigurationId:
+          type: string
+          description: The ID of the vehicle configuration
+          example: '34'
+        vehicleOptionConfigurations:
+          type: array
+          description: A list of vehicle option configurations packs
+          items:
+            $ref: '#/components/schemas/VehicleOptionConfiguration'
+        vehicleOptionConfigurationPacks:
+          type: array
+          description: A list of option vehicle configurations
+          items:
+            $ref: '#/components/schemas/VehicleOptionConfiguration'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: Vehicle configuration
+    VehicleResponse:
+      type: object
+      properties:
+        condition:
+          description: The condition of the vehicle
+          $ref: '#/components/schemas/EnumValue'
+        existingVehicleInformation:
+          description: Information about an existing vehicle, this field is not relevant for new vehicles
+          $ref: '#/components/schemas/ExistingVehicleInformation'
+        dealerPrice:
+          description: The dealer price of the vehicle
+          $ref: '#/components/schemas/DealerVehiclePrice'
+      description: The vehicle information
+    ExceptionInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/problems/microservices/service-unavailable
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Service Unavailable
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: The requested service is not available.
+        message:
+          description: Message objects containing translation information
+          $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '34898219'
+    WarningsInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/warnings/microservices/unprocessable-entity
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Unprocessable Entity
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Unable to process payload due to invalid data.
+        messages:
+          type: array
+          description: An array of message objects containing translation information
+          items:
+            $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '23121434'
+        isInteractiveWarning:
+          type: boolean
+          description: Indicates whether this error requires user interaction
+          example: false
+    CreateCarQuoteResponse:
+      type: object
+      properties:
+        quote:
+          description: The information about the quote itself
+          $ref: '#/components/schemas/RequestQuote'
+        quoteViolations:
+          description: The violations that should be fixed before the quote can be successfully validated
+          $ref: '#/components/schemas/QuoteViolation'
+        optionViolations:
+          description: The config option violations that should be fixed before the quote can be successfully validated
+          $ref: '#/components/schemas/ConfigOptionViolation'
+        calculateQuoteInfo:
+          description: The calculate sales quote info
+          $ref: '#/components/schemas/CalculateQuoteInfo'
+        allocatedDriver:
+          description: Allocated driver
+          $ref: '#/components/schemas/AllocatedDriverResponse'
+        allocatedDrivers:
+          type: array
+          description: A list of allocated drivers
+          items:
+            $ref: '#/components/schemas/AllocatedDriverResponse'
+        catalogOptionsWarningMessage:
+          type: array
+          description: A list of warning messages that no catalog options were found
+          items:
+            type: string
+            description: Warning message that no catalog options were found
+        promotions:
+          type: array
+          description: The list of promotions. This field will only be filled if the Promotions module is enabled.
+          items:
+            $ref: '#/components/schemas/PromotionResponse'
+        initialPayment:
+          description: Rental schedule initial payment. Only filled in if the rental profile ID is passed in the request.
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        rentalProfileName:
+          description: Rental profile name. Only filled in if the rental profile ID is passed in the request.
+          $ref: '#/components/schemas/MultiLanguageValue'
+        productRentalProfileId:
+          type: string
+          description: Product rental profile ID. Only filled in if the rental profile ID is passed in the request.
+    PromotionResponse:
+      type: object
+      properties:
+        promotionId:
+          type: string
+          description: The ID of the promotion. This represents a UUID generated from the Promotions module.
+          example: 19f461a7-6004-4ae3-a161-e4963cb75087
+        name:
+          description: The name of the promotion
+          $ref: '#/components/schemas/MultiLanguageValue'
+        promotionSelection:
+          description: Indicates whether the promotion is selected on the sales quote
+          $ref: '#/components/schemas/EnumValue'
+        isApplied:
+          type: boolean
+          description: Indicates whether the promotion is selected on the quote
+        validFrom:
+          type: string
+          description: The start date of the validity period of the promotion
+        validTo:
+          type: string
+          description: The end date of the validity period of the promotion, specified date included
+        externalReference:
+          type: string
+          description: The external reference of the promotion
+        violation:
+          type: string
+          description: Description of the conditions that have been violated
+        subventions:
+          type: array
+          description: A subvention
+          items:
+            $ref: '#/components/schemas/SubventionResponse'
+      description: The list of promotions. This field will only be filled if the Promotions module is enabled.
+    SubventionResponse:
+      type: object
+      properties:
+        subventionId:
+          type: string
+          description: The ID of the subvention
+          example: 333461d7-4504-4ft3-g561-e4963dr58006
+        subventionTypeId:
+          type: string
+          description: The subvention type ID
+          example: subvention_type_interest
+        amount:
+          description: The subvention amount
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        leasePrice:
+          description: The lease price after all applicable subventions have been deducted
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        percentage:
+          type: number
+          description: The subvention lease percentage
+          format: double
+          example: 10
+        periods:
+          type: string
+          description: The subvention periods
+          example: 1,2,3,4
+      description: The list of subventions included in the promotion which must be considered during quote calculation
+    AddressRequest:
+      type: object
+      properties:
+        addressId:
+          type: string
+          description: The address ID
+          example: '23287213'
+        isDeleted:
+          type: boolean
+          description: Indicates whether the address needs to be deleted
+          example: true
+          default: false
+        addressLine1:
+          type: string
+          description: Address line 1
+          example: Longstreet
+        addressLine1Number:
+          type: string
+          description: Address line 1 number
+          example: '5'
+        addressLine2:
+          type: string
+          description: Address line 2
+          example: Address information
+        addressLine3:
+          type: string
+          description: Address line 3
+          example: Address information
+        addressLine4:
+          type: string
+          description: Address line 4
+          example: Address information
+        addressLine5:
+          type: string
+          description: Address line 5
+          example: Address information
+        city:
+          type: string
+          description: City
+          example: Ghent
+        postalCode:
+          type: string
+          description: Postal code
+          example: '9000'
+        state:
+          type: string
+          description: State
+          example: GE
+        country:
+          maxLength: 3
+          minLength: 2
+          pattern: ^([A-Za-z]{2,3})?$
+          type: string
+          description: Country code
+          format: ISO3166-1 alpha-2 or ISO3166-1 alpha-3
+          example: BE
+        addressType:
+          description: Address type
+          $ref: '#/components/schemas/SimpleEnumValue'
+      description: Addresses
+    AllocatedDriver:
+      type: object
+      properties:
+        isMainDriver:
+          type: boolean
+          description: Flag indicating if this is the main driver
+          default: true
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: The allocated driver on the quote
+    CatalogOptionRequest:
+      type: object
+      properties:
+        catalogOptionId:
+          type: string
+          description: The ID of the catalog option. One of the `catalogOptionId` or `optionCode` parameters is required, but both cannot be set together.
+          example: '10722824'
+        optionCode:
+          type: string
+          description: The code of the catalog option. One of the `catalogOptionId` or `optionCode` parameters is required, but both cannot be set together.
+          example: QM02
+        catalogPrice:
+          description: The price of the catalog option. This field can only be set by dealer_salesperson, dealer_manager, broker_salesperson and broker_manager roles.
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        catalogVatCode:
+          description: ID of the VAT code. This field can only be set by dealer_salesperson, dealer_manager, broker_salesperson and broker_manager roles.
+          $ref: '#/components/schemas/SimpleEnumValue'
+        dynamicAttributesMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SimpleDynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: A list of catalog options
+    CreateCarQuoteRequest:
+      type: object
+      properties:
+        customerId:
+          type: string
+          description: The ID of the customer
+          example: '600357'
+        legalEntityGroup:
+          description: Legal entity group of the customer that will be added to the quote after creation
+          $ref: '#/components/schemas/SimpleEnumValue'
+        catalogVehicleId:
+          type: string
+          description: The ID of the catalog vehicle. One of the `catalogVehicleId` or `catalogVehicleReference` parameters is required, but both cannot be set together.
+          example: '214760230'
+        catalogVehicleReference:
+          type: string
+          description: The reference of the catalog vehicle. One of the `catalogVehicleId` or `catalogVehicleReference` parameters is required, but both cannot be set together.
+          example: '815246020220706'
+        quotationTemplateId:
+          type: string
+          description: The ID of the quotation template
+          example: '100005'
+        numberOfVehicles:
+          minimum: 1
+          type: integer
+          description: The number of vehicles that will be ordered through the sales quote
+          format: int32
+          example: 2
+        term:
+          minimum: 0
+          type: number
+          description: The term on the car quote of the leasing agreement
+          format: double
+          example: 48
+        mileage:
+          minimum: 0
+          type: number
+          description: The maximum mileage of the car quote of the leasing agreement
+          format: double
+          example: 40000
+        customer:
+          description: The customer on the quote
+          $ref: '#/components/schemas/CustomerRequest'
+        carPolicyVehicleId:
+          type: string
+          description: The car policy vehicle ID
+          example: '41199698'
+        driverContactId:
+          type: string
+          description: The driver contact ID
+          example: '41199698'
+        duration:
+          minimum: 0
+          type: number
+          description: The duration on the product
+          format: double
+          deprecated: true
+        distance:
+          minimum: 0
+          type: number
+          description: The distance on the product
+          format: double
+          deprecated: true
+        quoteReason:
+          description: The reason for creating the quote
+          $ref: '#/components/schemas/EnumValue'
+        dummyQuotationTemplate:
+          type: boolean
+          description: Flag indicating if a dummy quotation template is used
+          deprecated: true
+          default: false
+        calculateQuote:
+          type: boolean
+          description: Flag indicating if we need to run a quote calculation or not, this flag can be ignored when you are using a list based car policy
+          default: true
+        vehicle:
+          description: The vehicle data for the quote.
+          $ref: '#/components/schemas/Vehicle'
+        allocatedDriver:
+          description: The allocated driver on the quote
+          $ref: '#/components/schemas/AllocatedDriver'
+        includePriceIndication:
+          type: boolean
+          description: Indicates whether the budget strategy 'Price Indication' must be taken into account to indicate if the lease price and lease VAT should be included for all choices that have not been selected (isSelected = false).
+          example: false
+          default: false
+        ignoreCarPolicy:
+          type: boolean
+          description: Indicates whether vehicle model restrictions of car policies should be ignored. If set to 'true', no restrictions will be applied.
+          example: false
+          default: false
+        productRentalProfileId:
+          type: string
+          description: The product rental profile ID
+          example: '41199698'
+    CustomerRequest:
+      type: object
+      properties:
+        tradingName:
+          type: string
+          description: Company name. This parameter is only optional for individual customers, but required for non-individual customers such as Organization.
+          example: Company Co
+        officialRegistration:
+          type: string
+          description: Official registration
+          example: 20009280 0000
+        vatNumber:
+          type: string
+          description: VAT number
+          example: BE1234567891
+        establishmentDate:
+          type: string
+          description: Establishment date
+          format: date
+          example: '2026-04-02'
+        taxLiability:
+          description: Tax liability
+          $ref: '#/components/schemas/SimpleEnumValue'
+        legalEntity:
+          description: Legal entity
+          $ref: '#/components/schemas/SimpleEnumValue'
+        individualPerson:
+          description: Individual Person, required when legal entity is an individual or sole trader
+          $ref: '#/components/schemas/IndividualPersonRequest'
+        reference:
+          type: string
+          description: Additional customer reference. Typically used for mapping to other systems.
+          example: '100000008'
+        addresses:
+          type: array
+          description: A list of addresses
+          items:
+            $ref: '#/components/schemas/AddressRequest'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumberRequest'
+        internetReferences:
+          type: array
+          description: A list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReferenceRequest'
+        brokerCompanyId:
+          type: string
+          description: Broker company ID to which the customer is linked
+          example: '123145345'
+        sectorCode:
+          type: string
+          description: Sector code
+          example: '0020'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SimpleDynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: The customer on the quote
+    FreeFormAccessories:
+      type: object
+      properties:
+        optionCode:
+          type: string
+          description: The code of the catalog option. This is an additional code for the catalog option which will be used for interfacing purposes.
+          example: BATTERYPOWERUNIT
+        description:
+          type: string
+          description: The description of the generic option
+          example: Battery Power 1.0
+        optionType:
+          description: Indicates whether the catalog option is an option or an accessory
+          $ref: '#/components/schemas/SimpleEnumValue'
+        catalogPrice:
+          type: number
+          description: The catalog price of the configuration option.
+          format: double
+          example: 2000
+        genericOptionId:
+          type: string
+          description: ID of the generic option
+          example: '41199698'
+      description: Vehicle free form accessories
+      example: 25
+    IndividualPersonRequest:
+      required:
+        - lastName
+        - personTitle
+      type: object
+      properties:
+        personId:
+          type: string
+          description: ID of the person
+          example: '100099'
+        firstName:
+          type: string
+          description: First name
+          example: Adam
+        middleName:
+          type: string
+          description: Middle name
+          example: Paul
+        maidenName:
+          type: string
+          description: Maiden name
+          example: Black
+        lastName:
+          minLength: 1
+          type: string
+          description: Last name
+          example: Smith
+        initials:
+          type: string
+          description: Initials
+          example: A.S.
+        birthDate:
+          type: string
+          description: Birth date
+          format: date
+          example: '2026-04-02'
+        country:
+          maxLength: 3
+          minLength: 2
+          pattern: ^([A-Za-z]{2,3})?$
+          type: string
+          description: Country code
+          format: ISO3166-1 alpha-2 or ISO3166-1 alpha-3
+          example: BE
+        language:
+          maxLength: 3
+          minLength: 2
+          pattern: ^([A-Za-z]{2,3})?$
+          type: string
+          description: Language
+          format: ISO 639-1 or ISO 639-2
+          example: nl
+        numberOfDependents:
+          minimum: 0
+          type: integer
+          description: The number of people dependent on the person
+          format: int32
+          example: 2
+        placeOfBirth:
+          type: string
+          description: A person's place of birth
+          example: Munich
+        officialRegistration:
+          type: string
+          description: Official registration
+          example: 20009280 0000
+        personTitle:
+          description: Person title
+          $ref: '#/components/schemas/SimpleEnumValue'
+        gender:
+          description: Gender
+          $ref: '#/components/schemas/SimpleEnumValue'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SimpleDynamicAttributeValue'
+          description: A map of dynamic attributes
+        countryOfBirth:
+          maxLength: 3
+          minLength: 2
+          pattern: ^([A-Za-z]{2,3})?$
+          type: string
+          description: The country of birth code
+          format: ISO3166-1 alpha-2 or ISO3166-1 alpha-3
+          example: BE
+        residencyStatus:
+          description: The residency status of the customer
+          $ref: '#/components/schemas/SimpleEnumValue'
+      description: Individual Person, required when legal entity is an individual or sole trader
+    InternetReferenceRequest:
+      type: object
+      properties:
+        internetReferenceId:
+          type: string
+          description: The internet reference ID
+          example: '41199698'
+        url:
+          type: string
+          description: The URL of the reference
+          example: sofico@sofico.be
+        internetReferenceType:
+          description: The internet reference type
+          $ref: '#/components/schemas/SimpleEnumValue'
+        isDeleted:
+          type: boolean
+          description: Indicates whether the internet reference needs to be deleted
+          example: true
+          default: false
+      description: Internet reference
+    NetPriceRequest:
+      type: object
+      properties:
+        amountIncludingVat:
+          minimum: 0
+          type: number
+          description: |-
+            The sales prices of the used vehicle including VAT.
+            Exactly one sales price must be provided, either the one with VAT `amountIncludingVat` or the one without VAT `amountExcludingVat`.
+          format: double
+          example: 3000
+        amountExcludingVat:
+          minimum: 0
+          type: number
+          description: |-
+            The sales prices of the used vehicle excluding VAT.
+            Exactly one sales price must be provided, either the one with VAT `amountIncludingVat` or the one without VAT `amountExcludingVat`.
+          format: double
+          example: 2521
+      description: The net price of the used vehicle. This field is mutually exclusive with `dealerPrice`.
+    PhoneNumberRequest:
+      type: object
+      properties:
+        phoneNumberId:
+          type: string
+          description: The ID of the phone number
+          example: '41199698'
+        country:
+          maxLength: 3
+          minLength: 2
+          pattern: ^([A-Za-z]{2,3})?$
+          type: string
+          description: Country code
+          format: ISO3166-1 alpha-2 or ISO3166-1 alpha-3
+          example: BE
+        number:
+          type: string
+          description: The phone number
+          example: '0474002342'
+        zonalPhoneNumber:
+          type: string
+          description: The zonal phone number
+          example: '352'
+        phoneType:
+          description: The type of phone number
+          $ref: '#/components/schemas/SimpleEnumValue'
+        isDeleted:
+          type: boolean
+          description: Indicates whether the phone number needs to be deleted
+          example: true
+          default: false
+      description: Phone number
+    SimpleDynamicAttributeValue:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The value of the dynamic attribute
+          example: '5'
+      description: _
+    SimpleEnumValue:
+      title: SimpleEnumValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID
+          example: '100002'
+      description: Miles API v1 representation of a simple enumeration value
+    Vehicle:
+      type: object
+      properties:
+        firstRegistrationDate:
+          type: string
+          description: The date on which the vehicle was registered for the first time
+          format: date
+          example: '2026-04-02'
+        firstUsageVehicleType:
+          type: integer
+          description: Deprecated since 2023-06-13 and version 1.64.0 in favor of nature
+          format: int64
+          deprecated: true
+        makeDescription:
+          type: string
+          description: The make name of a vehicle
+          example: Renault
+        modelDescription:
+          type: string
+          description: The model name of a vehicle
+          example: Model
+        versionDescription:
+          type: string
+          description: Deprecated since 2023-10-30 and version number 1.70.0 in favor of vehicleDescription
+          deprecated: true
+        vehicleDescription:
+          type: string
+          description: The description of the configuration vehicle
+          example: Renault Austral 2022
+        vehiclePriceNet:
+          type: number
+          description: Deprecated since 2025-06-26 and version '1.89.0' in favor of 'netPrice'. This field is mutually exclusive with `dealerPrice`.
+          format: double
+          deprecated: true
+        netPrice:
+          description: The net price of the used vehicle. This field is mutually exclusive with `dealerPrice`.
+          $ref: '#/components/schemas/NetPriceRequest'
+        mileage:
+          type: number
+          description: Deprecated since 2025-08-13 and version '1.95.0' in favor of 'currentMileage'
+          format: double
+          deprecated: true
+        chassisNumber:
+          type: string
+          description: Deprecated since 2025-08-13 and version '1.95.0' in favor of 'vin'
+          deprecated: true
+        currentMileage:
+          type: number
+          description: The current distance the vehicle has on odometer
+          format: double
+          example: 5000
+        vin:
+          type: string
+          description: The VIN of the vehicle
+          example: WBAEV534X5KM11712
+        registrationCode:
+          description: The registration code relates to general information about the vehicle enumeration ID
+          $ref: '#/components/schemas/SimpleEnumValue'
+        engineFuelType:
+          description: The vehicle's engine fuel type enumeration ID
+          $ref: '#/components/schemas/SimpleEnumValue'
+        totalWeight:
+          type: number
+          description: The total weight of the vehicle
+          format: double
+          example: 12000
+        kw:
+          type: number
+          description: The number of kilowatts of the engine of the vehicle
+          format: double
+          example: 30
+        consumption:
+          type: number
+          description: The vehicle consumption
+          format: double
+          example: 16.5
+        co2Emission:
+          type: integer
+          description: The vehicle CO2 emission
+          format: int32
+          example: 4
+        catalogPrice:
+          description: The catalog price of the vehicle. This field can only be set by dealer_salesperson, dealer_manager, broker_salesperson and broker_manager roles.
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        requestedDeliveryDate:
+          type: string
+          description: The requested delivery date
+          format: date
+          example: '2026-04-02'
+        licensePlate:
+          type: string
+          description: License plate
+          example: 1-ABC-003
+        nature:
+          description: The nature of the vehicle enumeration ID
+          $ref: '#/components/schemas/SimpleEnumValue'
+        freeFormAccessories:
+          type: array
+          description: A list of vehicle accessories
+          items:
+            $ref: '#/components/schemas/FreeFormAccessories'
+        catalogOptions:
+          type: array
+          description: A list of catalog options
+          items:
+            $ref: '#/components/schemas/CatalogOptionRequest'
+        condition:
+          description: |
+            The vehicle condition enumeration ID. When not provided as a broker or dealer salesperson or manager, the system will fall back to the first active vehicle condition of the vehicle condition group "New".
+          $ref: '#/components/schemas/SimpleEnumValue'
+        dynamicAttributes:
+          type: array
+          description: Deprecated since 2023-06-28 and version '1.65.0' in favor of 'dynamicAttributesMap'
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+        dynamicAttributesMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SimpleDynamicAttributeValue'
+          description: A map of dynamic attributes
+        dealerPrice:
+          description: |
+            The dealer price of the vehicle, only for used vehicles.
+            This field is mutually exclusive with `netPrice`.
+            This field can only be set by `dealer_salesperson`, `dealer_manager`, `broker_salesperson`, and `broker_manager` roles.
+          $ref: '#/components/schemas/VehicleDealerPriceRequest'
+      description: The vehicle data for the quote.
+    VehicleDealerPriceExcludingVatRequest:
+      required:
+        - excludingVat
+      type: object
+      properties:
+        excludingVat:
+          minimum: 0
+          type: number
+          description: The dealer price of the vehicle excluding VAT
+          format: double
+          example: 28842.98
+    VehicleDealerPriceIncludingVatRequest:
+      required:
+        - includingVat
+      type: object
+      properties:
+        includingVat:
+          minimum: 0
+          type: number
+          description: The dealer price of the vehicle including VAT
+          format: double
+          example: 34900
+    VehicleDealerPriceRequest:
+      type: object
+      description: |
+        The dealer price of the vehicle, only for used vehicles.
+        This field is mutually exclusive with `netPrice`.
+        This field can only be set by `dealer_salesperson`, `dealer_manager`, `broker_salesperson`, and `broker_manager` roles.
+      oneOf:
+        - $ref: '#/components/schemas/VehicleDealerPriceExcludingVatRequest'
+        - $ref: '#/components/schemas/VehicleDealerPriceIncludingVatRequest'
+    CreateStockCarQuoteResponse:
+      type: object
+      properties:
+        quote:
+          description: The information about the quote itself
+          $ref: '#/components/schemas/RequestQuote'
+        quoteViolations:
+          description: The violations that should be fixed before the quote can be successfully validated
+          $ref: '#/components/schemas/QuoteViolation'
+        stockVehicleInformation:
+          description: The stock vehicle information
+          $ref: '#/components/schemas/StockVehicleInformationResponse'
+    StockVehicleInformationResponse:
+      type: object
+      properties:
+        chassisNumber:
+          type: string
+          description: The chassis number of the stock vehicle
+          example: WBAEV534X5KM11711
+        configurationDate:
+          type: string
+          description: The date when this stock vehicle was configured
+          format: date
+          example: '2026-04-02'
+      description: The stock vehicle information
+    CreateStockCarQuoteRequest:
+      type: object
+      properties:
+        customerId:
+          type: string
+          description: The ID of the customer
+          example: '600357'
+        legalEntityGroup:
+          description: Legal entity group of the customer that will be added to the quote after creation
+          $ref: '#/components/schemas/SimpleEnumValue'
+        catalogVehicleId:
+          type: string
+          description: The ID of the catalog vehicle. One of the `catalogVehicleId` or `catalogVehicleReference` parameters is required, but both cannot be set together.
+          example: '214760230'
+        catalogVehicleReference:
+          type: string
+          description: The reference of the catalog vehicle. One of the `catalogVehicleId` or `catalogVehicleReference` parameters is required, but both cannot be set together.
+          example: '815246020220706'
+        quotationTemplateId:
+          type: string
+          description: The ID of the quotation template
+          example: '100005'
+        numberOfVehicles:
+          minimum: 1
+          type: integer
+          description: The number of vehicles that will be ordered through the sales quote
+          format: int32
+          example: 2
+        term:
+          minimum: 0
+          type: number
+          description: The term on the car quote of the leasing agreement
+          format: double
+          example: 48
+        mileage:
+          minimum: 0
+          type: number
+          description: The maximum mileage of the car quote of the leasing agreement
+          format: double
+          example: 40000
+        customer:
+          description: The customer on the quote
+          $ref: '#/components/schemas/CustomerRequest'
+        stockVehicle:
+          description: Information about the stock vehicle to make a sales quote for
+          $ref: '#/components/schemas/StockVehicleInformationRequest'
+    StockVehicleInformationRequest:
+      type: object
+      properties:
+        chassisNumber:
+          type: string
+          description: The chassis number of the stock vehicle
+          example: WBAEV534X5KM11711
+        configurationDate:
+          type: string
+          description: The date on which this stock vehicle was configured. The current date is used by default.
+          format: date
+          example: '2026-04-02'
+        nature:
+          description: The nature of the stock vehicle
+          $ref: '#/components/schemas/SimpleEnumValue'
+      description: Information about the stock vehicle to make a sales quote for
+    CreateUsedCarQuoteResponse:
+      type: object
+      properties:
+        quote:
+          description: The information about the quote itself
+          $ref: '#/components/schemas/RequestQuote'
+        quoteViolations:
+          description: The violations that should be fixed before the quote can be successfully validated
+          $ref: '#/components/schemas/QuoteViolation'
+        usedVehicleInformation:
+          description: The used vehicle information
+          $ref: '#/components/schemas/UsedVehicleInformationResponse'
+    DeliveryCostResponse:
+      type: object
+      properties:
+        deliveryCostWithVat:
+          description: The delivery cost of the used vehicle with VAT
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        deliveryCostWithoutVat:
+          description: The delivery cost of the used vehicle without VAT
+          $ref: '#/components/schemas/MultiCurrencyValue'
+      description: The delivery cost of the used vehicle
+    SalesPriceResponse:
+      type: object
+      properties:
+        salesPriceWithVat:
+          description: The sales prices of the used vehicle with VAT
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        salesPriceWithoutVat:
+          description: The sales prices of the used vehicle without VAT
+          $ref: '#/components/schemas/MultiCurrencyValue'
+      description: The sales price of the used vehicle
+    UsedVehicleInformationResponse:
+      required:
+        - firstRegistrationDate
+        - mileage
+      type: object
+      properties:
+        firstRegistrationDate:
+          type: string
+          description: The date on which the used vehicle is first registered
+          format: date
+          example: '2026-04-02'
+        chassisNumber:
+          type: string
+          description: The chassis number of the used vehicle
+          example: ZA9EB9Z07FJ4C1CST
+        configurationDate:
+          type: string
+          description: The date when this vehicle was configured. You need to fill this property in when it's different from firstRegistrationDate. By default the value firstRegistrationDate will be used if this property is not filled in.
+          format: date
+          example: '2026-04-02'
+        mileage:
+          minimum: 0
+          type: number
+          description: The current mileage of the used vehicle
+          format: double
+          example: 2453874
+        requestedDeliveryDate:
+          type: string
+          description: The requested delivery date for the used vehicle
+          format: date
+          example: '2026-04-02'
+        description:
+          type: string
+          description: The description of the used vehicle
+          example: Stock LEXUS IS 220d 177 pk Business
+        salesPrice:
+          description: The sales price of the used vehicle
+          $ref: '#/components/schemas/SalesPriceResponse'
+        deliveryCost:
+          description: The delivery cost of the used vehicle
+          $ref: '#/components/schemas/DeliveryCostResponse'
+        totalDeliveryCosts:
+          description: The total delivery costs of the used vehicle
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        totalDeliveryCostsVat:
+          description: The total delivery costs VAT of the used vehicle
+          $ref: '#/components/schemas/MultiCurrencyValue'
+      description: The used vehicle information
+    CreateUsedCarQuoteRequest:
+      required:
+        - usedVehicle
+      type: object
+      properties:
+        customerId:
+          type: string
+          description: The ID of the customer
+          example: '600357'
+        legalEntityGroup:
+          description: Legal entity group of the customer that will be added to the quote after creation
+          $ref: '#/components/schemas/SimpleEnumValue'
+        catalogVehicleId:
+          type: string
+          description: The ID of the catalog vehicle. One of the `catalogVehicleId` or `catalogVehicleReference` parameters is required, but both cannot be set together.
+          example: '214760230'
+        catalogVehicleReference:
+          type: string
+          description: The reference of the catalog vehicle. One of the `catalogVehicleId` or `catalogVehicleReference` parameters is required, but both cannot be set together.
+          example: '815246020220706'
+        quotationTemplateId:
+          type: string
+          description: The ID of the quotation template
+          example: '100005'
+        numberOfVehicles:
+          minimum: 1
+          type: integer
+          description: The number of vehicles that will be ordered through the sales quote
+          format: int32
+          example: 2
+        term:
+          minimum: 0
+          type: number
+          description: The term on the car quote of the leasing agreement
+          format: double
+          example: 48
+        mileage:
+          minimum: 0
+          type: number
+          description: The maximum mileage of the car quote of the leasing agreement
+          format: double
+          example: 40000
+        customer:
+          description: The customer on the quote
+          $ref: '#/components/schemas/CustomerRequest'
+        usedVehicle:
+          description: Information about the used vehicle to make a sales quote for
+          $ref: '#/components/schemas/UsedVehicleInformationRequest'
+    DeliveryCostRequest:
+      type: object
+      properties:
+        deliveryCostWithVat:
+          minimum: 0
+          type: number
+          description: |-
+            The delivery cost of the used vehicle with VAT.
+            You may provide only one of the two delivery costs, either the one with VAT (deliveryCostWithVat), the one without VAT (deliveryCostWithoutVat) or none
+          format: double
+          example: 242
+        deliveryCostWithoutVat:
+          minimum: 0
+          type: number
+          description: |-
+            The delivery cost of the used vehicle without VAT.
+            You may provide only one of the two delivery costs, either the one with VAT (deliveryCostWithVat), the one without VAT (deliveryCostWithoutVat) or none
+          format: double
+          example: 200
+      description: The cost of the used vehicle to be delivered
+    SalesPriceRequest:
+      type: object
+      properties:
+        salesPriceWithVat:
+          minimum: 0
+          type: number
+          description: |-
+            The sales prices of the used vehicle with VAT.
+            You need to provide exactly one sales price, either the one with VAT (salesPriceWithVat) or the one without VAT (salesPriceWithoutVat)
+          format: double
+          example: 3000
+        salesPriceWithoutVat:
+          minimum: 0
+          type: number
+          description: |-
+            The sales prices of the used vehicle without VAT.
+            You need to provide exactly one sales price, either the one with VAT (salesPriceWithVat) or the one without VAT (salesPriceWithoutVat)
+          format: double
+          example: 2521
+      description: The sales price of the used vehicle
+    UsedVehicleInformationRequest:
+      required:
+        - firstRegistrationDate
+        - mileage
+        - salesPrice
+      type: object
+      properties:
+        firstRegistrationDate:
+          type: string
+          description: The date on which the used vehicle is first registered
+          format: date
+          example: '2026-04-02'
+        chassisNumber:
+          type: string
+          description: The chassis number of the used vehicle
+          example: ZA9EB9Z07FJ4C1CST
+        configurationDate:
+          type: string
+          description: The date when this vehicle was configured. You need to fill this property in when it's different from firstRegistrationDate. By default the value firstRegistrationDate will be used if this property is not filled in.
+          format: date
+          example: '2026-04-02'
+        mileage:
+          minimum: 0
+          type: number
+          description: The current mileage of the used vehicle
+          format: double
+          example: 2453874
+        requestedDeliveryDate:
+          type: string
+          description: The requested delivery date for the used vehicle
+          format: date
+          example: '2026-04-02'
+        description:
+          type: string
+          description: The description of the used vehicle
+          example: Stock LEXUS IS 220d 177 pk Business
+        salesPrice:
+          description: The sales price of the used vehicle
+          $ref: '#/components/schemas/SalesPriceRequest'
+        deliveryCost:
+          description: The cost of the used vehicle to be delivered
+          $ref: '#/components/schemas/DeliveryCostRequest'
+        nature:
+          description: The nature of the used vehicle
+          $ref: '#/components/schemas/SimpleEnumValue'
+      description: Information about the used vehicle to make a sales quote for
+    AbstractCondition:
+      type: object
+      description: A condition used in the validation
+      oneOf:
+        - $ref: '#/components/schemas/Condition'
+        - $ref: '#/components/schemas/AndCondition'
+        - $ref: '#/components/schemas/OrCondition'
+        - $ref: '#/components/schemas/NotCondition'
+    AgeUnit:
+      type: string
+      description: The unit of the age value
+      example: YEARS
+      enum:
+        - YEARS
+        - MONTHS
+        - DAYS
+        - HOURS
+        - MINUTES
+        - SECONDS
+    AgeUnitValue:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: The number of age units
+          format: int64
+          example: 18
+        unit:
+          description: The unit of the age value
+          $ref: '#/components/schemas/AgeUnit'
+      description: The age for the operator
+    AndCondition:
+      type: object
+      properties:
+        and:
+          type: array
+          description: The conditions to combine with the AND logical operator, an empty list of conditions evaluates to TRUE
+          items:
+            allOf: []
+            anyOf: []
+            oneOf:
+              - $ref: '#/components/schemas/Condition'
+              - $ref: '#/components/schemas/AndCondition'
+              - $ref: '#/components/schemas/OrCondition'
+              - $ref: '#/components/schemas/NotCondition'
+    Condition:
+      maxProperties: 1
+      minProperties: 1
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/OperatorContext'
+      description: A single condition element
+    ConditionalValidation:
+      type: object
+      properties:
+        .condition:
+          type: string
+          description: When this condition evaluates to true, the field should apply to the validation
+          example: MY_CONDITION
+        .validation:
+          type: string
+          description: The validation condition to which this field should apply, when the condition evaluates to true
+          example: MY_VALIDATION_CONDITION
+        .validationErrorMessage:
+          type: object
+          additionalProperties:
+            type: string
+            description: The custom error message in case the property validation is not correct. The property names will be an ISO 639-2 language code.
+          description: The custom error message in case the property validation is not correct. The property names will be an ISO 639-2 language code.
+      description: A conditional validation rule
+    DefaultValue:
+      type: object
+      properties:
+        string:
+          type: string
+          description: The text value to use as default
+          example: my paragraph
+        enumId:
+          type: string
+          description: The enumeration value to use as default
+          example: '800'
+        integer:
+          type: integer
+          description: The integer value to use as default
+          format: int32
+          example: 12347
+        date:
+          type: string
+          description: The date to use as default
+          format: date
+          example: '2026-04-02'
+        dateTime:
+          type: string
+          description: The date and time to use as default
+          format: date-time
+          example: '2026-04-02T12:05:56.503Z'
+        time:
+          description: The time to use as default
+          $ref: '#/components/schemas/LocalTime'
+        value:
+          type: object
+        long:
+          type: integer
+          description: The long value to use as default
+          format: int64
+          example: 15678468974132
+        double:
+          type: number
+          description: The double value to use as default
+          format: double
+          example: 15248.1337
+        boolean:
+          type: boolean
+          description: The boolean value to use as default
+          example: true
+      description: The default value that applies for this field when it is empty
+    Element:
+      type: object
+      properties:
+        path:
+          type: string
+          description: The relative path to the element starting from the collection that needs to be evaluated
+          example: startDate
+        type:
+          type: array
+          description: |
+            The ordered list of types corresponding to the elements of the condition path.
+            Example:
+
+            The condition path 'object.subobject.field' consists of 3 elements in a set order: 'object', 'subobject', and 'field'.
+
+            This means that this list will also have 3 elements where the first element will be the type of 'object',
+            the second element the type of 'subobject' and the last element the type of 'field'.
+          items:
+            $ref: '#/components/schemas/ValidationElementType'
+      description: The definition of the end element inside the collection
+    ElementRange:
+      type: object
+      properties:
+        isOpenEnded:
+          type: boolean
+          description: |
+            Indicates that the end of the range is open.
+            The start of the range is always closed.
+            Only integer numbers (8-/16-/32-/64-bit) and local dates support closed ends.
+            All comparable types are supported for open ends.
+          example: false
+          default: true
+        start:
+          description: The definition of the start element inside the collection
+          $ref: '#/components/schemas/Element'
+        end:
+          description: The definition of the end element inside the collection
+          $ref: '#/components/schemas/Element'
+      description: The element range information for the operator
+    EvaluatorContext:
+      type: object
+      properties:
+        regex:
+          type: string
+          description: The regular expression for the operator
+          example: ^[A-Za-z]{2,3}$
+        string:
+          type: string
+          description: The string value for the operator
+          example: alpha
+        strings:
+          type: array
+          description: The list of string values for the operator
+          items:
+            type: string
+            description: A string value for the operator
+            example: alpha
+        enumId:
+          type: string
+          description: The enumeration ID value for the operator
+          example: '6'
+        enumIds:
+          type: array
+          description: The list of enumeration IDs for the operator
+          items:
+            type: string
+            description: An enumeration ID value for the operator
+            example: '6'
+        enumGroupId:
+          type: string
+          description: The enumeration group ID value for the operator
+          example: '1002'
+        enumGroupIds:
+          type: array
+          description: The list of enumeration group IDs for the operator
+          items:
+            type: string
+            description: An enumeration group ID value for the operator
+            example: '1002'
+        enumerationTypeId:
+          type: string
+          description: 'The enumeration type ID (Miles back-office application: attribute type ID) value for the operator'
+          example: '114'
+        integer:
+          type: integer
+          description: The integer value for the operator
+          format: int32
+          example: 15678
+        integers:
+          type: array
+          description: The list of integers for the operator
+          items:
+            type: integer
+            description: An integer value for the operator
+            format: int32
+            example: 15678
+        longs:
+          type: array
+          description: The list of longs for the operator
+          items:
+            type: integer
+            description: A long value for the operator
+            format: int64
+            example: 15678468974132
+        age:
+          description: The age for the operator
+          $ref: '#/components/schemas/AgeUnitValue'
+        date:
+          type: string
+          description: The date for the operator
+          format: date
+          example: '2026-04-02'
+        dateTime:
+          type: string
+          description: The date time for the operator
+          format: date-time
+          example: '2026-04-02T12:05:56.504Z'
+        time:
+          type: string
+          description: The time for the operator
+          format: ISO 8601 hh:mm:ss
+        elementRange:
+          description: The element range information for the operator
+          $ref: '#/components/schemas/ElementRange'
+        unit:
+          type: string
+          description: The unit for DoubleUnitValue or IntegerUnitValue evaluations. This is field optional.
+          example: '4497'
+        long:
+          type: integer
+          description: The long value for the operator
+          format: int64
+          example: 15678468974132
+        double:
+          type: number
+          description: The floating-point decimal number value for the operator
+          format: double
+          example: 2500.87
+      description: The operator argument
+    LocalTime:
+      type: object
+      properties:
+        hour:
+          type: integer
+          format: int32
+        minute:
+          type: integer
+          format: int32
+        second:
+          type: integer
+          format: int32
+        nano:
+          type: integer
+          format: int32
+      description: The time to use as default
+      format: ISO 8601 hh:mm:ss
+    Mandatory:
+      type: string
+      description: Deprecated since 2025-06-06 in favor of '.validationRequirement'
+      deprecated: true
+      enum:
+        - REQUIRED
+        - CONDITIONAL
+        - OPTIONAL
+    NotCondition:
+      type: object
+      properties:
+        not:
+          type: object
+          description: A condition used in the validation
+          oneOf:
+            - $ref: '#/components/schemas/Condition'
+            - $ref: '#/components/schemas/AndCondition'
+            - $ref: '#/components/schemas/OrCondition'
+            - $ref: '#/components/schemas/NotCondition'
+    Operator:
+      type: string
+      description: The operator to use
+      enum:
+        - NOT_NULL
+        - IS_NULL
+        - NOT_EMPTY
+        - IS_EMPTY
+        - NOT_BLANK
+        - IS_BLANK
+        - REGEX
+        - EQUALS_IGNORE_CASE
+        - NOT_EQUALS_IGNORE_CASE
+        - IN_IGNORE_CASE
+        - NOT_IN_IGNORE_CASE
+        - IN
+        - NOT_IN
+        - IN_GROUP
+        - NOT_IN_GROUP
+        - IS_ENUMERATION_TYPE
+        - EQUALS
+        - NOT_EQUALS
+        - IS_TRUE
+        - IS_FALSE
+        - LOWER_THAN
+        - LOWER_THAN_EQUAL_TO
+        - GREATER_THAN
+        - GREATER_THAN_EQUAL_TO
+        - MIN_AGE
+        - MAX_AGE
+        - HAS_GAPS
+        - HAS_NO_GAPS
+        - HAS_OVERLAPS
+        - HAS_NO_OVERLAPS
+        - 'FALSE'
+        - 'TRUE'
+    OperatorContext:
+      maxProperties: 1
+      minProperties: 1
+      type: object
+      properties:
+        operator:
+          description: The operator to use
+          $ref: '#/components/schemas/Operator'
+        value:
+          description: The operator argument
+          $ref: '#/components/schemas/EvaluatorContext'
+        dynamicType:
+          type: string
+          description: |
+            Defines which type an abstract Value, dynamic attribute or qualifier should have:
+            - 1 / MULTI_LANGUAGE = MultiLanguageValue
+            - 2 / ENUM = EnumValue
+            - 3 / MULTI_CURRENCY = MultiCurrencyValue
+            - 4 / DOUBLE_UNIT = DoubleUnitValue
+            - 5 / INTEGER_UNIT = IntegerUnitValue
+            - 6 / STRING = StringValue
+            - 7 / INTEGER = IntegerValue
+            - 8 / DOUBLE = DoubleValue
+            - 9 / BOOLEAN = BooleanValue
+            - 11 / DATE = DateValue
+            - 12 / TIME = TimeValue
+            - 13 / DATE_TIME = DateTimeValue
+            - 14 / ZONED_DATE_TIME = ZonedDateTimeValue
+            - 15 / LONG = LongValue
+
+            Both the names and the numbers are allowed
+          example: '7'
+          enum:
+            - '1'
+            - MULTI_LANGUAGE
+            - '2'
+            - ENUM
+            - '3'
+            - MULTI_CURRENCY
+            - '4'
+            - DOUBLE_UNIT
+            - '5'
+            - INTEGER_UNIT
+            - '6'
+            - STRING
+            - '7'
+            - INTEGER
+            - '8'
+            - DOUBLE
+            - '9'
+            - BOOLEAN
+            - '11'
+            - DATE
+            - '12'
+            - TIME
+            - '13'
+            - DATE_TIME
+            - '14'
+            - ZONED_DATE_TIME
+            - '15'
+            - LONG
+        type:
+          type: array
+          description: |
+            The ordered list of types corresponding to the elements of the condition path.
+            Example:
+
+            The condition path 'object.subobject.field' consists of 3 elements in a set order: 'object', 'subobject', and 'field'.
+
+            This means that this list will also have 3 elements where the first element will be the type of 'object',
+            the second element the type of 'subobject' and the last element the type of 'field'.
+          items:
+            $ref: '#/components/schemas/ValidationElementType'
+      description: A single condition element
+    OrCondition:
+      type: object
+      properties:
+        or:
+          type: array
+          description: The conditions to combine with the OR logical operator, an empty list of conditions evaluates to FALSE
+          items:
+            allOf: []
+            anyOf: []
+            oneOf:
+              - $ref: '#/components/schemas/Condition'
+              - $ref: '#/components/schemas/AndCondition'
+              - $ref: '#/components/schemas/OrCondition'
+              - $ref: '#/components/schemas/NotCondition'
+    ValidationElementType:
+      type: object
+      properties:
+        value:
+          type: string
+          description: |-
+            Defines the type corresponding with the element
+
+            Possible types:
+            - An object name, for objects with a fixed set of fields
+            - Map (objects with dynamic keys)
+            - Enum (enumerations)
+            - String (text)
+            - Integer
+            - Number (decimal numbers)
+            - Boolean
+            - Time
+            - Date
+            - DateTime
+            - ZonedDateTime
+          example: EnumValue
+        isArray:
+          type: boolean
+          description: Defines if the element contains multiple values (`true`) or only a single value (`false`)
+          example: true
+          default: false
+        property:
+          type: string
+          description: |-
+            When the element contains a propety list selector, this fields will contain the type of the property.
+
+            Possible types:
+            - An object name, for objects with a fixed set of fields
+            - Map (objects with dynamic keys)
+            - Enum (enumerations)
+            - String (text)
+            - Integer
+            - Number (decimal numbers)
+            - Boolean
+            - Time
+            - Date
+            - DateTime
+            - ZonedDateTime
+          example: String
+      description: The type of an element in the condition path
+    ValidationPath:
+      maxProperties: 2147483647
+      type: object
+      properties:
+        .mandatory:
+          description: Deprecated since 2025-06-06 in favor of '.validationRequirement'
+          $ref: '#/components/schemas/Mandatory'
+        .validationRequirement:
+          description: The validation requirement for this field
+          $ref: '#/components/schemas/ValidationRequirement'
+        .condition:
+          type: string
+          description: The condition to use for the conditionally required check
+          example: MY_CONDITION
+        .validation:
+          type: string
+          description: The validation condition to which this field should apply
+          example: MY_VALIDATION_CONDITION
+        .default:
+          description: The default value that applies for this field when it is empty
+          $ref: '#/components/schemas/DefaultValue'
+        .type:
+          description: The type of the current element in the validation path
+          $ref: '#/components/schemas/ValidationElementType'
+        .mandatoryErrorMessage:
+          type: object
+          additionalProperties:
+            type: string
+            description: |
+              Deprecated since 2025-06-06 in favor of '.validationRequirementErrorMessage'.
+              Should and will be exactly the same content as `.mandatoryErrorMessage`.
+            deprecated: true
+          description: |
+            Deprecated since 2025-06-06 in favor of '.validationRequirementErrorMessage'.
+            Should and will be exactly the same content as `.mandatoryErrorMessage`.
+          deprecated: true
+        .validationRequirementErrorMessage:
+          type: object
+          additionalProperties:
+            type: string
+            description: The custom error message in case the property is (not) provided, according to the `.validationRequirement` rule. The property names will be an ISO 639-2 language code.
+          description: The custom error message in case the property is (not) provided, according to the `.validationRequirement` rule. The property names will be an ISO 639-2 language code.
+        .validationErrorMessage:
+          type: object
+          additionalProperties:
+            type: string
+            description: The custom error message in case the property validation is not correct. The property names will be an ISO 639-2 language code.
+          description: The custom error message in case the property validation is not correct. The property names will be an ISO 639-2 language code.
+        .conditionalValidation:
+          type: array
+          description: The list of conditional validation rules
+          items:
+            $ref: '#/components/schemas/ConditionalValidation'
+      additionalProperties:
+        $ref: '#/components/schemas/ValidationPath'
+      description: A path element to the element to evaluate
+    ValidationRequirement:
+      type: string
+      description: The validation requirement for this field
+      example: REQUIRED
+      enum:
+        - REQUIRED
+        - CONDITIONALLY
+        - OPTIONAL
+        - NOT_ALLOWED
+        - CONDITIONALLY_NOT_ALLOWED
+    ValidationRoot:
+      type: object
+      properties:
+        defaultLanguage:
+          type: string
+          description: The ISO language code of the fallback language for the error message. The language code should have been defined in the `supportedLanguages` set.
+          format: ISO 639-2
+          example: ENG
+        supportedLanguages:
+          uniqueItems: true
+          type: array
+          description: A not empty set of supported languages
+          items:
+            type: string
+            description: An ISO language code of a supported language
+            format: ISO 639-2
+            example: ENG
+        root:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ValidationPath'
+          description: All the validation paths
+        conditions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/AbstractCondition'
+          description: All the conditions used in the validations
+    ValidationRulesCategory:
+      type: string
+      enum:
+        - CREATE_CAR_QUOTE
+  securitySchemes:
+    Roles:
+      type: openIdConnect
+      description: Users need to have certain roles to be able to access certain API endpoints. If there are no roles defined for the endpoint, * is shown. This means that every authorized user has access to the endpoint.
+      openIdConnectUrl: ''
+x-tagGroups:
+  - tags:
+      - ''
+      - ValidationRules
+    name: User experience-oriented endpoints

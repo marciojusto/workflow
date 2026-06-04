@@ -1,0 +1,22 @@
+{
+  "name": "@mfs/refdata-loader",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "load": "tsx src/index.ts",
+    "verify": "tsx src/index.ts verify"
+  },
+  "dependencies": {
+    "mongodb": "^6.17.0",
+    "ofetch": "^1.4.1",
+    "commander": "^13.1.0",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "@types/node": "^22.0.0"
+  }
+}

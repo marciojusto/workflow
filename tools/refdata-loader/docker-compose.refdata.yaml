@@ -1,0 +1,96 @@
+services:
+  mongo-refdev:
+    image: mongo:7
+    container_name: mongo-refdev
+    restart: always
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27019"]
+    ports:
+      - "27019:27019"
+    volumes:
+      - mongo_refdev_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27019/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  mongo-refdev-init:
+    image: mongo:7
+    container_name: mongo-refdev-init
+    depends_on:
+      mongo-refdev:
+        condition: service_healthy
+    command:
+      - bash
+      - -c
+      - |
+        until mongosh --host mongo-refdev:27019 --eval 'db.adminCommand("ping")' &>/dev/null; do sleep 2; done
+        mongosh --host mongo-refdev:27019 --eval '
+          try {
+            var status = rs.status();
+            if (status.ok !== 1) throw new Error("init required");
+          } catch (e) {
+            rs.initiate({
+              _id: "rs0",
+              members: [{ _id: 0, host: "mongo-refdev:27019" }]
+            });
+          }
+        '
+
+  mongo-refasy:
+    image: mongo:7
+    container_name: mongo-refasy
+    restart: always
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27020"]
+    ports:
+      - "27020:27020"
+    volumes:
+      - mongo_refasy_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27020/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  mongo-refasy-init:
+    image: mongo:7
+    container_name: mongo-refasy-init
+    depends_on:
+      mongo-refasy:
+        condition: service_healthy
+    command:
+      - bash
+      - -c
+      - |
+        until mongosh --host mongo-refasy:27020 --eval 'db.adminCommand("ping")' &>/dev/null; do sleep 2; done
+        mongosh --host mongo-refasy:27020 --eval '
+          try {
+            var status = rs.status();
+            if (status.ok !== 1) throw new Error("init required");
+          } catch (e) {
+            rs.initiate({
+              _id: "rs0",
+              members: [{ _id: 0, host: "mongo-refasy:27020" }]
+            });
+          }
+        '
+
+  mongo-express-refdata:
+    image: mongo-express:latest
+    container_name: mongo-express-refdata
+    restart: always
+    depends_on:
+      mongo-refdev:
+        condition: service_healthy
+      mongo-refasy:
+        condition: service_healthy
+    environment:
+      ME_CONFIG_MONGODB_URL: "mongodb://mongo-refdev:27019,mongo-refasy:27020/?replicaSet=rs0"
+      ME_CONFIG_BASICAUTH_USERNAME: "admin"
+      ME_CONFIG_BASICAUTH_PASSWORD: "admin"
+    ports:
+      - "8082:8081"
+
+volumes:
+  mongo_refdev_data:
+  mongo_refasy_data:

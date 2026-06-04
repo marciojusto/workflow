@@ -1,0 +1,3982 @@
+openapi: 3.0.1
+info:
+  title: miles-catalog
+  description: "This service may be used to retrieve for\n\t\t\tmakes, models, catalog vehicles and catalog options. Also generic\n\t\t\toptions can be retrieved for colors and accessories. Finally, also\n\t\t\tvehicle images are available through this service."
+  contact:
+    url: https://www.sofico.global
+  license:
+    name: Sofico
+    url: https://www.sofico.global
+  version: 2.59.1
+  x-milesServiceType: functional
+  x-logo:
+    url: https://www.sofico.global/sofico.svg
+    altText: Sofico logo
+paths:
+  /accessories/generic-options:
+    get:
+      summary: Find generic options
+      description: 'Deprecated: Use findGenericOptions with the correct optionType filter'
+      operationId: findAccessoryGenericOptions
+      parameters:
+        - name: generic_option_id
+          in: query
+          description: ID(s) of the generic option(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: option_type_id
+          in: query
+          description: ID(s) of the option type(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: description
+          in: query
+          description: Wildcard for the description of the generic option
+          schema:
+            type: string
+        - name: count
+          in: query
+          description: Maximum number of accessory generic options to be displayed
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          description: Number of accessory generic options to skip before selecting accessory generic options
+          schema:
+            type: integer
+            format: int32
+        - name: sort_by
+          in: query
+          description: Sorting to be applied on the list of accessory generic options
+          schema:
+            $ref: '#/components/schemas/SortBy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindAccessoryGenericOptionsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - mobility_user
+  /catalog-vehicles/{catalog_vehicle_id}/catalog-options:
+    get:
+      summary: Find catalog options
+      description: This endpoint retrieves a list of catalog options.
+      operationId: findCatalogOptions
+      parameters:
+        - name: catalog_vehicle_id
+          in: path
+          description: ID of the catalog vehicle
+          required: true
+          schema:
+            type: string
+        - name: catalog_option_id
+          in: query
+          description: ID(s) of the catalog option(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: option_type_id
+          in: query
+          description: ID(s) of the option type(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: option_use_id
+          in: query
+          description: ID(s) of the option usage(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: option_code
+          in: query
+          description: Wildcard for the option code
+          schema:
+            type: string
+        - name: description
+          in: query
+          description: Wildcard for the description of the catalog option
+          schema:
+            type: string
+        - name: is_standard
+          in: query
+          description: Whether or not the catalog option is standard
+          schema:
+            type: boolean
+        - name: quotation_template_id
+          in: query
+          description: ID of the quotation template
+          schema:
+            type: string
+        - name: dynamic_attribute
+          in: query
+          description: List of dynamic attribute filters (<attribute_id>|<value>)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: only_featured_options
+          in: query
+          description: |
+            Indicates whether excluded catalog options should be fetched based on the linked car policy.
+            If it is set to false (default), then the car policy is checked and the excluded options are disabled.
+            If it is set to true, then all the catalog options are fetched with no additional checks.
+          schema:
+            type: boolean
+            default: false
+        - name: count
+          in: query
+          description: Maximum number of catalog options to be displayed
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          description: Number of catalog options to skip before selecting catalog options
+          schema:
+            type: integer
+            format: int32
+        - name: sort_by
+          in: query
+          description: Sorting to be applied on the list of catalog options
+          schema:
+            $ref: '#/components/schemas/SortBy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindCatalogOptionsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - mobility_user
+            - external_vehicle_configurator
+            - retail_prospect
+  /catalog-vehicles:
+    get:
+      summary: Find catalog vehicles
+      description: This endpoint retrieves a list of catalog vehicles.
+      operationId: findCatalogVehicles
+      parameters:
+        - name: catalog_vehicle_id
+          in: query
+          description: ID(s) of the catalog vehicle(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: available_date
+          in: query
+          description: 'Date on which the catalog vehicle should be available (format: yyyy-MM-dd)'
+          schema:
+            type: string
+            default: today
+        - name: model_year_lower_limit
+          in: query
+          description: 'Date from which the release date of the model is available, specified date included (format: yyyy-MM-dd)'
+          schema:
+            type: string
+        - name: model_year_upper_limit
+          in: query
+          description: 'Date until which the release date of the model is available, specified date included (format: yyyy-MM-dd)'
+          schema:
+            type: string
+        - name: include_expired
+          in: query
+          description: |-
+            Indicates whether the expired catalog vehicles should be included in the response or not.
+             If this property is set to true, then the vehicles will be retrieved without taking the available_date parameter into account.
+          schema:
+            type: boolean
+            default: false
+          example: true
+        - name: co2_emission_max
+          in: query
+          description: Deprecated, use co2EmissionUpperLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: co2_emission_upper_limit
+          in: query
+          description: CO2 emission upper limit
+          schema:
+            type: integer
+            format: int32
+        - name: din_hp_min
+          in: query
+          description: Deprecated, use dinHpLowerLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: din_hp_max
+          in: query
+          description: Deprecated, use dinHpUpperLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: din_hp_lower_limit
+          in: query
+          description: dinHp lower limit
+          schema:
+            type: integer
+            format: int32
+        - name: din_hp_upper_limit
+          in: query
+          description: dinHp upper limit
+          schema:
+            type: integer
+            format: int32
+        - name: battery_capacity_lower_limit
+          in: query
+          description: The lower limit of the battery capacity in kWh of the linked catalog vehicles
+          schema:
+            type: number
+            format: double
+          example: 25
+        - name: battery_capacity_upper_limit
+          in: query
+          description: The upper limit of the battery capacity in kWh of the linked catalog vehicles
+          schema:
+            type: number
+            format: double
+          example: 100
+        - name: battery_range_lower_limit
+          in: query
+          description: battery range lower limit
+          schema:
+            type: number
+            format: double
+          example: 200
+        - name: battery_range_upper_limit
+          in: query
+          description: battery range upper limit
+          schema:
+            type: number
+            format: double
+          example: 250
+        - name: maximum_number_of_passengers_min
+          in: query
+          description: Deprecated, use maximumSeatingCapacityLowerLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: maximum_number_of_passengers_max
+          in: query
+          description: Deprecated, use maximumSeatingCapacityUpperLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: seating_capacity_lower_limit
+          in: query
+          description: Lower limit seating capacity
+          schema:
+            type: integer
+            format: int32
+          example: 1
+        - name: seating_capacity_upper_limit
+          in: query
+          description: Upper limit seating capacity
+          schema:
+            type: integer
+            format: int32
+          example: 2
+        - name: maximum_seating_capacity_lower_limit
+          in: query
+          description: Lower limit maximum seating capacity
+          schema:
+            type: integer
+            format: int32
+        - name: maximum_seating_capacity_upper_limit
+          in: query
+          description: Upper limit maximum seating capacity
+          schema:
+            type: integer
+            format: int32
+        - name: type_name
+          in: query
+          description: Wildcard for the type name
+          schema:
+            type: string
+        - name: body_style_id
+          in: query
+          description: ID(s) of the body style(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: emission_norm_id
+          in: query
+          description: ID(s) of the emission norm(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: energy_label_id
+          in: query
+          description: ID(s) of the energy label(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: engine_fuel_type_id
+          in: query
+          description: ID(s) of the engine fuel type(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: engine_fuel_type_group_id
+          in: query
+          description: ID(s) of engine fuel type group(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: transmission_id
+          in: query
+          description: ID(s) of the transmission(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: model_id
+          in: query
+          description: ID(s) of the model(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: make_id
+          in: query
+          description: ID(s) of the make(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: country_id
+          in: query
+          description: ID(s) of the country(ies)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: lease_price_min
+          in: query
+          description: Minimum leasing price
+          schema:
+            type: number
+            format: double
+        - name: lease_price_max
+          in: query
+          description: Maximum leasing price
+          schema:
+            type: number
+            format: double
+        - name: customer_id
+          in: query
+          description: ID of the customer
+          schema:
+            type: string
+        - name: dynamic_attribute
+          in: query
+          description: List of dynamic attribute filters (<attribute_id>|<value>)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: model_dynamic_attribute
+          in: query
+          description: List of dynamic attribute filters on catalog vehicle model (<attribute_id>|<value>)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: transmission_group_id
+          in: query
+          description: ID(s) of the transmission group(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: powertrain_id
+          in: query
+          description: ID(s) of the powertrain(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: quotation_template_id
+          in: query
+          description: ID of the quotation template
+          schema:
+            type: string
+        - name: mileage
+          in: query
+          description: Mileage for which the catalog vehicle is quoted
+          schema:
+            type: number
+            format: double
+        - name: term
+          in: query
+          description: Term for which the catalog vehicle is quoted
+          schema:
+            type: number
+            format: double
+        - name: car_policy_id
+          in: query
+          description: ID of the car policy
+          schema:
+            type: string
+        - name: ignore_car_policy
+          in: query
+          description: Ignore catalog vehicle restrictions of car policy
+          schema:
+            type: boolean
+            default: false
+        - name: driver_id
+          in: query
+          description: ID of the driver
+          schema:
+            type: string
+        - name: vehicle_nature_id
+          in: query
+          description: ID(s) of the vehicle nature(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: number_of_doors_id
+          in: query
+          description: ID(s) of the number of door(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: drive_id
+          in: query
+          description: ID(s) of the drive(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: vehicle_status_id
+          in: query
+          description: ID(s) of the vehicle status(es). Include stock and include used parameters will be ignored if this parameter is populated.
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: code
+          in: query
+          description: code
+          schema:
+            type: string
+          example: 22A1PP2A5HMZJB0A0D0
+        - name: reference1
+          in: query
+          description: reference1
+          schema:
+            type: string
+          example: '708201320211207'
+        - name: reference2
+          in: query
+          description: reference2
+          schema:
+            type: string
+          example: '708201330'
+        - name: reference3
+          in: query
+          description: reference3
+          schema:
+            type: string
+          example: '7082013'
+        - name: trim_level
+          in: query
+          description: trim level
+          schema:
+            type: string
+          example: '708201320211207'
+        - name: include_stock
+          in: query
+          description: Whether the stock catalog vehicles should be included in the response or not.
+          schema:
+            type: boolean
+            default: false
+        - name: include_used
+          in: query
+          description: Indicates whether the used catalog vehicles should be included in the response
+          schema:
+            type: boolean
+            default: false
+        - name: include_active
+          in: query
+          description: Indicates whether the active catalog vehicles should be included in the response
+          schema:
+            type: boolean
+            default: false
+        - name: count
+          in: query
+          description: Maximum number of catalog vehicles to be displayed
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          description: The number of catalog vehicles to exclude before returning the collection
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+        - name: sort_by
+          in: query
+          description: Sorting to be applied on the list of catalog vehicles
+          schema:
+            $ref: '#/components/schemas/SortBy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindCatalogVehiclesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - mobility_user
+            - backoffice_user
+            - retail_prospect
+  /catalog-vehicles/searches:
+    post:
+      summary: Find catalog vehicles
+      description: This endpoint retrieves a list catalog vehicles filtered by vehicle filters.
+      operationId: findCatalogVehiclesByVehicleFilters
+      requestBody:
+        description: Data required to find catalog vehicles
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindCatalogVehiclesRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindCatalogVehiclesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - promotion_user
+            - promotion_manager
+            - dealer_manager
+            - external_vehicle_configurator
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - retail_prospect
+  /colors/generic-options:
+    get:
+      summary: Find generic options
+      description: 'Deprecated: Use findGenericOptions with the correct optionType filter'
+      operationId: findColorGenericOptions
+      parameters:
+        - name: generic_option_id
+          in: query
+          description: ID(s) of the generic option(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: description
+          in: query
+          description: Wildcard for the description of the generic option
+          schema:
+            type: string
+        - name: count
+          in: query
+          description: Maximum number of color generic options to be displayed
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          description: Number of color generic options to skip before selecting color generic options
+          schema:
+            type: integer
+            format: int32
+        - name: sort_by
+          in: query
+          description: Sorting to be applied on the list of color generic options
+          schema:
+            $ref: '#/components/schemas/SortBy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindColorGenericOptionsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - mobility_user
+  /generic-options:
+    get:
+      summary: Find generic options
+      description: This endpoint retrieves a list of generic options.
+      operationId: findGenericOptions
+      parameters:
+        - name: available_date
+          in: query
+          description: 'Date on which the generic option should be available (format: yyyy-MM-dd)'
+          schema:
+            type: string
+            default: today
+        - name: generic_option_id
+          in: query
+          description: ID(s) of the generic option(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: option_type_id
+          in: query
+          description: ID(s) of the option type(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: description
+          in: query
+          description: Wildcard for the description of the generic option
+          schema:
+            type: string
+        - name: count
+          in: query
+          description: Maximum number of generic options to be displayed
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          description: Number of generic options to skip before selecting generic options
+          schema:
+            type: integer
+            format: int32
+        - name: sort_by
+          in: query
+          description: Sorting to be applied on the list of generic options
+          schema:
+            $ref: '#/components/schemas/SortBy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindGenericOptionsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - mobility_user
+            - promotion_manager
+            - promotion_user
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - retail_prospect
+  /makes:
+    get:
+      summary: Find makes
+      description: This endpoint retrieves a list of makes.
+      operationId: findMakes
+      parameters:
+        - name: make_id
+          in: query
+          description: ID(s) of the make(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          description: Wildcard for the name of the make
+          schema:
+            type: string
+        - name: available_date
+          in: query
+          description: 'Date on which the make should be available (format: yyyy-MM-dd)'
+          schema:
+            type: string
+            default: today
+        - name: quotation_template_id
+          in: query
+          description: ID of the quotation template used for the quoting flow
+          schema:
+            type: string
+        - name: car_policy_id
+          in: query
+          description: ID of the car policy
+          schema:
+            type: string
+        - name: ignore_car_policy
+          in: query
+          description: Ignore catalog vehicle restrictions of car policy
+          schema:
+            type: boolean
+            default: false
+        - name: driver_id
+          in: query
+          description: ID of the driver
+          schema:
+            type: string
+        - name: vehicle_nature_id
+          in: query
+          description: ID(s) of the vehicle nature(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: include_stock
+          in: query
+          description: |-
+            Whether the stock makes should be included in the response or not.
+            It's not possible to both select 'include_stock' and 'include_used'.
+          schema:
+            type: boolean
+            default: false
+        - name: include_used
+          in: query
+          description: |-
+            Whether the used makes should be included in the response or not.
+            It's not possible to both select 'include_stock' and 'include_used'.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindMakesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - external_vehicle_configurator
+            - broker_salesperson
+            - mobility_user
+            - retail_prospect
+  /models:
+    get:
+      summary: Find models
+      description: This endpoint retrieves a list of models.
+      operationId: findModels
+      parameters:
+        - name: model_id
+          in: query
+          description: ID(s) of the model(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          description: Wildcard for the name of the model
+          schema:
+            type: string
+        - name: make_id
+          in: query
+          description: ID(s) of the make(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: available_date
+          in: query
+          description: 'Date on which the model should be available (format: yyyy-MM-dd)'
+          schema:
+            type: string
+            default: today
+        - name: model_year_lower_limit
+          in: query
+          description: 'Date from which the release date of the linked catalog vehicles is available, specified date included (format: yyyy-MM-dd)'
+          schema:
+            type: string
+        - name: model_year_upper_limit
+          in: query
+          description: 'Date until which the release date of the linked catalog vehicles is available, specified date included (format: yyyy-MM-dd)'
+          schema:
+            type: string
+        - name: battery_capacity_lower_limit
+          in: query
+          description: The lower limit of the battery capacity in kWh of the linked catalog vehicles
+          schema:
+            type: number
+            format: double
+          example: 25
+        - name: battery_capacity_upper_limit
+          in: query
+          description: The upper limit of the battery capacity in kWh of the linked catalog vehicles
+          schema:
+            type: number
+            format: double
+          example: 100
+        - name: battery_range_lower_limit
+          in: query
+          description: Battery range lower limit
+          schema:
+            type: number
+            format: double
+        - name: battery_range_upper_limit
+          in: query
+          description: Battery range upper limit
+          schema:
+            type: number
+            format: double
+        - name: body_style_id
+          in: query
+          description: ID(s) of the body style(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: vehicle_category_id
+          in: query
+          description: ID(s) of the catalog vehicle category(ies)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: cc_max
+          in: query
+          description: Maximum cc
+          schema:
+            type: number
+            format: double
+        - name: co2_emission_max
+          in: query
+          description: Deprecated, use co2EmissionUpperLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: co2_emission_upper_limit
+          in: query
+          description: CO2 emission upper limit
+          schema:
+            type: integer
+            format: int32
+        - name: din_hp_min
+          in: query
+          description: Deprecated, use dinHpLowerLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: din_hp_max
+          in: query
+          description: Deprecated, use dinHpUpperLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: din_hp_lower_limit
+          in: query
+          description: dinHp lower limit
+          schema:
+            type: integer
+            format: int32
+        - name: din_hp_upper_limit
+          in: query
+          description: dinHp upper limit
+          schema:
+            type: integer
+            format: int32
+        - name: drive_id
+          in: query
+          description: ID(s) of the drive(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: emission_norm_id
+          in: query
+          description: ID(s) of the emission norm(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: energy_label_id
+          in: query
+          description: ID(s) of the energy label(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: engine_fuel_type_id
+          in: query
+          description: ID(s) of the engine fuel type(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: engine_fuel_type_group_id
+          in: query
+          description: ID(s) of the engine fuel type group(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: fiscal_power
+          in: query
+          description: Minimum fiscalPower
+          schema:
+            type: integer
+            format: int32
+        - name: kw
+          in: query
+          description: Minimum kW
+          schema:
+            type: number
+            format: double
+        - name: maximum_number_of_passengers_min
+          in: query
+          description: Deprecated, use maximumSeatingCapacityLowerLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: maximum_number_of_passengers_max
+          in: query
+          description: Deprecated, use maximumSeatingCapacityUpperLimit instead
+          deprecated: true
+          schema:
+            type: integer
+            format: int32
+        - name: maximum_seating_capacity_lower_limit
+          in: query
+          description: Lower limit maximum seating capacity
+          schema:
+            type: integer
+            format: int32
+        - name: maximum_seating_capacity_upper_limit
+          in: query
+          description: Upper limit maximum seating capacity
+          schema:
+            type: integer
+            format: int32
+        - name: vehicle_nature_id
+          in: query
+          description: ID(s) of the vehicle nature(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: transmission_id
+          in: query
+          description: ID(s) of the catalog vehicle transmission(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: country_id
+          in: query
+          description: ID(s) of the country(ies)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: customer_id
+          in: query
+          description: ID of the customer
+          schema:
+            type: string
+        - name: lease_price_min
+          in: query
+          description: Minimum leasing price
+          schema:
+            type: number
+            format: double
+        - name: lease_price_max
+          in: query
+          description: Maximum leasing price
+          schema:
+            type: number
+            format: double
+        - name: dynamic_attribute
+          in: query
+          description: List of dynamic attribute filters (<attribute_id>|<value>)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: transmission_group_id
+          in: query
+          description: ID(s) of the transmission group(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: powertrain_id
+          in: query
+          description: ID(s) of the powertrain(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: quotation_template_id
+          in: query
+          description: ID of the quotation template
+          schema:
+            type: string
+        - name: mileage
+          in: query
+          description: Mileage for which the catalog vehicle is quoted
+          schema:
+            type: number
+            format: double
+        - name: term
+          in: query
+          description: Term for which the catalog vehicle is quoted
+          schema:
+            type: number
+            format: double
+        - name: car_policy_id
+          in: query
+          description: ID of the car policy
+          schema:
+            type: string
+        - name: ignore_car_policy
+          in: query
+          description: Ignore model restrictions of car policy
+          schema:
+            type: boolean
+            default: false
+        - name: driver_id
+          in: query
+          description: ID of the driver
+          schema:
+            type: string
+        - name: include_stock
+          in: query
+          description: |-
+            Whether the stock models should be included in the response or not.
+            It's not possible to both select 'include_stock' and 'include_used'.
+          schema:
+            type: boolean
+            default: false
+        - name: include_used
+          in: query
+          description: |-
+            Whether the used models should be included in the response or not.
+            It's not possible to both select 'include_stock' and 'include_used'.
+          schema:
+            type: boolean
+            default: false
+        - name: enrich_catalog_vehicles
+          in: query
+          description: If set to true, the response will always be enriched. If set to false, the response will only be enriched if the quotation_template_id or car_policy_id parameter is specified.
+          schema:
+            type: boolean
+            default: false
+        - name: include_expired
+          in: query
+          description: |-
+            Indicates whether the expired catalog vehicles should be included in the response.
+             If this property is set to 'true', the vehicles will be retrieved without taking the `available_date` parameter into account.
+          schema:
+            type: boolean
+            default: false
+          example: true
+        - name: count
+          in: query
+          description: Maximum number of models to be displayed
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          description: Number of models to skip before selecting models
+          schema:
+            type: integer
+            format: int32
+        - name: sort_by
+          in: query
+          description: Sorting to be applied on the list of models
+          schema:
+            $ref: '#/components/schemas/SortBy'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindModelsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - mobility_user
+            - retail_prospect
+  /models/searches:
+    post:
+      summary: Find models
+      description: This endpoint retrieves a list models filtered by vehicle filters.
+      operationId: findModelsByVehicleFilters
+      requestBody:
+        description: Data required to find models
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindModelsRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindModelsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - retail_prospect
+  /catalog-vehicles/{catalog_vehicle_id}/technical-vehicle-specifications:
+    get:
+      summary: Find technical vehicle specifications
+      description: This endpoint retrieves a list of technical vehicle specifications.
+      operationId: findTechnicalVehicleSpecifications
+      parameters:
+        - name: catalog_vehicle_id
+          in: path
+          description: ID of the catalog vehicle
+          required: true
+          schema:
+            type: string
+        - name: technical_vehicle_specification_id
+          in: query
+          description: ID(s) of the technical vehicle specification(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: technical_vehicle_specification_type_id
+          in: query
+          description: ID(s) of the technical vehicle specification type(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindTechnicalVehicleSpecificationsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - mobility_user
+  /catalog-vehicles/trimline-mappings/searches:
+    post:
+      summary: Find vehicle mappings
+      description: This endpoint retrieves the mappings for the requested vehicle code and option codes.
+      operationId: findTrimlineMappings
+      requestBody:
+        description: The find parameters with which to search for the correct catalog vehicle based on the option codes
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrimlineMappingsSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrimlineMappingsSearchResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      security:
+        - Roles:
+            - '*'
+  /catalog-options/{catalog_option_id}:
+    get:
+      summary: Get catalog option
+      description: This endpoint retrieves a catalog option.
+      operationId: getCatalogOption
+      parameters:
+        - name: catalog_option_id
+          in: path
+          description: ID of the catalog option
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogOption'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - mobility_user
+            - retail_prospect
+  /catalog-vehicles/{catalog_vehicle_id}:
+    get:
+      summary: Get catalog vehicle
+      description: This endpoint retrieves information about a specific catalog vehicle.
+      operationId: getCatalogVehicle
+      parameters:
+        - name: catalog_vehicle_id
+          in: path
+          description: ID of the catalog vehicle
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogVehicle'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - external_vehicle_configurator
+            - broker_salesperson
+            - mobility_user
+            - retail_prospect
+  /vehicle-images/{vehicle_reference}:
+    get:
+      summary: Download default vehicle image
+      description: This endpoint retrieves the main image for a vehicle.
+      operationId: getDefaultVehicleImage
+      parameters:
+        - name: vehicle_reference
+          in: path
+          description: Reference of the vehicle
+          required: true
+          schema:
+            pattern: .*
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - mobility_user
+  /vehicle-images/{vehicle_reference}/file/{filename}:
+    get:
+      summary: Download vehicle image
+      description: This endpoint retrieves the specified image for a vehicle.
+      operationId: getVehicleImage
+      parameters:
+        - name: vehicle_reference
+          in: path
+          description: Reference of the vehicle
+          required: true
+          schema:
+            pattern: .+
+            type: string
+        - name: filename
+          in: path
+          description: Name of the file
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - mobility_user
+  /vehicle-images/{vehicle_reference}/list:
+    get:
+      summary: List images
+      description: This endpoint retrieves a list of all images for a catalog vehicle.
+      operationId: getVehicleImages
+      parameters:
+        - name: vehicle_reference
+          in: path
+          description: Reference of the vehicle
+          required: true
+          schema:
+            pattern: .+
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleImagesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - mobility_user
+  /vehicle-lifestages:
+    get:
+      summary: List vehicle lifestages
+      description: This endpoint retrieves all lifestages of a vehicle. It will indicate for each lifestage if it is configured.
+      operationId: getVehicleLifestages
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindVehicleLifestagesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+  /filters:
+    get:
+      summary: List filters
+      description: This endpoint retrieves a list of filters with their possible values.
+      operationId: listFilters
+      parameters:
+        - name: filter_id
+          in: query
+          description: ID(s) of the filter(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: quotation_template_id
+          in: query
+          description: ID of the quotation template used for the quoting flow
+          schema:
+            type: string
+        - name: car_policy_id
+          in: query
+          description: ID of the car policy
+          schema:
+            type: string
+        - name: ignore_car_policy
+          in: query
+          description: Ignore catalog vehicle restrictions of car policy
+          schema:
+            type: boolean
+            default: false
+        - name: driver_id
+          in: query
+          description: ID of the driver
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListFiltersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_manager
+            - mobility_manager_assistant
+            - dealer_manager
+            - dealer_salesperson
+            - broker_manager
+            - broker_salesperson
+            - mobility_user
+            - retail_prospect
+components:
+  schemas:
+    AbstractValue:
+      type: object
+      description: An object that contains the actual value
+    DynamicAttributeValue:
+      title: DynamicAttributeValue
+      type: object
+      properties:
+        valueType:
+          type: integer
+          description: |
+            Based on this integer the 'value' will consist of a value matching these types: 
+             * 1  = MultiLanguageValue 
+             * 2  = EnumValue 
+             * 3  = MultiCurrencyValue 
+             * 4  = DoubleUnitValue 
+             * 5  = IntegerUnitValue 
+             * 6  = StringValue 
+             * 7  = IntegerValue 
+             * 8  = DoubleValue 
+             * 9  = BooleanValue 
+             * 10 = UnnamedValue 
+             * 11 = DateValue 
+             * 12 = TimeValue 
+             * 13 = DateTimeValue 
+             * 14 = ZonedDateTimeValue 
+             * 15 = LongValue 
+          format: int32
+          example: 7
+        value:
+          description: An object that contains the actual value
+          $ref: '#/components/schemas/AbstractValue'
+        sysRepAttributeId:
+          type: string
+          description: The Miles back-office application ID that describes the attribute
+      description: Miles API v1 representation of a dynamic attribute value.It has a 'valueType' as a discriminator for the actual 'value'.The 'sysRepAttributeId' identifies which attribute value is represented.
+    EnumValue:
+      title: EnumValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID
+          example: '100002'
+        attributeTypeId:
+          type: string
+          description: ' The ID of the attribute type'
+          example: '237'
+        enumGroupId:
+          type: string
+          description: This will be represented as a separate attribute value
+          example: '1350'
+          deprecated: true
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '24379'
+        translation:
+          type: string
+          description: The translation of the enumeration ID in human-readable format
+          example: Request
+        enabled:
+          type: boolean
+          description: Indicates whether this object can still be used
+          example: true
+      description: Miles API v1 representation of an enum value. It contains additional values representing the attribute type and multi-language context.
+    FindAccessoryGenericOption:
+      type: object
+      properties:
+        genericOptionId:
+          type: string
+          description: The ID of the accessory generic option
+          example: '9'
+        availableFrom:
+          type: string
+          description: The start date from which the accessory generic option is available
+          format: date
+          example: '2026-03-20'
+        availableTo:
+          type: string
+          description: The end date to which the accessory generic option is available
+          format: date
+          example: '2026-03-20'
+        description:
+          description: The description of the accessory description option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        checkPresence:
+          type: boolean
+          description: If the presence of the accessory generic option must be checked
+          example: false
+        optionType:
+          description: The option type of the accessory generic option
+          $ref: '#/components/schemas/EnumValue'
+        reference:
+          type: string
+          description: The reference of the accessory generic option
+          example: Blue
+        residualValueCoefficient:
+          type: number
+          description: The residual value coefficient of the accessory generic option
+          format: double
+          example: 1
+        residualValuePercentage:
+          type: number
+          description: The residual value percentage of the accessory generic option
+          format: double
+          example: 0
+        qualifier1:
+          description: The first qualifier of the accessory generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        qualifier2:
+          description: The second qualifier of the accessory generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        qualifier3:
+          description: The third qualifier of the accessory generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        descriptionOverridable:
+          type: boolean
+          description: Indicates whether the description of the accessory generic option is overridable
+          example: false
+        optionCategory:
+          description: The category of the generic option
+          $ref: '#/components/schemas/EnumValue'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: An accessory generic options contained by this response
+    FindAccessoryGenericOptionsResponse:
+      type: object
+      properties:
+        genericOptions:
+          type: array
+          description: The list of accessory generic options
+          items:
+            $ref: '#/components/schemas/FindAccessoryGenericOption'
+        totalCount:
+          type: integer
+          description: The number of accessory generic options
+          format: int64
+    MultiLanguageValue:
+      title: MultiLanguageValue
+      type: object
+      properties:
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '170392'
+        translation:
+          type: string
+          description: The translation of the multi-language ID in human-readable format
+          example: Hatchback
+      description: Miles API v1 representation of a translated string value.
+    QualifierDefinition:
+      title: QualifierDefinition
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the qualifier definition
+          example: Vehicle category
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '89653'
+        qualifierType:
+          type: string
+          description: The qualifier type ID
+          example: '113'
+        defaultValueType:
+          type: integer
+          description: |
+            Based on this integer the 'defaultValue' will consist of a value matching these types: 
+             * 1  = MultiLanguageValue 
+             * 2  = EnumValue 
+             * 3  = MultiCurrencyValue 
+             * 4  = DoubleUnitValue 
+             * 5  = IntegerUnitValue 
+             * 6  = StringValue 
+             * 7  = IntegerValue 
+             * 8  = DoubleValue 
+             * 9  = BooleanValue 
+             * 10 = UnnamedValue 
+             * 11 = DateValue 
+             * 12 = TimeValue 
+             * 13 = DateTimeValue 
+             * 14 = ZonedDateTimeValue 
+             * 15 = LongValue 
+          format: int32
+          example: 7
+        defaultValue:
+          description: An object that contains the actual value
+          $ref: '#/components/schemas/AbstractValue'
+        value:
+          $ref: '#/components/schemas/AbstractValue'
+        translation:
+          type: string
+        valueType:
+          type: integer
+          format: int32
+      description: Miles API v1 representation of a qualifier definition value.
+    SortBy:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The key used for sorting
+          example: name
+        order:
+          description: The sorting order, by default it is ascending
+          $ref: '#/components/schemas/SortOrder'
+      description: The field and direction used to sort
+    SortOrder:
+      type: string
+      description: The sorting order, by default it is ascending
+      example: ASC
+      default: ASC
+      enum:
+        - ASC
+        - DESC
+    ExceptionInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/problems/microservices/service-unavailable
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Service Unavailable
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: The requested service is not available.
+        message:
+          description: Message objects containing translation information
+          $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '34898219'
+    FindCatalogOption:
+      type: object
+      properties:
+        catalogOptionId:
+          type: string
+          description: The ID of the catalog option
+          example: '1000000'
+        optionType:
+          description: The option type of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        optionUse:
+          description: The option use of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        optionCode:
+          type: string
+          description: The delivery cost of the catalog option
+          example: LR
+        description:
+          description: The description of the catalog option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        annotation:
+          description: The annotation of the catalog option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        reference:
+          type: string
+          description: The reference of the catalog option
+          example: 9e72849d-03f9-4a59-be77-fbd5375e59e5
+        isStandard:
+          type: boolean
+          description: If the catalog option is standard
+          example: false
+        catalogPrice:
+          description: The catalog price of the catalog option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumerPrice:
+          description: The consumer price of the catalog option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        catalogOptionTypeId:
+          type: string
+          description: The ID of the type of the catalog option
+          example: '1000000'
+        catalogVatCode:
+          description: The catalog VAT code of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        isDisabled:
+          type: boolean
+          description: Indicates whether the catalog option is disabled
+          example: false
+        catalogOptionPacks:
+          type: array
+          description: The sub-packs that are contained by this pack
+          items:
+            $ref: '#/components/schemas/FindCatalogOption'
+        catalogOptions:
+          type: array
+          description: The options that are contained by this pack
+          items:
+            $ref: '#/components/schemas/FindCatalogOption'
+        genericOptions:
+          type: array
+          description: The generic options that are contained by this pack
+          items:
+            $ref: '#/components/schemas/GenericOption'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: Catalog option
+    FindCatalogOptionsResponse:
+      type: object
+      properties:
+        catalogOptions:
+          type: array
+          description: A list of catalog options
+          items:
+            $ref: '#/components/schemas/FindCatalogOption'
+        totalCount:
+          type: integer
+          description: The number of catalog options
+          format: int64
+    ForeignCurrencyValue:
+      title: ForeignCurrencyValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value that holds the currency amount
+          format: double
+          example: 25.56
+        currency:
+          type: string
+          description: The ISO code of the currency
+          example: USD
+      description: Miles API v1 representation of a foreign currency value.
+    GenericOption:
+      type: object
+      properties:
+        genericOptionId:
+          type: string
+          description: ID of the generic option
+          example: '41199698'
+        optionType:
+          description: Option type of the generic option
+          $ref: '#/components/schemas/EnumValue'
+        availableFrom:
+          type: string
+          description: Available from date of the generic option
+          format: date
+          example: '2026-03-20'
+        availableTo:
+          type: string
+          description: Available to date of the generic option
+          format: date
+          example: '2026-03-20'
+        description:
+          description: Description of the generic option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        checkPresence:
+          type: boolean
+          description: Check presence boolean of the generic option
+        reference:
+          type: string
+          description: Reference of the generic option
+          example: '15568845'
+        residualValueCoefficient:
+          type: number
+          description: Residual value coefficient of the generic option
+          format: double
+          example: 10
+        residualValuePercentage:
+          type: number
+          description: Residual value percentage of the generic option
+          format: double
+          example: 10
+        qualifier1:
+          description: The first qualifier of the generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        qualifier2:
+          description: The second qualifier of the generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        qualifier3:
+          description: The third qualifier of the generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        optionCategory:
+          description: The option category of the generic option
+          $ref: '#/components/schemas/EnumValue'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: An generic option that is contained by this pack
+    MultiCurrencyValue:
+      title: MultiCurrencyValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value that holds the currency amount
+          format: double
+          example: 25.56
+        currencyValue:
+          type: number
+          description: The currency amount in a different currency. Deprecated since 2025-07-10 and version '3.5.0' in favor of 'foreignCurrency'.
+          format: double
+          example: 27.56
+          deprecated: true
+        currencyId:
+          type: string
+          description: The ID of the currency. Deprecated since 2025-07-10 and version '3.5.0' in favor of 'foreignCurrency'.
+          example: '2'
+          deprecated: true
+        currency:
+          type: string
+          description: The ISO code of the reference currency
+          example: EUR
+        foreignCurrency:
+          description: Foreign currency information
+          $ref: '#/components/schemas/ForeignCurrencyValue'
+      description: Miles API v1 representation of a currency value.
+    BatteryType:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the battery type
+        description:
+          type: string
+          description: Battery type of the vehicle
+          example: zinc air
+      description: The battery type of the vehicle
+    ChargingPortLocation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the charging port location
+        description:
+          type: string
+          description: Charging port location of the vehicle
+          example: front side
+      description: The location of the DC charger port
+    ChargingPortSocketType:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the charging port socket type
+        description:
+          type: string
+          description: Charging port socket type of the vehicle
+          example: GB/T
+      description: The socket type of the DC charger
+    Country:
+      type: object
+      properties:
+        countryId:
+          type: string
+          description: The country ID
+          example: '600236'
+      description: Country
+    DoubleUnitValue:
+      title: DoubleUnitValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value contains a decimal number
+          format: double
+          example: 3.9
+        unit:
+          description: The unit of the value
+          $ref: '#/components/schemas/UnitValue'
+      description: Miles API v1 representation of a double with an additional unit value.
+    ElectricalVehicleSpecs:
+      type: object
+      properties:
+        batteryCapacity:
+          type: number
+          description: The battery capacity of the catalog vehicles in kWh
+          format: double
+          example: 50
+        batteryRange:
+          description: The battery range of the catalog vehicles
+          $ref: '#/components/schemas/DoubleUnitValue'
+        electricConsumption:
+          description: The electric consumption of the linked catalog vehicles in kWh
+          $ref: '#/components/schemas/DoubleUnitValue'
+        maximumBatteryRange:
+          description: The maximum battery range
+          $ref: '#/components/schemas/DoubleUnitValue'
+        minimumBatteryRange:
+          description: The minimum battery range
+          $ref: '#/components/schemas/DoubleUnitValue'
+        batteryType:
+          description: The battery type of the vehicle
+          $ref: '#/components/schemas/BatteryType'
+        acMaximumChargeCapacityKw:
+          type: number
+          description: The maximum capacity of the AC charger in kW
+          format: double
+          example: 20
+        acMinimumChargeTime:
+          description: The minimum time for charging with AC charger (0-100%)
+          $ref: '#/components/schemas/DoubleUnitValue'
+        acChargingPortLocation:
+          description: The location of the AC charger port
+          $ref: '#/components/schemas/ChargingPortLocation'
+        acChargingSocketType:
+          description: The socket type of the AC charger
+          $ref: '#/components/schemas/ChargingPortSocketType'
+        acChargingSpeed:
+          description: The AC charging speed
+          $ref: '#/components/schemas/DoubleUnitValue'
+        dcMaximumChargeCapacityKw:
+          type: number
+          description: The maximum capacity of the DC charger in kW
+          format: double
+          example: 100
+        dcMinimumChargeTime:
+          description: The minimum time for charging with DC charger (20-80%)
+          $ref: '#/components/schemas/DoubleUnitValue'
+        dcChargingPortLocation:
+          description: The location of the DC charger port
+          $ref: '#/components/schemas/ChargingPortLocation'
+        dcChargingSocketType:
+          description: The socket type of the DC charger
+          $ref: '#/components/schemas/ChargingPortSocketType'
+        dcChargingSpeed:
+          description: The DC charging speed
+          $ref: '#/components/schemas/DoubleUnitValue'
+        kwElectric:
+          type: number
+          description: The engine power in kW
+          format: double
+          example: 250
+        dinHpElectric:
+          type: integer
+          description: The electrical engine power in HP
+          format: int32
+          example: 209
+      description: The electrical specifications of the catalog vehicle
+    EngineFuelType:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the engine fuel type
+        description:
+          type: string
+          description: Engine fuel type of the vehicle
+          example: M85
+      description: The secondary fuel type
+    FindCatalogVehicle:
+      type: object
+      properties:
+        catalogVehicleId:
+          type: string
+          description: Catalog Vehicle ID
+          example: '5665416'
+        carPolicyVehicleId:
+          type: string
+          description: Car Policy Vehicle ID
+          example: '68541'
+        batteryRange:
+          description: Deprecated since 2022-11-10 and version '2.23.0' in favor of 'electricalVehicleSpecs.batteryRange'
+          $ref: '#/components/schemas/DoubleUnitValue'
+        catalogPrice:
+          description: Catalog price
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        cc:
+          type: number
+          description: Engine capacity in cm3
+          format: double
+          example: 1200
+        co2Emission:
+          type: integer
+          description: Emission of CO2
+          format: int32
+          example: 127
+        consumerPrice:
+          description: Consumer price
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        description:
+          description: General description
+          $ref: '#/components/schemas/MultiLanguageValue'
+        dinHp:
+          type: integer
+          description: Motive power in DIN hp
+          format: int32
+          example: 105
+        imagesPath:
+          type: string
+          description: Image path
+          example: AUDI/A3/2017/3HA
+        kw:
+          type: number
+          description: Motive power in KW
+          format: double
+          example: 77
+        maximumNumberOfPassengers:
+          type: integer
+          description: Maximum number of passengers
+          format: int32
+          example: 5
+        seatingCapacity:
+          type: integer
+          description: Seating capacity
+          format: int32
+          example: 5
+        maximumSeatingCapacity:
+          type: integer
+          description: Maximum seating capacity
+          format: int32
+          example: 5
+        typeName:
+          type: string
+          description: Type name
+          example: 1.2 TFSI AMBIENTE
+        consumption:
+          description: Fuel consumption
+          $ref: '#/components/schemas/DoubleUnitValue'
+        startingLeasePrice:
+          description: The lowest leasing price possible
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        code:
+          type: string
+          description: Vehicle code
+          example: 22A1PP2A5HMZJB0A0D0
+        reference1:
+          type: string
+          description: Reference 1
+          example: '708201320211207'
+        reference2:
+          type: string
+          description: Reference 2
+          example: '708201330'
+        reference3:
+          type: string
+          description: Reference 3
+          example: '7082013'
+        trimLevel:
+          type: string
+          description: Trim level
+          example: Black forest
+        bodyStyle:
+          description: Body style
+          $ref: '#/components/schemas/EnumValue'
+        vehicleCategory:
+          description: The vehicle category of a catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        emissionNorm:
+          description: Emission norm
+          $ref: '#/components/schemas/EnumValue'
+        energyLabel:
+          description: Energy label
+          $ref: '#/components/schemas/EnumValue'
+        engineFuelType:
+          description: Engine fuel type
+          $ref: '#/components/schemas/EnumValue'
+        engineFuelTypeGroup:
+          description: Engine fuel type group
+          $ref: '#/components/schemas/EnumValue'
+        transmission:
+          description: Transmission
+          $ref: '#/components/schemas/EnumValue'
+        transmissionGroup:
+          description: Transmission group
+          $ref: '#/components/schemas/EnumValue'
+        powertrain:
+          description: Powertrain
+          $ref: '#/components/schemas/EnumValue'
+        vehicleStatus:
+          description: Catalog vehicle status
+          $ref: '#/components/schemas/EnumValue'
+        drive:
+          description: Catalog vehicle drive
+          $ref: '#/components/schemas/EnumValue'
+        numberOfDoors:
+          description: Catalog vehicle number of doors
+          $ref: '#/components/schemas/EnumValue'
+        modelYear:
+          type: string
+          description: Model year
+          format: date
+          example: '2026-03-20'
+        model:
+          description: Model
+          $ref: '#/components/schemas/Model'
+        country:
+          description: Country
+          $ref: '#/components/schemas/Country'
+        upgradeCost:
+          description: Cost of upgrade
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        downgradeCompensation:
+          description: Compensation due to downgrade
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        catalogOptions:
+          type: array
+          description: A list of options that the car has
+          items:
+            $ref: '#/components/schemas/FindCatalogVehicleOption'
+        electricalVehicleSpecs:
+          description: The electrical specifications of the catalog vehicle
+          $ref: '#/components/schemas/ElectricalVehicleSpecs'
+        minimumLuggageCapacity:
+          type: number
+          description: The minimum luggage capacity
+          format: double
+          example: 50
+        secondaryEngineFuelType:
+          description: The secondary fuel type
+          $ref: '#/components/schemas/EngineFuelType'
+        numberOfMotors:
+          type: integer
+          description: The number of motors
+          format: int32
+          example: 4
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: The list of catalog vehicles
+    FindCatalogVehicleOption:
+      type: object
+      properties:
+        catalogOptionId:
+          type: string
+          description: The ID of the catalog vehicle option
+          example: '1000000'
+        description:
+          description: The description of the catalog option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        optionType:
+          description: The option type of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        optionUse:
+          description: The option use of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        isDefault:
+          type: boolean
+          description: Indicates whether the catalog vehicle option is default
+          example: false
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: Option that the car has
+    FindCatalogVehiclesResponse:
+      type: object
+      properties:
+        catalogVehicles:
+          type: array
+          description: The list of catalog vehicles
+          items:
+            $ref: '#/components/schemas/FindCatalogVehicle'
+        rateBookQuote:
+          description: The rate book quote
+          $ref: '#/components/schemas/RateBookQuote'
+        pricesHidden:
+          type: boolean
+          description: Whether or not the prices are hidden
+        budgetUnit:
+          description: The budget unit, deprecated since 2023-01-18 and version '2.25.0' in favor of applicable unit
+          $ref: '#/components/schemas/EnumValue'
+        applicableUnit:
+          description: The applicable unit. Note that this could be either a budget unit or an applicable lease price unit. This field is mutually exclusive with `costTypeId`.
+          $ref: '#/components/schemas/EnumValue'
+        costTypeId:
+          type: string
+          description: The ID of the cost type linked to the mobility plan on which the rate book quote is based. This field and `applicableUnit` are mutually exclusive.
+          example: 43c47620-1997-4979-bfd1-25fb7763b9af
+        label:
+          type: string
+          description: The name of the cost type linked to the mobility plan on which the rate book quote is based, or the translation of the `applicableUnit` when the mobility plan is not linked to a cost type.
+          example: Fuel Cost Type
+        totalCount:
+          type: integer
+          description: The number of accessory generic options
+          format: int64
+    Make:
+      type: object
+      properties:
+        makeId:
+          type: string
+          description: Id of the make
+          example: '602514'
+        name:
+          description: Name of the make
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: Make
+    Model:
+      type: object
+      properties:
+        modelId:
+          type: string
+          description: Model ID
+          example: '65454'
+        name:
+          description: Name
+          $ref: '#/components/schemas/MultiLanguageValue'
+        make:
+          description: Make
+          $ref: '#/components/schemas/Make'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: The model of the catalog vehicle
+    RateBookQuote:
+      type: object
+      properties:
+        quotationTemplateId:
+          type: string
+          description: Quotation template id of the rate book quote
+          example: '600302'
+        quotationTemplateName:
+          description: Quotation template name of the rate book quote
+          $ref: '#/components/schemas/MultiLanguageValue'
+        quotationTemplateCategory:
+          description: Quotation template category of the rate book quote
+          $ref: '#/components/schemas/EnumValue'
+        isStandard:
+          type: boolean
+          description: If the rate book quote is standard
+          example: false
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: Rate book quote
+    UnitValue:
+      title: UnitValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID of the unit
+          example: '1605'
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '33284'
+        translation:
+          type: string
+          description: The translation of the unit in human-readable format
+          example: L/100km
+      description: Miles API v1 representation of a unit value. It typically is part of a DoubleUnitValue or IntegerUnitValue.
+    FindCatalogVehiclesRequest:
+      type: object
+      properties:
+        vehicleFilters:
+          type: array
+          description: The list of vehicle filters
+          items:
+            $ref: '#/components/schemas/VehicleFilter'
+        modelIds:
+          uniqueItems: true
+          type: array
+          description: The model ID(s) used to filter the catalog vehicles
+          items:
+            type: string
+            description: The model ID(s) used to filter the catalog vehicles
+        count:
+          type: integer
+          description: The max number of catalog vehicles you want returned
+          format: int32
+        offset:
+          type: integer
+          description: The amount of catalog vehicles to skip
+          format: int32
+        sortBy:
+          description: The field and direction used to sort
+          $ref: '#/components/schemas/SortBy'
+        detailLevel:
+          type: string
+          description: The field that defines which fields will be available in response content
+          default: DETAILED
+          enum:
+            - ID_ONLY
+            - DETAILED
+    MinMaxValidation:
+      type: object
+      properties:
+        min:
+          type: number
+          description: The minimum allowed value of the custom attribute
+          format: double
+          example: 0
+        max:
+          type: number
+          description: The maximum allowed value of the custom attribute
+          format: double
+          example: 1000
+        values:
+          type: array
+          description: A list of filter values of the custom attribute
+          items:
+            type: string
+            description: A filter value
+            example: '512'
+        customAttribute:
+          type: string
+          description: The custom attribute to filter on
+          example: D_000001
+      description: A min-max-validation filter
+    VehicleFilter:
+      type: object
+      properties:
+        filterBodyStyleIds:
+          type: array
+          description: A list of body styles
+          items:
+            type: string
+            description: A body style
+            example: '100158'
+        filterVehicleCategoryIds:
+          type: array
+          description: A list of vehicle categories
+          items:
+            type: string
+            description: A vehicle category
+            example: '100008'
+        filterFuelTypeIds:
+          type: array
+          description: A list of fuel types
+          items:
+            type: string
+            description: A fuel type
+            example: '100152'
+        filterFuelTypeGroupIds:
+          type: array
+          description: A list of fuel type groups
+          items:
+            type: string
+            description: A fuel type group
+            example: '1127'
+        filterVehicleNatureIds:
+          type: array
+          description: A list of vehicle natures
+          items:
+            type: string
+            description: A vehicle nature
+            example: '100088'
+        filterPowerTrainIds:
+          type: array
+          description: A list of power trains
+          items:
+            type: string
+            description: A power train
+            example: '3766'
+        filterNumberOfDoorIds:
+          type: array
+          description: A list of numbers of doors
+          items:
+            type: string
+            description: A number of doors
+            example: '100117'
+        filterTransmissionGroupIds:
+          type: array
+          description: A list of transmission groups
+          items:
+            type: string
+            description: A transmission group
+            example: '2594'
+        filterEnergyLabelIds:
+          type: array
+          description: A list of energy labels
+          items:
+            type: string
+            description: A energy label
+            example: '200100'
+        filterVehicles:
+          type: array
+          description: A list of vehicle filters
+          items:
+            $ref: '#/components/schemas/VehicleFilterVehicle'
+        filterCodes:
+          type: array
+          description: A list of wildcard filters for code
+          items:
+            type: string
+            description: A wildcard filter for code
+            example: 4F20
+        filterMaxCatalogPrice:
+          type: number
+          description: The maximum catalog price of the vehicle
+          format: double
+          example: 65000
+        filterMaxCC:
+          type: number
+          description: The maximum cc of the vehicle
+          format: double
+          example: 2996
+        filterAvailableOn:
+          type: string
+          description: The date on which the vehicle should be available
+          format: date
+          example: '2026-03-20'
+        minMaxValidations:
+          type: array
+          description: A list of min-max-validation filters
+          items:
+            $ref: '#/components/schemas/MinMaxValidation'
+        type:
+          type: string
+          description: The filter type
+          example: included
+          enum:
+            - included
+            - excluded
+      description: The list of vehicle filters
+    VehicleFilterVehicle:
+      type: object
+      properties:
+        makeId:
+          type: string
+          description: The ID of the make
+          example: '600040'
+        modelIds:
+          type: array
+          description: A list of model ID's
+          items:
+            type: string
+            description: The ID of a model
+            example: '600099'
+      description: A vehicle filter
+    WarningsInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/warnings/microservices/unprocessable-entity
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Unprocessable Entity
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Unable to process payload due to invalid data.
+        messages:
+          type: array
+          description: An array of message objects containing translation information
+          items:
+            $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '23121434'
+        isInteractiveWarning:
+          type: boolean
+          description: Indicates whether this error requires user interaction
+          example: false
+    FindColorGenericOption:
+      type: object
+      properties:
+        genericOptionId:
+          type: string
+          description: The ID of the color generic option
+          example: '9'
+        availableFrom:
+          type: string
+          description: The start date from which the color generic option is available
+          format: date
+          example: '2026-03-20'
+        availableTo:
+          type: string
+          description: The end date to which the color generic option is available
+          format: date
+          example: '2026-03-20'
+        description:
+          description: The description of the color generic option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        checkPresence:
+          type: boolean
+          description: If the presence of the color generic option must be checked
+          example: false
+        reference:
+          type: string
+          description: The reference of the color generic option
+          example: 9e72849d-03f9-4a59-be77-fbd5375e59e5
+        residualValueCoefficient:
+          type: number
+          description: The residual value coefficient of the color generic option
+          format: double
+          example: 30
+        residualValuePercentage:
+          type: number
+          description: The residual value percentage of the color generic option
+          format: double
+          example: 0.3
+        qualifier1:
+          description: The first qualifier of the color generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        qualifier2:
+          description: The second qualifier of the color generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        qualifier3:
+          description: The third qualifier of the color generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        optionCategory:
+          description: The category of the generic option
+          $ref: '#/components/schemas/EnumValue'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: The list of color generic options
+    FindColorGenericOptionsResponse:
+      type: object
+      properties:
+        genericOptions:
+          type: array
+          description: The list of color generic options
+          items:
+            $ref: '#/components/schemas/FindColorGenericOption'
+        totalCount:
+          type: integer
+          description: The number of color generic options
+          format: int64
+    FindGenericOption:
+      type: object
+      properties:
+        genericOptionId:
+          type: string
+          description: ID of the generic option
+          example: '41199698'
+        optionType:
+          description: Option type of the generic option
+          $ref: '#/components/schemas/EnumValue'
+        availableFrom:
+          type: string
+          description: Available from date of the generic option
+          format: date
+          example: '2026-03-20'
+        availableTo:
+          type: string
+          description: Available to date of the generic option
+          format: date
+          example: '2026-03-20'
+        description:
+          description: Description of the generic option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        checkPresence:
+          type: boolean
+          description: Check presence boolean of the generic option
+        reference:
+          type: string
+          description: Reference of the generic option
+          example: '15568845'
+        residualValueCoefficient:
+          type: number
+          description: Residual value coefficient of the generic option
+          format: double
+          example: 10
+        residualValuePercentage:
+          type: number
+          description: Residual value percentage of the generic option
+          format: double
+          example: 10
+        qualifier1:
+          description: The first qualifier of the generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        qualifier2:
+          description: The second qualifier of the generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        qualifier3:
+          description: The third qualifier of the generic option
+          $ref: '#/components/schemas/QualifierDefinition'
+        descriptionOverridable:
+          type: boolean
+          description: Indicates whether the description is overridable
+          default: false
+        optionCategory:
+          description: The category of the generic option
+          $ref: '#/components/schemas/EnumValue'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: The list of generic options
+    FindGenericOptionsResponse:
+      type: object
+      properties:
+        genericOptions:
+          type: array
+          description: The list of generic options
+          items:
+            $ref: '#/components/schemas/FindGenericOption'
+        totalCount:
+          type: integer
+          description: The number of generic options
+          format: int64
+    FindMakesResponse:
+      type: object
+      properties:
+        makes:
+          type: array
+          description: The list of makes
+          items:
+            $ref: '#/components/schemas/Make'
+        totalCount:
+          type: integer
+          description: The number of makes
+          format: int64
+    FindModel:
+      type: object
+      properties:
+        modelId:
+          type: string
+          description: The ID of the model
+          example: '600099'
+        name:
+          description: The name of the model
+          $ref: '#/components/schemas/MultiLanguageValue'
+        reference:
+          type: string
+          description: The reference of the model
+        batteryRangeUpperLimit:
+          description: Deprecated since 2022-11-22 and version '2.24.0' in favor of 'electricalVehicleSpecs.batteryRangeUpperLimit'
+          $ref: '#/components/schemas/DoubleUnitValue'
+        batteryRangeLowerLimit:
+          description: Deprecated since 2022-11-22 and version '2.24.0' in favor of 'electricalVehicleSpecs.batteryRangeLowerLimit'
+          $ref: '#/components/schemas/DoubleUnitValue'
+        co2EmissionMax:
+          type: integer
+          description: Use co2EmissionUpperLimit instead
+          format: int32
+          example: 200
+          deprecated: true
+        co2EmissionMin:
+          type: integer
+          description: Use co2EmissionLowerLimit instead
+          format: int32
+          example: 200
+          deprecated: true
+        numberOfPassengersMin:
+          type: integer
+          description: Use seatingCapacityLowerLimit instead
+          format: int32
+          example: 200
+          deprecated: true
+        maximumNumberOfPassengersMin:
+          type: integer
+          description: Use maximumSeatingCapacityLowerLimit instead
+          format: int32
+          example: 200
+          deprecated: true
+        numberOfPassengersMax:
+          type: integer
+          description: Use seatingCapacityUpperLimit instead
+          format: int32
+          example: 200
+          deprecated: true
+        maximumNumberOfPassengersMax:
+          type: integer
+          description: Use maximumSeatingCapacityUpperLimit instead
+          format: int32
+          example: 200
+          deprecated: true
+        dinHpMin:
+          type: integer
+          description: Use dinHpLowerLimit instead
+          format: int32
+          example: 200
+          deprecated: true
+        dinHpMax:
+          type: integer
+          description: Use dinHpUpperLimit instead
+          format: int32
+          example: 200
+          deprecated: true
+        maximumSeatingCapacityLowerLimit:
+          type: integer
+          description: The lower limit of the maximum seating capacity
+          format: int32
+          example: 8
+        maximumSeatingCapacityUpperLimit:
+          type: integer
+          description: The upper limit of the maximum seating capacity
+          format: int32
+          example: 8
+        seatingCapacityLowerLimit:
+          type: integer
+          description: The upper limit of the seating capacity
+          format: int32
+          example: 8
+        seatingCapacityUpperLimit:
+          type: integer
+          description: The lower limit of the seating capacity
+          format: int32
+          example: 4
+        co2EmissionUpperLimit:
+          type: integer
+          description: The upper limit of the co2 emission
+          format: int32
+          example: 200
+        co2EmissionLowerLimit:
+          type: integer
+          description: The lower limit of the co2 emission
+          format: int32
+          example: 200
+        dinHpUpperLimit:
+          type: integer
+          description: The upper limit of the din HP
+          format: int32
+          example: 200
+        dinHpLowerLimit:
+          type: integer
+          description: The lower limit of the din HP
+          format: int32
+          example: 150
+        imagesPath:
+          type: string
+          description: The images path of the model
+          example: 811810d1-dcf0-4a3a-ac0f-b66a49bb1c18
+        modelYears:
+          type: array
+          description: The list of model years
+          items:
+            type: string
+            description: A model year
+            format: date
+            example: '2026-03-20'
+        startingLeasePrice:
+          description: The starting lease price of the model
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        electricalVehicleSpecs:
+          description: The electrical specification ranges of the model
+          $ref: '#/components/schemas/ModelElectricalVehicleSpecs'
+        bodyStyles:
+          type: array
+          description: The list of body styles
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        engineFuelTypes:
+          type: array
+          description: The list of engine fuel types
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        engineFuelTypeGroups:
+          type: array
+          description: The list of engine fuel type groups
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        transmissions:
+          type: array
+          description: The list of transmissions
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        transmissionGroups:
+          type: array
+          description: The list of transmission groups
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        vehicleStatuses:
+          type: array
+          description: The list of vehicle statuses
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        make:
+          description: The make of the model
+          $ref: '#/components/schemas/Make'
+      description: The list of models
+    FindModelsResponse:
+      type: object
+      properties:
+        models:
+          type: array
+          description: The list of models
+          items:
+            $ref: '#/components/schemas/FindModel'
+        rateBookQuote:
+          description: Rate book quote
+          $ref: '#/components/schemas/RateBookQuote'
+        pricesHidden:
+          type: boolean
+          description: Whether or not the priced are hidden
+        budgetUnit:
+          description: The budget unit, deprecated since 2023-01-18 and version '2.25.0' in favor of applicable unit
+          $ref: '#/components/schemas/EnumValue'
+        applicableUnit:
+          description: |
+            The applicable unit. Note that this can be either a budget unit or an applicable lease price unit. Note that this field is mutually exclusive with the `costTypeId` field.
+          $ref: '#/components/schemas/EnumValue'
+        label:
+          type: string
+          description: The label of the price returned in this object. Reflects the displayed price like the cost type or the lease price name.
+          example: excl. VAT without fuel provision
+        costTypeId:
+          type: string
+          description: The ID of the cost type that was used for the calculation. Note that this field is mutually exclusive with `applicableUnit`.
+          example: 557a2b02-4997-4086-b57f-a4192c36d317
+        totalCount:
+          type: integer
+          description: The number of models
+          format: int64
+    ModelElectricalVehicleSpecs:
+      type: object
+      properties:
+        batteryCapacityUpperLimit:
+          type: number
+          description: The upper limit of the battery capacity in kWh of the linked catalog vehicles
+          format: double
+          example: 150
+        batteryCapacityLowerLimit:
+          type: number
+          description: The lower limit of the battery capacity in kWh of the linked catalog vehicles
+          format: double
+          example: 25
+        batteryRangeUpperLimit:
+          description: The upper limit of the battery range of the linked catalog vehicles
+          $ref: '#/components/schemas/DoubleUnitValue'
+        batteryRangeLowerLimit:
+          description: The lower limit of the battery range of the linked catalog vehicles
+          $ref: '#/components/schemas/DoubleUnitValue'
+        electricConsumption:
+          description: The electric consumption of the linked catalog vehicles in kWh
+          $ref: '#/components/schemas/DoubleUnitValue'
+      description: The electrical specification ranges of the model
+    FindModelsRequest:
+      type: object
+      properties:
+        vehicleFilters:
+          type: array
+          description: The list of vehicle filters
+          items:
+            $ref: '#/components/schemas/VehicleFilter'
+        count:
+          type: integer
+          description: The max number of models you want returned
+          format: int32
+        offset:
+          type: integer
+          description: The amount of models to skip
+          format: int32
+        sortBy:
+          description: The field and direction used to sort
+          $ref: '#/components/schemas/SortBy'
+    FindTechnicalVehicleSpecificationsResponse:
+      type: object
+      properties:
+        technicalVehicleSpecifications:
+          type: array
+          description: A list of technical vehicle specification types
+          items:
+            $ref: '#/components/schemas/TechnicalVehicleSpecification'
+        totalCount:
+          type: integer
+          description: The number of technical vehicle specifications that qualify for the filters
+          format: int64
+          example: 70
+    TechnicalVehicleSpecification:
+      type: object
+      properties:
+        technicalVehicleSpecificationId:
+          type: string
+          description: The ID of the technical vehicle specification
+          example: '400032'
+        lastModified:
+          type: string
+          description: The start date from which the technical vehicle specification type is valid
+          format: date
+          example: '2026-03-20'
+        qualifier:
+          description: The qualifier of the technical vehicle specification
+          $ref: '#/components/schemas/QualifierDefinition'
+        technicalVehicleSpecificationTypeId:
+          type: string
+          description: The ID of the technical vehicle specification type
+          example: '400032'
+      description: Technical vehicle specification type
+    TrimlineMappingsSearchResponse:
+      type: object
+      properties:
+        catalogVehicleId:
+          type: string
+          description: The ID of the catalog vehicle
+          example: '10001'
+        optionCodes:
+          type: array
+          description: A set of option codes
+          items:
+            type: string
+            description: Option code
+            example: '10000'
+    TrimlineMappingsSearchRequest:
+      type: object
+      properties:
+        vehicleCode:
+          type: string
+          description: The code of the vehicle
+          example: '10001'
+        priceDate:
+          type: string
+          description: 'The date on which the price is calculated '
+          format: date
+          example: '2026-03-20'
+        optionCodes:
+          uniqueItems: true
+          type: array
+          description: A set of option codes
+          items:
+            type: string
+            description: Option code
+            example: '10000'
+        includeActive:
+          type: boolean
+          description: Indicates whether the active catalog vehicles should be included in the response
+          default: false
+        includeStock:
+          type: boolean
+          description: Indicates whether the stock catalog vehicles should be included in the response
+          default: false
+        includeUsed:
+          type: boolean
+          description: Indicates whether the used catalog vehicles should be included in the response.
+          default: false
+    CatalogOption:
+      type: object
+      properties:
+        catalogOptionId:
+          type: string
+          description: The ID of the catalog option
+          example: '1000000'
+        annotation:
+          description: The annotation of the catalog option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        availableFrom:
+          type: string
+          description: The start date from which the catalog option is available
+          format: date
+          example: '2026-03-20'
+        availableTo:
+          type: string
+          description: The end date to which the catalog option is available
+          format: date
+          example: '2026-03-20'
+        automaticSelection:
+          type: boolean
+          description: If the catalog option supports automatic selection
+          example: false
+        catalogOptionTypeId:
+          type: string
+          description: The ID of the type of the catalog option
+          example: '1000000'
+        catalogPrice:
+          description: The catalog price of the catalog option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumerPrice:
+          description: The consumer price of the catalog option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        defaultDiscountPercentage:
+          type: number
+          description: The default discount percentage of the catalog option
+          format: double
+          example: 0.04
+        defaultDiscountAmount:
+          description: The default discount amount of the catalog option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        deliveryCost:
+          description: The delivery cost of the catalog option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        description:
+          description: The description of the catalog option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        reference:
+          type: string
+          description: The reference of the catalog option
+          example: 9e72849d-03f9-4a59-be77-fbd5375e59e5
+        isStandard:
+          type: boolean
+          description: If the catalog option is standard
+          example: false
+        maintenanceCost:
+          description: The maintenance cost of the catalog option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        netWeight:
+          description: The net weight of the catalog option
+          $ref: '#/components/schemas/DoubleUnitValue'
+        optionCode:
+          type: string
+          description: The delivery cost of the catalog option
+          example: LR
+        residualValueCoefficient:
+          type: number
+          description: The residual value coefficient of the catalog option
+          format: double
+          example: 30
+        residualValuePercentage:
+          type: number
+          description: The residual value percentage of the catalog option
+          format: double
+          example: 0.3
+        tax:
+          description: The tax amount of the catalog option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        taxPercentage:
+          type: number
+          description: The tax percentage of the catalog option
+          format: double
+          example: 0.21
+        tireSpecification:
+          type: string
+          description: The tire specification of the catalog option
+          example: 175/55  R 15    H
+        optionUse:
+          description: The option use of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        catalogVatCode:
+          description: The catalog vat code of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        deliveryVatCode:
+          description: The delivery vat code of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        optionType:
+          description: The option type of the catalog option
+          $ref: '#/components/schemas/EnumValue'
+        catalogVehicle:
+          description: The referenced catalog vehicle
+          $ref: '#/components/schemas/CatalogVehicleReference'
+        catalogOptionPacks:
+          type: array
+          description: The sub-packs that are contained by this pack
+          items:
+            $ref: '#/components/schemas/CatalogOption'
+        catalogOptions:
+          type: array
+          description: The options that are contained by this pack
+          items:
+            $ref: '#/components/schemas/CatalogOption'
+        genericOptions:
+          type: array
+          description: The generic options that are contained by this pack
+          items:
+            $ref: '#/components/schemas/GenericOption'
+    CatalogVehicleReference:
+      type: object
+      properties:
+        catalogVehicleId:
+          type: string
+          description: The ID of the catalog vehicle
+          example: '602709'
+      description: The catalog vehicle where this catalog vehicle is based on
+    CatalogVehicle:
+      type: object
+      properties:
+        catalogVehicleId:
+          type: string
+          description: The ID of the catalog vehicle
+          example: '602709'
+        acceleration:
+          type: number
+          description: The acceleration of the catalog vehicle
+          format: double
+          example: 6
+        airSuspension:
+          type: boolean
+          description: The air suspension of the catalog vehicle
+          example: false
+        antiCorrosionWarrantyDistance:
+          description: The anti corrosion warranty distance of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        antiCorrosionWarrantyDuration:
+          description: The anti corrosion warranty duration of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        assistanceDuration:
+          description: The assistance duration of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        availableFrom:
+          type: string
+          description: The start date of which the catalog vehicle is available
+          format: date
+          example: '2026-03-20'
+        availableTo:
+          type: string
+          description: The end date to which the catalog vehicle is available
+          format: date
+          example: '2026-03-20'
+        batteryRange:
+          description: Deprecated since 2022-11-10 and version '2.23.0' in favor of 'electricalVehicleSpecs.batteryRange'
+          $ref: '#/components/schemas/DoubleUnitValue'
+        bore:
+          type: string
+          description: The bore of the catalog vehicle
+          example: '85'
+        catalogPrice:
+          description: The catalog price of the catalog vehicle
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        cc:
+          type: number
+          description: The cc of the catalog vehicle
+          format: double
+          example: 2996
+        co2Emission:
+          type: integer
+          description: The co2 emission of the catalog vehicle
+          format: int32
+          example: 173
+        code:
+          type: string
+          description: The code of the catalog vehicle
+          example: 4F20DL
+        consumerPrice:
+          description: The consumer price of the catalog vehicle
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumption:
+          description: The consumption of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        defaultDeliveryCost:
+          description: The default delivery cost of the catalog vehicle
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        defaultOptionDiscount:
+          type: number
+          description: The default option discount of the catalog vehicle
+          format: double
+          example: 0.05
+        defaultDiscountPercentage:
+          type: number
+          description: The default discount percentage of the catalog vehicle
+          format: double
+          example: 0.05
+        defaultDiscountAmount:
+          description: The default discount amount of the catalog vehicle
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        description:
+          description: The description of the catalog vehicle
+          $ref: '#/components/schemas/MultiLanguageValue'
+        dinHp:
+          type: integer
+          description: The din hp of the catalog vehicle
+          format: int32
+          example: 102
+        etanCode:
+          type: string
+          description: The etan code of the catalog vehicle
+          example: 63981113BA
+        reference1:
+          type: string
+          description: The first reference of the catalog vehicle
+          example: 22616cd0-9486-4314-9ef1-dfcd13fceb01-2010
+        reference2:
+          type: string
+          description: The second reference of the catalog vehicle
+          example: MEK6VIAN2235
+        reference3:
+          type: string
+          description: The third reference of the catalog vehicle
+          example: 22616cd0-9486-4314-9ef1-dfcd13fceb01
+        facelift:
+          type: boolean
+          description: If the catalog vehicle has a facelift
+          example: false
+        fiscalPower:
+          type: integer
+          description: The fiscal power of the catalog vehicle
+          format: int32
+          example: 13
+        fullServiceWarrantyDistance:
+          description: The full service warranty distance of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        fullServiceWarrantyDuration:
+          description: The full service warranty duration of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        height:
+          type: integer
+          description: The height of the catalog vehicle
+          format: int32
+          example: 1542
+        hydroCarbon:
+          type: integer
+          description: The hydro carbon of the catalog vehicle
+          format: int32
+          example: 600000
+        imagesPath:
+          type: string
+          description: The images path of the catalog vehicle
+          example: 811810d1-dcf0-4a3a-ac0f-b66a49bb1c18
+        insuranceGroup:
+          type: integer
+          description: The insurance group of the catalog vehicle
+          format: int32
+          example: 600000
+        interval:
+          type: integer
+          description: The interval of the catalog vehicle
+          format: int32
+          example: 40000
+        introductionDate:
+          type: string
+          description: The introduction date of the catalog vehicle
+          format: date
+          example: '2026-03-20'
+        kw:
+          type: number
+          description: The kw of the catalog vehicle
+          format: double
+          example: 33
+        length:
+          type: integer
+          description: The length of the catalog vehicle
+          format: int32
+          example: 2695
+        linkSystem:
+          type: boolean
+          description: The number of doors of the catalog vehicle
+          example: false
+        maximumLoad:
+          description: The maximum load of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        maximumNumberOfPassengers:
+          type: integer
+          description: Use maximumSeatingCapacity Instead
+          format: int32
+          deprecated: true
+        maximumSeatingCapacity:
+          type: integer
+          description: The maximum number of seats of the catalog vehicle
+          format: int32
+          example: 8
+        maximumWeight:
+          description: The maximum weight of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        modelYear:
+          type: string
+          description: The model year of the catalog vehicle
+          format: date
+          example: '2026-03-20'
+        netWeight:
+          description: The net weight of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        noxEmission:
+          type: integer
+          description: The nox emission of the catalog vehicle
+          format: int32
+          example: 25
+        numberOfAxes:
+          type: integer
+          description: The number of axes of the catalog vehicle
+          format: int32
+          example: 2
+        numberOfCylinders:
+          type: integer
+          description: The number of cylinders of the catalog vehicle
+          format: int32
+          example: 3
+        numberOfPassengers:
+          type: integer
+          description: Use seatingCapacity instead
+          format: int32
+          deprecated: true
+        seatingCapacity:
+          type: integer
+          description: The number of seats of the catalog vehicle
+          format: int32
+          example: 5
+        numberOfWheels:
+          type: integer
+          description: The number of wheels of the catalog vehicle
+          format: int32
+          example: 4
+        origin:
+          type: string
+          description: The origin of the catalog vehicle
+          example: Sofico
+        paintWarrantyDistance:
+          description: The paint warranty distance of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        paintWarrantyDuration:
+          description: The paint warranty duration of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        particleEmission:
+          type: integer
+          description: The particle emission of the catalog vehicle
+          format: int32
+          example: 0
+        powertrainWarrantyDistance:
+          description: The powertrain warranty distance of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        powertrainWarrantyDuration:
+          description: The powertrain warranty duration of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        roadsideAssistanceDistance:
+          description: The road assistance distance of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        roadsideAssistanceDuration:
+          description: The road assistance duration of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        stroke:
+          type: string
+          description: The stroke of the catalog vehicle
+          example: '79'
+        tankContents:
+          type: number
+          description: The tank contents of the catalog vehicle
+          format: double
+          example: 33
+        tax:
+          description: The tax amount of the catalog vehicle
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        taxPercentage:
+          type: number
+          description: The tax percentage of the catalog vehicle
+          format: double
+          example: 0.21
+        tireSpecification:
+          type: string
+          description: The tire specification of the catalog vehicle
+          example: 175/55  R 15    H
+        torque:
+          type: integer
+          description: The torque of the catalog vehicle
+          format: int32
+          example: 140
+        trailerLoadBraked:
+          description: The trailer load braked of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        trailerLoadUnbraked:
+          description: The trailer load unbraked of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        trimLevel:
+          type: string
+          description: The trim level of the catalog vehicle
+          example: Solar
+        typeName:
+          type: string
+          description: The type name of the catalog vehicle
+          example: 0.8 cdi 45 pk Pure Plus
+        warrantyDistance:
+          description: The warranty distance of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        warrantyDuration:
+          description: The warranty duration of the catalog vehicle
+          $ref: '#/components/schemas/DoubleUnitValue'
+        wheelbase:
+          type: integer
+          description: The wheelbase of the catalog vehicle
+          format: int32
+          example: 1867
+        width:
+          type: integer
+          description: The width of the catalog vehicle
+          format: int32
+          example: 1559
+        bodyStyle:
+          description: The body style of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        catalogItemType:
+          description: The catalog item type of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        catalogVatCode:
+          description: The catalog vat code of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        deliveryVatCode:
+          description: The delivery vat code of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        drive:
+          description: The drive of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        emissionNorm:
+          description: The emission norm of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        energyLabel:
+          description: The energy label of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        engineFuelType:
+          description: The primary engine fuel type of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        engineFuelTypeGroup:
+          description: The engine fuel type group of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        licenseType:
+          description: The license type of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        nature:
+          description: The vehicle nature of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        numberOfDoors:
+          description: The number of doors of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        powertrain:
+          description: The powertrain of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        transmission:
+          description: The transmission of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        transmissionGroup:
+          description: The transmission group of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        vehicleCategory:
+          description: The vehicle category of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        vehicleStatus:
+          description: The vehicle status of the catalog vehicle
+          $ref: '#/components/schemas/EnumValue'
+        model:
+          description: The model of the catalog vehicle
+          $ref: '#/components/schemas/Model'
+        electricalVehicleSpecs:
+          description: The electrical specifications of the catalog vehicle
+          $ref: '#/components/schemas/ElectricalVehicleSpecs'
+        minimumLuggageCapacity:
+          type: number
+          description: The minimum luggage capacity
+          format: double
+          example: 50
+        secondaryEngineFuelType:
+          description: The secondary fuel type
+          $ref: '#/components/schemas/EngineFuelType'
+        numberOfMotors:
+          type: integer
+          description: The number of motors
+          format: int32
+          example: 4
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        baseCatalogVehicle:
+          description: The catalog vehicle where this catalog vehicle is based on
+          $ref: '#/components/schemas/CatalogVehicleReference'
+    VehicleImage:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Url of the vehicle image
+          example: https://website.be/vehicle.png
+      description: A vehicle image
+    VehicleImagesResponse:
+      type: object
+      properties:
+        vehicleImages:
+          type: array
+          description: A list of vehicle images
+          items:
+            $ref: '#/components/schemas/VehicleImage'
+    FindVehicleLifestagesResponse:
+      type: object
+      properties:
+        vehicleLifestages:
+          type: array
+          description: A list of vehicle lifestages
+          items:
+            $ref: '#/components/schemas/VehicleLifestage'
+        totalCount:
+          type: integer
+          description: The number of vehicle lifestages
+          format: int64
+    VehicleLifestage:
+      type: object
+      properties:
+        vehicleLifestageId:
+          type: string
+          description: ID of the vehicle lifestage
+          example: 8d95b6c6-1e47-45e7-9ede-47e25131674e
+        name:
+          description: Name of the vehicle lifestage
+          $ref: '#/components/schemas/MultiLanguageValue'
+        isConfigured:
+          type: boolean
+          description: If the lifestage is configured in the service this will return true
+      description: A vehicle lifestage
+    Filter:
+      type: object
+      properties:
+        filterId:
+          type: string
+          description: The ID of the filter
+        description:
+          description: The description of the filter
+          $ref: '#/components/schemas/MultiLanguageValue'
+        filterValues:
+          type: array
+          description: A list of filter values
+          items:
+            $ref: '#/components/schemas/FilterValue'
+      description: A filter
+    FilterValue:
+      type: object
+      properties:
+        filterValueId:
+          type: string
+          description: The ID of the filter value
+        filterValueGroupId:
+          type: string
+          description: The ID of the filter value group
+        description:
+          description: The description of a filter value
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: An filter value that is contained by this filter
+    ListFiltersResponse:
+      type: object
+      properties:
+        filters:
+          type: array
+          description: A list of filters
+          items:
+            $ref: '#/components/schemas/Filter'
+  securitySchemes:
+    Roles:
+      type: openIdConnect
+      description: Users need to have certain roles to be able to access certain API endpoints. If there are no roles defined for the endpoint, * is shown. This means that every authorized user has access to the endpoint.
+      openIdConnectUrl: ''
+x-tagGroups:
+  - tags:
+      - ''
+    name: User experience-oriented endpoints

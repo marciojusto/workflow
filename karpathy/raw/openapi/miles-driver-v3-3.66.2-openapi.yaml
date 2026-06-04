@@ -1,0 +1,4318 @@
+openapi: 3.0.1
+info:
+  title: miles-driver
+  description: This service is used by a driver to retrieve information linked to the driver.
+  contact:
+    url: https://www.sofico.global
+  license:
+    name: Sofico
+    url: https://www.sofico.global
+  version: 3.66.2
+  x-milesServiceType: functional
+  x-logo:
+    url: https://www.sofico.global/sofico.svg
+    altText: Sofico logo
+paths:
+  /driver/current/ordered-quotations/{quote_id}/documents:
+    get:
+      summary: Find documents attached to ordered quotation
+      description: This endpoint retrieves a list of all documents attached to the given ordered quotation.
+      operationId: findAttachedDocuments
+      parameters:
+        - name: quote_id
+          in: path
+          description: ID of the ordered quotation
+          required: true
+          schema:
+            type: string
+        - name: status_id
+          in: query
+          description: ID(s) of the document status(es) (enumeration)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: document_template_id
+          in: query
+          description: ID(s) of the document template(es)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindAttachedQuoteDocumentsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- No quote found for user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+    post:
+      summary: Attach document to ordered quotation
+      description: This endpoint uploads a document for an ordered quotation. Deprecated since 2023-09-28 and version 3.47.0 in favor of the `POST /orders/{order_id}/documents` endpoint on the **miles-fleet-order-v1** service.
+      operationId: attachQuoteDocument
+      parameters:
+        - name: quote_id
+          in: path
+          description: ID of ordered quotation
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File to attach to the ordered quotation
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttachedDocumentRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderedQuotationDocument'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/ordered-quotation/{quote_id}/documents:
+    post:
+      summary: Attach document to ordered quotation
+      description: This endpoint uploads a document for an ordered quotation.
+      operationId: attachQuoteDocumentDeprecated
+      parameters:
+        - name: quote_id
+          in: path
+          description: ID of ordered quotation
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: File to attach to the ordered quotation
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttachedDocumentRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderedQuotationDocument'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No quote found for user
+            - Quote ID is missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: |-
+            - Invalid file name
+            - File type not allowed
+            - File size not allowed
+            - Failed to upload document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Failed to upload document'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/change-password:
+    put:
+      summary: Change password of authenticated driver
+      description: This endpoint updates the password of the authenticated driver.
+      operationId: changeDriverPassword
+      parameters:
+        - name: ignore_warnings
+          in: query
+          description: If set to true, (interactive) warnings will be ignored.
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        description: Date to update the passwords
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePassword'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: '- Failed to change the driver password'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Failed to change the driver password'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /sales-quotes/{sales_quote_id}/allocated-driver:
+    put:
+      summary: Update an allocated driver
+      description: This endpoint updates an allocated driver on a quote.Deprecated since 2023-09-15 and version 3.46.0, instead use the `PUT /sales-quotes/{sales_quote_id}/allocated-driver` endpoint on the **miles-quotation-v4** service
+      operationId: updateAllocatedDriver
+      parameters:
+        - name: sales_quote_id
+          in: path
+          description: ID of the sales quote
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Data required to update the allocated driver
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocatedDriverRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocatedDriversResponse'
+        '400':
+          description: |-
+            - No allocated driver present
+            - A contact ID must be present
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No quote found for user
+            - Invalid mobility user
+            - Insurance not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: |-
+            - Failed to change insurance
+            - Insurance not found
+            - Creating/updating driver failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Creating/updating driver failed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+    post:
+      summary: Create an allocated driver
+      description: This endpoint creates an allocated driver on a quote.Deprecated since 2023-09-15 and version 3.46.0, instead use the `POST /sales-quotes/{sales_quote_id}/allocated-driver` endpoint on the **miles-quotation-v4** service
+      operationId: createAllocatedDriver
+      parameters:
+        - name: sales_quote_id
+          in: path
+          description: ID of the sales quote
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Data required to create the allocated driver
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocatedDriverRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocatedDriversResponse'
+        '400':
+          description: '- No allocated driver present'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No quote found for user
+            - Invalid mobility user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: |-
+            - Failed to change insurance
+            - Insurance not found
+            - Creating/updating driver failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Creating/updating driver failed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /sales-quotes/{sales_quote_id}/allocated-driver/{contact_id}:
+    delete:
+      summary: Delete an allocated driver
+      description: This endpoint deletes an allocated driver from a quote.Deprecated since 2023-09-15 and version 3.46.0, instead use the `DELETE /sales-quotes/{sales_quote_id}/allocated-driver/{contact_id}` endpoint on the **miles-quotation-v4** service
+      operationId: deleteAllocatedDriver
+      parameters:
+        - name: sales_quote_id
+          in: path
+          description: ID of the sales quote
+          required: true
+          schema:
+            type: string
+        - name: contact_id
+          in: path
+          description: ID of the contact
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No quote found for user
+            - Driver cannot be deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: |-
+            - Failed to delete driver
+            - Failed to delete driver
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/documents:
+    get:
+      summary: Find documents attached to authenticated driver
+      description: This endpoint retrieves all documents attached to the authenticated driver.
+      operationId: findAttachedDriverDocuments
+      parameters:
+        - name: status_id
+          in: query
+          description: ID(s) of the document status(es) (enumeration)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: document_template_id
+          in: query
+          description: ID(s) of the document template(es)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindAttachedDriverDocumentsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/car-policies/{car_policy_id}/help-contents:
+    get:
+      summary: Find car policy help contents
+      description: This endpoints retrieves a list of car policy help contents.
+      operationId: findCarPolicyHelpContents
+      parameters:
+        - name: car_policy_id
+          in: path
+          description: ID of the car policy
+          required: true
+          schema:
+            type: string
+        - name: topic
+          in: query
+          description: Topic of the help content.
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarPolicyHelpContentsResponse'
+        '400':
+          description: '- Customer not valid for authenticated user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- No such car policy found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/sites:
+    get:
+      summary: Find delivery addresses
+      description: This endpoint retrieves the vehicle delivery addresses for the customer the driver is linked to.
+      operationId: findDeliveryAddresses
+      parameters:
+        - name: count
+          in: query
+          description: The maximum number of elements to be returned
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 10
+        - name: offset
+          in: query
+          description: The number of elements to skip before returning the requested list of elements
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            example: 50
+        - name: sort_by
+          in: query
+          description: List of order clauses in which the elements will be returned, deprecated since 2022-09-06 and version 1.184.0 in favor of sorting
+          deprecated: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: sorting
+          in: query
+          description: List of order clauses in which the elements will be returned
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindSitesResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- Address not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '500':
+          description: '- Failed to find delivery address'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/managers:
+    get:
+      summary: Find managers related to authenticated driver
+      description: This endpoint retrieves a list of the associated managers for the authenticated driver.
+      operationId: findManagers
+      parameters:
+        - name: manager_type
+          in: query
+          description: ID(s) of the manager type(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindManagersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/ordered-quotations:
+    get:
+      summary: Find ordered quotations for authenticated driver
+      description: This endpoint retrieves a list of ordered quotations based on the query parameters for the authenticated driver.
+      operationId: findOrderedQuotations
+      parameters:
+        - name: quote_id
+          in: query
+          description: ID(s) of the quote(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: vehicle_category
+          in: query
+          description: ID(s) of the vehicle category(ies)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: count
+          in: query
+          description: Maximum number of quotes to be displayed
+          schema:
+            type: integer
+            format: int32
+        - name: offset
+          in: query
+          description: Offset to start counting
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindOrderedQuotationsResponse'
+        '400':
+          description: '- Invalid customer ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '500':
+          description: |-
+            - Vehicle on ordered quotation not found
+            - Missing vehicle nature on ordered quotation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/documents/actions/generations:
+    post:
+      summary: Generate document for authenticated driver
+      description: This endpoint creates a document for the authenticated driver.
+      operationId: generateDriverDocument
+      requestBody:
+        description: Data required to generate the document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDocumentRequest'
+        required: true
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: '- Requested document template not available'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: '- Failed to generate document'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Failed to generate document'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/ordered-quotations/{quote_id}/documents/actions/creations:
+    post:
+      summary: Generate document for an ordered quotation
+      description: This endpoint generates a document for an ordered quotation. Deprecated since 2023-10-18 and version 3.48.0 in favor of the `POST /orders/{order_id}/documents/actions/creations` endpoint on the **miles-fleet-order-v1** service.
+      operationId: generateQuoteDocument
+      parameters:
+        - name: quote_id
+          in: path
+          description: ID of ordered quotation
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Data required to generate the document
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDocumentRequest'
+        required: true
+      responses:
+        '200':
+          description: Response is a download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          x-isResponseFile: 'true'
+        '400':
+          description: '- Requested document template not available'
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- No quote found for user'
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: '- Failed to generate document'
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Failed to generate document'
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /sales-quotes/{sales_quote_id}/allocated-drivers/{driver_id}:
+    get:
+      summary: Get an allocated driver
+      description: This endpoint retrieves an allocated driver for the authenticated driver, based on a sales quote ID and driver ID.Deprecated since 2023-09-15 and version 3.46.0, instead use the `GET /sales-quotes/{sales_quote_id}/allocated-drivers/{driver_id}` endpoint on the **miles-quotation-v4** service
+      operationId: getAllocatedDriver
+      parameters:
+        - name: sales_quote_id
+          in: path
+          description: ID of the sales quote
+          required: true
+          schema:
+            type: string
+        - name: driver_id
+          in: path
+          description: ID of the driver
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocatedDriverResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No quote found for user
+            - Allocated driver not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /amendment-quotes/{amendment_quote_id}/allocated-drivers/{driver_id}:
+    get:
+      summary: Get an allocated driver
+      description: This endpoint retrieves an allocated driver for the authenticated driver, based on a sales quote ID and driver ID.Deprecated since 2023-09-15 and version 3.46.0, instead use the `GET /amendment-quotes/{amendment_quote_id}/allocated-drivers/{driver_id}` endpoint on the **miles-contract-v2** service
+      operationId: getAllocatedDriverOnAmendmentQuote
+      parameters:
+        - name: amendment_quote_id
+          in: path
+          description: ID of the amendment quote
+          required: true
+          schema:
+            type: string
+          example: '1515456'
+        - name: driver_id
+          in: path
+          description: ID of the driver
+          required: true
+          schema:
+            type: string
+          example: '4578146'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocatedDriverResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No quote found for user
+            - Allocated driver not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /sales-quotes/{sales_quote_id}/allocated-drivers:
+    get:
+      summary: Get list of allocated drivers
+      description: This endpoint retrieves a list of allocated drivers for the authenticated driver, based on a sales quote ID.Deprecated since 2023-09-15 and version 3.46.0, instead use the `GET /sales-quotes/{sales_quote_id}/allocated-drivers/` endpoint on the **miles-quotation-v4** service
+      operationId: getAllocatedDrivers
+      parameters:
+        - name: sales_quote_id
+          in: path
+          description: ID of the sales quote
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocatedDriversResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- No quote found for user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/ordered-quotations/{quote_id}/documents/{document_id}:
+    get:
+      summary: Get document attached to ordered quotation
+      description: This endpoint downloads a specific document attached to the given ordered quotation. Deprecated since 2023-11-30 and version 3.49.0 in favor of the 'GET /orders/{order_id}/documents/{document_id}' endpoint on the **miles-fleet-order-v1** service.
+      operationId: getAttachedDocument
+      parameters:
+        - name: quote_id
+          in: path
+          description: ID of the ordered quotation
+          required: true
+          schema:
+            type: string
+        - name: document_id
+          in: path
+          description: ID of the document attached to the ordered quotation
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Response is a download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          x-isResponseFile: 'true'
+        '401':
+          description: Unauthorized
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No quote found for user
+            - No document found
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/documents/{document_id}:
+    get:
+      summary: Get document attached to authenticated driver
+      description: This endpoint downloads a specific document attached to the authenticated driver.
+      operationId: getAttachedDriverDocument
+      parameters:
+        - name: document_id
+          in: path
+          description: ID of the document
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Response is a download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          x-isResponseFile: 'true'
+        '401':
+          description: Unauthorized
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- No document found'
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: '- Failed to download document'
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Failed to download document'
+          content:
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/document-templates:
+    get:
+      summary: Get available document templates for authenticated driver
+      description: This endpoint retrieves the available document templates for document generation by the authenticated driver.
+      operationId: getAvailableDriverDocumentTemplates
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAvailableDocumentTemplatesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/bike-policies/{bike_policy_id}:
+    get:
+      summary: Get bike policy
+      description: This endpoint retrieves a bike policy for the authenticated driver.
+      operationId: getBikePolicy
+      parameters:
+        - name: bike_policy_id
+          in: path
+          description: ID of the bike policy
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BikePolicy'
+        '400':
+          description: '- Customer not valid for authenticated user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- No such bike policy found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/car-policies/{car_policy_id}:
+    get:
+      summary: Get car policy
+      description: This endpoint retrieves a car policy for the authenticated driver.
+      operationId: getCarPolicy
+      parameters:
+        - name: car_policy_id
+          in: path
+          description: ID of the car policy
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarPolicy'
+        '400':
+          description: '- Customer not valid for authenticated user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- No such car policy found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current:
+    get:
+      summary: Retrieve data of authenticated driver
+      description: This endpoint retrieves the personal data of the authenticated driver.
+      operationId: getDriverDetail
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentFetchedDriver'
+        '400':
+          description: '- Invalid customer ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+    put:
+      summary: Update data of authenticated driver
+      description: This endpoint updates the personal data of the authenticated driver.
+      operationId: updateDriverDetail
+      requestBody:
+        description: Data needed to update the driver
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDriverRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '400':
+          description: '- Usage of multiple exclusive parameters not permitted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: |-
+            - No countries found
+            - Address not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: '- Failed to change the driver password'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Failed to change the driver password'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/mobility-plans/{mobility_plan_id}:
+    get:
+      summary: Get mobility plan
+      description: This endpoint retrieves a mobility plan.
+      operationId: getMobilityPlan
+      parameters:
+        - name: mobility_plan_id
+          in: path
+          description: ID of the mobility plan
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMobilityPlanResponse'
+        '400':
+          description: '- Invalid customer ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- No mobility plan found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/ordered-quotations/{quote_id}:
+    get:
+      summary: Get ordered quotation
+      description: This endpoint retrieves an ordered quotation.
+      operationId: getOrderedQuotation
+      parameters:
+        - name: quote_id
+          in: path
+          description: ID of the quote
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderedQuotation'
+        '400':
+          description: |-
+            - Customer not valid for authenticated user
+            - Invalid customer ID
+            - Ordered quotation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '500':
+          description: |-
+            - Vehicle on ordered quotation not found
+            - Missing vehicle nature on ordered quotation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/vehicles/{vehicle_id}:
+    get:
+      summary: Get vehicle
+      description: This endpoint retrieves a vehicle for the authenticated driver.
+      operationId: getVehicle
+      parameters:
+        - name: vehicle_id
+          in: path
+          description: ID of the vehicle
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDriverFleetVehicleResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '404':
+          description: '- Vehicle data for driver not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      deprecated: true
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/contacts:
+    get:
+      summary: List management contacts for the current driver
+      description: This endpoint retrieves a list of management contacts for the authenticated driver.
+      operationId: listDriverContacts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDriverContactsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /drivers/filters:
+    get:
+      summary: List filters
+      description: This endpoint retrieves a list of filters with their possible summaries.
+      operationId: listFilters
+      parameters:
+        - name: filter_id
+          in: query
+          description: ID(s) of the filter(s)
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListFiltersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/mobility-plans:
+    get:
+      summary: List mobility plans for authenticated driver
+      description: This endpoint retrieves a list of mobility plans for the authenticated driver.
+      operationId: listMobilityPlans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMobilityPlansResponse'
+        '400':
+          description: '- Invalid customer ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+  /driver/current/reset-password:
+    put:
+      summary: Reset password of authenticated driver
+      description: This endpoint resets the password of the authenticated driver.
+      operationId: resetDriverPassword
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+        '422':
+          description: '- Failed to reset the driver password'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WarningsInfoDTO'
+        '500':
+          description: '- Failed to reset the driver password'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionInfoDTO'
+      security:
+        - Roles:
+            - mobility_user
+components:
+  schemas:
+    MultiLanguageValue:
+      title: MultiLanguageValue
+      type: object
+      properties:
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '170392'
+        translation:
+          type: string
+          description: The translation of the multi-language ID in human-readable format
+          example: Hatchback
+      description: Miles API v1 representation of a translated string value.
+    OrderedQuotationDocument:
+      type: object
+      properties:
+        quoteId:
+          type: string
+        documentId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        documentType:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    AttachedDocumentRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          description: file data
+          format: binary
+        description:
+          type: string
+    ExceptionInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/problems/microservices/service-unavailable
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Service Unavailable
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: The requested service is not available.
+        message:
+          description: Message objects containing translation information
+          $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '34898219'
+    WarningsInfoDTO:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type. This provides human-readable documentation for the problem type when dereferenced.
+          example: https://api.sofico.global/warnings/microservices/unprocessable-entity
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type
+          example: Unprocessable Entity
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Unable to process payload due to invalid data.
+        messages:
+          type: array
+          description: An array of message objects containing translation information
+          items:
+            $ref: '#/components/schemas/MultiLanguageValue'
+        arguments:
+          type: array
+          description: Additional arguments that provide context for the error
+          items:
+            type: string
+            example: '23121434'
+        isInteractiveWarning:
+          type: boolean
+          description: Indicates whether this error requires user interaction
+          example: false
+    UpdatePassword:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+    AbstractValue:
+      type: object
+      description: An object that contains the actual value
+    Address:
+      type: object
+      properties:
+        addressId:
+          type: string
+          description: The address ID
+          example: '23287213'
+        formattedAddress:
+          type: string
+          description: This parameter should no longer be used
+          deprecated: true
+        addressLine1:
+          description: Address line 1
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1Number:
+          description: Address line 1 number
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine2:
+          description: Address line 2
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine3:
+          description: Address line 3
+          $ref: '#/components/schemas/MultiLanguageValue'
+        city:
+          description: City
+          $ref: '#/components/schemas/MultiLanguageValue'
+        locationIdentification:
+          description: The location of identification
+          $ref: '#/components/schemas/MultiLanguageValue'
+        postalCode:
+          type: string
+          description: The postal code of the address
+          example: '9000'
+        state:
+          description: The state of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        deleted:
+          type: boolean
+          description: If the address must be deleted, only when the address ID is given
+          example: true
+          default: false
+        country:
+          description: Country
+          $ref: '#/components/schemas/Country'
+      description: Use driverAddress instead
+      deprecated: true
+    AllocatedDriverResponse:
+      type: object
+      properties:
+        contactId:
+          type: string
+          description: The contact ID of the driver
+          example: '2000568'
+        firstName:
+          type: string
+          description: The first name of the driver
+          example: John
+        middleName:
+          type: string
+          description: The middle name of the driver
+          example: Jeff
+        lastName:
+          type: string
+          description: The last name of the driver
+          example: Doe
+        identification:
+          type: string
+          description: The identification of the driver
+          example: John Jeff Doe
+        isMainDriver:
+          type: boolean
+          description: Indicates whether the driver is the main driver on the quote
+          example: true
+        customerId:
+          type: string
+          description: The ID of the customer this driver belongs to
+          example: '20356789'
+        dateOfBirth:
+          type: string
+          description: The date of birth of the driver
+          format: date
+          example: '2026-03-27'
+        officialRegistration:
+          type: string
+          description: The official registration of the driver
+          example: PD-001
+        gender:
+          description: The gender of the driver
+          $ref: '#/components/schemas/EnumValue'
+        personTitle:
+          description: The person title of the driver
+          $ref: '#/components/schemas/EnumValue'
+        driverStatus:
+          description: The driver status
+          $ref: '#/components/schemas/EnumValue'
+        driverAddress:
+          description: The address of the driver
+          $ref: '#/components/schemas/DriverAddress'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          description: A list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        customers:
+          type: array
+          description: A list of customers
+          items:
+            $ref: '#/components/schemas/Customer'
+        language:
+          description: The language for the driver
+          $ref: '#/components/schemas/DriverLanguage'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+          x-Included in response from detail_level: MEDIUM
+      description: An allocated driver
+    AllocatedDriversResponse:
+      type: object
+      properties:
+        allocatedDrivers:
+          type: array
+          description: A list of allocated drivers
+          items:
+            $ref: '#/components/schemas/AllocatedDriverResponse'
+    ContactAddress:
+      type: object
+      properties:
+        label:
+          description: The contact address label
+          $ref: '#/components/schemas/EnumValue'
+        address:
+          description: The address
+          $ref: '#/components/schemas/Address'
+    Country:
+      type: object
+      properties:
+        countryId:
+          type: string
+        countryCodeISO2:
+          type: string
+        countryCodeISO3:
+          type: string
+        countryCodeISONumber:
+          type: integer
+          format: int32
+        countryName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        countryPhoneCode:
+          type: string
+        ecCountryCode:
+          type: string
+      description: The country the phone number is from
+    Customer:
+      type: object
+      properties:
+        customerId:
+          type: string
+          description: The ID of the customer
+          example: '1234'
+        businessUnitLegalName:
+          type: string
+          description: The name of the legal unit
+          example: management
+        tradingName:
+          type: string
+          description: The trading name
+          example: Sofico
+        addresses:
+          type: array
+          description: The addresses of the customer
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+      description: The customer of the driver
+    DriverAddress:
+      type: object
+      properties:
+        label:
+          description: The address label
+          $ref: '#/components/schemas/EnumValue'
+        address:
+          description: The address
+          $ref: '#/components/schemas/Address'
+      description: The address of the driver
+    DriverLanguage:
+      type: object
+      properties:
+        languageId:
+          type: string
+          description: The ID of the language
+          example: '2147599982'
+        reference:
+          type: string
+          description: The reference of the language
+          example: nl
+        description:
+          type: string
+          description: Deprecated since 2022-12-01 and version '3.41.0' in favor of 'translatedDescription'
+          deprecated: true
+        translatedDescription:
+          description: The translation of the language
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The language for the driver
+    DynamicAttributeValue:
+      title: DynamicAttributeValue
+      type: object
+      properties:
+        valueType:
+          type: integer
+          description: |
+            Based on this integer the 'value' will consist of a value matching these types: 
+             * 1  = MultiLanguageValue 
+             * 2  = EnumValue 
+             * 3  = MultiCurrencyValue 
+             * 4  = DoubleUnitValue 
+             * 5  = IntegerUnitValue 
+             * 6  = StringValue 
+             * 7  = IntegerValue 
+             * 8  = DoubleValue 
+             * 9  = BooleanValue 
+             * 10 = UnnamedValue 
+             * 11 = DateValue 
+             * 12 = TimeValue 
+             * 13 = DateTimeValue 
+             * 14 = ZonedDateTimeValue 
+             * 15 = LongValue 
+          format: int32
+          example: 7
+        value:
+          description: An object that contains the actual value
+          $ref: '#/components/schemas/AbstractValue'
+        sysRepAttributeId:
+          type: string
+          description: The Miles back-office application ID that describes the attribute
+      description: Miles API v1 representation of a dynamic attribute value.It has a 'valueType' as a discriminator for the actual 'value'.The 'sysRepAttributeId' identifies which attribute value is represented.
+    EnumValue:
+      title: EnumValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID
+          example: '100002'
+        attributeTypeId:
+          type: string
+          description: ' The ID of the attribute type'
+          example: '237'
+        enumGroupId:
+          type: string
+          description: This will be represented as a separate attribute value
+          example: '1350'
+          deprecated: true
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '24379'
+        translation:
+          type: string
+          description: The translation of the enumeration ID in human-readable format
+          example: Request
+        enabled:
+          type: boolean
+          description: Indicates whether this object can still be used
+          example: true
+      description: Miles API v1 representation of an enum value. It contains additional values representing the attribute type and multi-language context.
+    InternetReference:
+      type: object
+      properties:
+        internetReferenceId:
+          type: string
+          description: The ID of the Internet reference
+          example: '2147599982'
+        url:
+          type: string
+          description: The URL
+          example: www.myfancysite.com
+        irType:
+          description: The Internet reference type
+          $ref: '#/components/schemas/EnumValue'
+        deleted:
+          type: boolean
+          description: Indicates whether the Internet reference needs to be deleted
+          example: false
+      description: Internet reference
+    PhoneNumber:
+      type: object
+      properties:
+        phoneNumberId:
+          type: string
+          description: The ID of the phone number
+          example: '2147599982'
+        phoneType:
+          description: The phone number type
+          $ref: '#/components/schemas/EnumValue'
+        countryPhoneCode:
+          type: string
+          description: The phone number country code
+          example: '32'
+        formattedPhoneNumber:
+          type: string
+          description: The formatted phone number
+          example: +32 9 223 11 33
+        country:
+          description: The country the phone number is from
+          $ref: '#/components/schemas/Country'
+        zonalPhoneNumber:
+          type: string
+          description: The zone number of phone number
+          example: '9'
+        localPhoneNumber:
+          type: string
+          description: The local part of phone number
+          example: '2231133'
+        deleted:
+          type: boolean
+          description: Indicates whether the phone number needs to be deleted
+          example: false
+      description: Phone number
+    AllocatedDriverRequest:
+      type: object
+      properties:
+        contactId:
+          type: string
+          description: The contact ID of the driver
+          example: '2000568'
+        firstName:
+          type: string
+          description: The first name of the driver
+          example: John
+        middleName:
+          type: string
+          description: The middle name of the driver
+          example: Jeff
+        lastName:
+          type: string
+          description: The last name of the driver
+          example: Doe
+        identification:
+          type: string
+          description: The identification of the driver
+          example: John Jeff Doe
+        isMainDriver:
+          type: boolean
+          description: Indicates whether the driver is the main driver on the quote
+          example: true
+        customerId:
+          type: string
+          description: The ID of the customer this driver belongs to
+          example: '20356789'
+        dateOfBirth:
+          type: string
+          description: The date of birth of the driver
+          format: date
+          example: '2026-03-27'
+        officialRegistration:
+          type: string
+          description: The official registration of the driver
+          example: PD-001
+        gender:
+          description: The gender of the driver
+          $ref: '#/components/schemas/EnumValue'
+        personTitle:
+          description: The person title of the driver
+          $ref: '#/components/schemas/EnumValue'
+        driverStatus:
+          description: The driver status
+          $ref: '#/components/schemas/EnumValue'
+        driverAddress:
+          description: The address of the driver
+          $ref: '#/components/schemas/DriverAddress'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          description: A list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        customers:
+          type: array
+          description: A list of customers
+          items:
+            $ref: '#/components/schemas/Customer'
+        language:
+          description: The language for the driver
+          $ref: '#/components/schemas/DriverLanguage'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+          x-Included in response from detail_level: MEDIUM
+    AttachedQuoteDocument:
+      type: object
+      properties:
+        quoteId:
+          type: string
+        documentId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        documentType:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    FindAttachedQuoteDocumentsResponse:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachedQuoteDocument'
+    AttachedDriverDocument:
+      type: object
+      properties:
+        driverId:
+          type: string
+        documentId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        documentType:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    FindAttachedDriverDocumentsResponse:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachedDriverDocument'
+    CarPolicyHelpContent:
+      type: object
+      properties:
+        carPolicyId:
+          type: string
+        topic:
+          type: string
+        language:
+          type: string
+        content:
+          type: string
+    CarPolicyHelpContentsResponse:
+      type: object
+      properties:
+        helpContents:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyHelpContent'
+    FindSite:
+      type: object
+      properties:
+        siteId:
+          type: string
+          description: The site ID
+          example: '100001'
+        name:
+          type: string
+          description: The site name
+          example: account 1
+        reference:
+          type: string
+          description: The site reference
+          example: reference 1
+        addresses:
+          type: array
+          description: A list of addresses
+          items:
+            $ref: '#/components/schemas/ContactAddress'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          description: A list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: Sites
+    FindSitesResponse:
+      type: object
+      properties:
+        sites:
+          type: array
+          description: A list of sites
+          items:
+            $ref: '#/components/schemas/FindSite'
+        totalCount:
+          type: integer
+          description: The number of sites that qualify for the filters
+          format: int64
+          example: 24
+    FindManager:
+      type: object
+      properties:
+        managerId:
+          type: string
+        identification:
+          type: string
+        employeeNumber:
+          type: string
+        jobTitle:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        managingCustomers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagerManagingCustomer'
+        unitAccount:
+          $ref: '#/components/schemas/UnitAccount'
+        customer:
+          $ref: '#/components/schemas/Customer'
+    FindManagersResponse:
+      type: object
+      properties:
+        managers:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindManager'
+    ManagerManagingCustomer:
+      type: object
+      properties:
+        managingCustomerId:
+          type: string
+        vehicleNature:
+          $ref: '#/components/schemas/EnumValue'
+        managerType:
+          $ref: '#/components/schemas/EnumValue'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        unitAccount:
+          $ref: '#/components/schemas/UnitAccount'
+    UnitAccount:
+      type: object
+      properties:
+        unitAccountId:
+          type: string
+        name:
+          type: string
+        unitAccountType:
+          $ref: '#/components/schemas/EnumValue'
+      description: The unit account information of the driver
+    DoubleUnitValue:
+      title: DoubleUnitValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value contains a decimal number
+          format: double
+          example: 3.9
+        unit:
+          description: The unit of the value
+          $ref: '#/components/schemas/UnitValue'
+      description: Miles API v1 representation of a double with an additional unit value.
+    FindBikeConfiguration:
+      type: object
+      properties:
+        bikeConfigurationId:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        catalogBikeId:
+          type: string
+        makeName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        modelName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        typeName:
+          type: string
+        catalogPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        nature:
+          $ref: '#/components/schemas/EnumValue'
+    FindCarConfiguration:
+      type: object
+      properties:
+        carConfigurationId:
+          type: string
+        co2Emission:
+          type: integer
+          format: int32
+        kw:
+          type: number
+          format: double
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        dinHp:
+          type: integer
+          format: int32
+        catalogCarId:
+          type: string
+        consumption:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        nature:
+          $ref: '#/components/schemas/EnumValue'
+        makeName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        modelName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        typeName:
+          type: string
+        cc:
+          type: number
+          format: double
+        engineFuelType:
+          $ref: '#/components/schemas/EnumValue'
+        imagesPath:
+          type: string
+        maximumNumberOfPassengers:
+          type: integer
+          format: int32
+        numberOfPassengers:
+          type: integer
+          format: int32
+        transmission:
+          $ref: '#/components/schemas/EnumValue'
+    FindDriver:
+      type: object
+      properties:
+        driverId:
+          type: string
+        identification:
+          type: string
+        employeeNumber:
+          type: string
+        jobTitle:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+      description: The driver for which this quote is
+    FindOrderedQuotation:
+      type: object
+      properties:
+        quoteId:
+          type: string
+        quoteReference:
+          type: string
+        pricesHidden:
+          type: boolean
+          deprecated: true
+        leasePricesHidden:
+          type: boolean
+        catalogPricesHidden:
+          type: boolean
+        vehicleNature:
+          $ref: '#/components/schemas/EnumValue'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        driver:
+          $ref: '#/components/schemas/FindDriver'
+        leasingCompany:
+          $ref: '#/components/schemas/LeasingCompany'
+        product:
+          $ref: '#/components/schemas/FindProduct'
+        contract:
+          $ref: '#/components/schemas/OrderedQuotationContract'
+        bikeConfiguration:
+          $ref: '#/components/schemas/FindBikeConfiguration'
+        carConfiguration:
+          $ref: '#/components/schemas/FindCarConfiguration'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+    FindOrderedQuotationsResponse:
+      type: object
+      properties:
+        orderedQuotations:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindOrderedQuotation'
+        totalCount:
+          type: integer
+          format: int64
+    FindProduct:
+      type: object
+      properties:
+        productId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        distance:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        duration:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        proRataDistance:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        interestRate:
+          type: number
+          format: double
+        applicableLeasePrice:
+          $ref: '#/components/schemas/Price'
+        purchaseOptionValue:
+          $ref: '#/components/schemas/Price'
+        otherLeasePrices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Price'
+        dynamicAttributes:
+          type: array
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+        dynamicAttributesMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+    FleetVehicle:
+      type: object
+      properties:
+        fleetVehicleId:
+          type: string
+        licensePlate:
+          type: string
+        chassisNumber:
+          type: string
+        firstRegistrationDate:
+          type: string
+          format: date
+          example: '2026-03-27'
+        tire:
+          $ref: '#/components/schemas/Tire'
+        fleetVehicleStatus:
+          $ref: '#/components/schemas/EnumValue'
+      description: The fleet vehicle of the contract
+    ForeignCurrencyValue:
+      title: ForeignCurrencyValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value that holds the currency amount
+          format: double
+          example: 25.56
+        currency:
+          type: string
+          description: The ISO code of the currency
+          example: USD
+      description: Miles API v1 representation of a foreign currency value.
+    LeasingCompany:
+      type: object
+      properties:
+        leasingCompanyId:
+          type: string
+      description: The leasing company of the driver
+    MultiCurrencyValue:
+      title: MultiCurrencyValue
+      type: object
+      properties:
+        value:
+          type: number
+          description: The value that holds the currency amount
+          format: double
+          example: 25.56
+        currencyValue:
+          type: number
+          description: The currency amount in a different currency. Deprecated since 2025-07-10 and version '3.5.0' in favor of 'foreignCurrency'.
+          format: double
+          example: 27.56
+          deprecated: true
+        currencyId:
+          type: string
+          description: The ID of the currency. Deprecated since 2025-07-10 and version '3.5.0' in favor of 'foreignCurrency'.
+          example: '2'
+          deprecated: true
+        currency:
+          type: string
+          description: The ISO code of the reference currency
+          example: EUR
+        foreignCurrency:
+          description: Foreign currency information
+          $ref: '#/components/schemas/ForeignCurrencyValue'
+      description: Miles API v1 representation of a currency value.
+    OrderedQuotationContract:
+      type: object
+      properties:
+        contractId:
+          type: string
+          description: The ID of the contract
+          example: '123456'
+        contractReference:
+          type: string
+          description: The reference of the contract
+          example: 123456/001
+        startDate:
+          type: string
+          description: The start date of the contract
+          format: date
+          example: '2026-03-27'
+        contractStatus:
+          description: The status of the contract
+          $ref: '#/components/schemas/EnumValue'
+        fleetVehicle:
+          description: The fleet vehicle of the contract
+          $ref: '#/components/schemas/FleetVehicle'
+        vehicleOrder:
+          description: The vehicle order of the contract
+          $ref: '#/components/schemas/VehicleOrder'
+        salesQuote:
+          description: The sales quote of the contract
+          $ref: '#/components/schemas/SalesQuoteID'
+        requestQuote:
+          description: Use salesQuote instead
+          $ref: '#/components/schemas/RequestQuote'
+      description: The contract generated from this quote
+    Price:
+      type: object
+      properties:
+        value:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        budgetUnit:
+          $ref: '#/components/schemas/EnumValue'
+    RequestQuote:
+      type: object
+      properties:
+        quoteId:
+          type: string
+      description: Use salesQuote instead
+      deprecated: true
+    SalesQuoteID:
+      type: object
+      properties:
+        salesQuoteId:
+          type: string
+          description: The ID of the sales quote
+          example: '123456'
+      description: The sales quote of the contract
+    Tire:
+      type: object
+      properties:
+        tireId:
+          type: string
+        tireSpecification:
+          type: string
+        tireConstruction:
+          $ref: '#/components/schemas/EnumValue'
+    UnitValue:
+      title: UnitValue
+      type: object
+      properties:
+        enumId:
+          type: string
+          description: The enumeration ID of the unit
+          example: '1605'
+        multiLanguageId:
+          type: string
+          description: The multi-language ID that can be used to retrieve the translation in other languages
+          example: '33284'
+        translation:
+          type: string
+          description: The translation of the unit in human-readable format
+          example: L/100km
+      description: Miles API v1 representation of a unit value. It typically is part of a DoubleUnitValue or IntegerUnitValue.
+    VehicleOrder:
+      type: object
+      properties:
+        vehicleOrderId:
+          type: string
+        estimatedDeliveryDate:
+          type: string
+          format: date
+          example: '2026-03-27'
+        orderStatus:
+          $ref: '#/components/schemas/EnumValue'
+        externalOrderStatus:
+          description: The Status assigned to order by external data platform
+          $ref: '#/components/schemas/EnumValue'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+      description: The vehicle order of the contract
+    GenerateDocumentRequest:
+      type: object
+      properties:
+        documentTemplateId:
+          type: string
+    DocumentTemplate:
+      type: object
+      properties:
+        documentTemplateId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    GetAvailableDocumentTemplatesResponse:
+      type: object
+      properties:
+        documentTemplates:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentTemplate'
+    BikePolicy:
+      type: object
+      properties:
+        bikePolicyId:
+          type: string
+        name:
+          type: string
+        documentation:
+          type: string
+        isDraft:
+          type: boolean
+        durationMandatory:
+          type: boolean
+        term:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        mobilityPartType:
+          $ref: '#/components/schemas/EnumValue'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        bikePolicyRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/BikePolicyRule'
+    BikePolicyRule:
+      type: object
+      properties:
+        bikePolicyRuleId:
+          type: string
+        name:
+          type: string
+        filterBikeTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterMaxInvestmentPrice:
+          type: number
+          format: double
+        policyRuleType:
+          $ref: '#/components/schemas/EnumValue'
+    CarPolicy:
+      type: object
+      properties:
+        carPolicyId:
+          type: string
+        name:
+          type: string
+        documentation:
+          type: string
+        maxOptionalEquipmentValue:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        accessoriesNotAllowed:
+          type: boolean
+        distanceDurationMandatory:
+          type: boolean
+        customer:
+          $ref: '#/components/schemas/Customer'
+        policyDistanceDurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyDistanceDuration'
+        carPolicyGenericOptionRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyGenericOptionRule'
+        carPolicyRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyRule'
+        upgradeCostImpact:
+          $ref: '#/components/schemas/EnumValue'
+        carPolicyVehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyVehicle'
+        distanceDuration:
+          $ref: '#/components/schemas/EnumValue'
+        mobilityPartType:
+          $ref: '#/components/schemas/EnumValue'
+        fleetPolicyType:
+          $ref: '#/components/schemas/EnumValue'
+    CarPolicyCatalogOption:
+      type: object
+      properties:
+        catalogOptionTypeId:
+          type: string
+        catalogOptionCode:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        optionType:
+          $ref: '#/components/schemas/EnumValue'
+    CarPolicyCatalogVehicle:
+      type: object
+      properties:
+        catalogVehicleId:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    CarPolicyGenericOptionRule:
+      type: object
+      properties:
+        carPolicyGenericOptionRuleId:
+          type: string
+        genericOptionId:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        policyRuleType:
+          $ref: '#/components/schemas/EnumValue'
+        optionType:
+          $ref: '#/components/schemas/EnumValue'
+        catalogPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+    CarPolicyRule:
+      type: object
+      properties:
+        carPolicyRuleId:
+          type: string
+        name:
+          type: string
+        filterBodyStyles:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterFuelTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterFuelTypeGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterVehicleNatures:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterPowerTrains:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterNumberOfDoors:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterTransmissionGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterEnergyLabels:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnumValue'
+        filterColors:
+          type: array
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/CarPolicyRuleColor'
+        filterCars:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyRuleCar'
+        filterMaxCatalogPrice:
+          type: number
+          format: double
+        filterMaxCC:
+          type: number
+          format: double
+        minMaxValidations:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinMaxValidation'
+        policyRuleType:
+          $ref: '#/components/schemas/EnumValue'
+    CarPolicyRuleCar:
+      type: object
+      properties:
+        carId:
+          type: string
+        make:
+          $ref: '#/components/schemas/CarPolicyRuleCarMake'
+        models:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyRuleCarModel'
+    CarPolicyRuleCarMake:
+      type: object
+      properties:
+        makeId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    CarPolicyRuleCarModel:
+      type: object
+      properties:
+        modelId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    CarPolicyRuleColor:
+      type: object
+      properties:
+        genericOptionId:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+      deprecated: true
+    CarPolicyVehicle:
+      type: object
+      properties:
+        carPolicyVehicleId:
+          type: string
+        catalogVehicle:
+          $ref: '#/components/schemas/CarPolicyCatalogVehicle'
+        vehicleConfigurationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyVehicleConfigurationRule'
+        vehicleContactCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyVehicleContactCategory'
+    CarPolicyVehicleConfiguration:
+      type: object
+      properties:
+        carPolicyVehicleConfigurationId:
+          type: string
+        catalogOption:
+          $ref: '#/components/schemas/CarPolicyCatalogOption'
+        isDefault:
+          type: boolean
+    CarPolicyVehicleConfigurationRule:
+      type: object
+      properties:
+        vehicleConfigurationRuleId:
+          type: string
+        vehicleConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CarPolicyVehicleConfiguration'
+    CarPolicyVehicleContactCategory:
+      type: object
+      properties:
+        carPolicyVehicleContactCategoryId:
+          type: string
+        contactCategory:
+          $ref: '#/components/schemas/ContactCategory'
+        downgradeCompensation:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        upgradeCost:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        upgradeCostImpact:
+          $ref: '#/components/schemas/EnumValue'
+    ContactCategory:
+      type: object
+      properties:
+        contactCategoryId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The contact category of the driver
+    MinMaxValidation:
+      type: object
+      properties:
+        minMaxValidationId:
+          type: string
+        min:
+          type: number
+          format: double
+        max:
+          type: number
+          format: double
+        values:
+          type: array
+          items:
+            type: string
+        customAttribute:
+          $ref: '#/components/schemas/EnumValue'
+    PolicyDistanceDuration:
+      type: object
+      properties:
+        policyDistanceDurationId:
+          type: string
+        forFuelType:
+          $ref: '#/components/schemas/EnumValue'
+        forPowerTrain:
+          $ref: '#/components/schemas/EnumValue'
+        distance:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        yearlyDistance:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        term:
+          $ref: '#/components/schemas/DoubleUnitValue'
+    Consent:
+      type: object
+      properties:
+        consentId:
+          type: string
+          description: The consent ID
+          example: '10001'
+        optInDate:
+          type: string
+          description: Date the consent was given
+          format: date
+          example: '2026-03-27'
+        optOutDate:
+          type: string
+          description: Date the consent was revoked
+          format: date
+          example: '2026-03-27'
+        dataProcessingActivity:
+          description: The data processing activity
+          $ref: '#/components/schemas/DataProcessingActivity'
+      description: The user consent
+    CurrentFetchedDriver:
+      type: object
+      properties:
+        driverId:
+          type: string
+          description: The ID of the driver
+          example: '1234'
+        firstName:
+          type: string
+          description: The first name of the driver
+          example: John
+        middleName:
+          type: string
+          description: The middle name of the driver
+          example: Alfred
+        lastName:
+          type: string
+          description: The last name of the driver
+          example: Doe
+        identification:
+          type: string
+          description: The identification of the driver
+          example: John Doe
+        dateOfBirth:
+          type: string
+          description: The date of birth of the driver
+          format: date
+          example: '2026-03-27'
+        officialRegistration:
+          type: string
+          description: The official registration of the driver, deprecated since 2023-01-23 and version 3.43.0
+          deprecated: true
+        employeeNumber:
+          type: string
+          description: The employee number of the driver
+        jobTitle:
+          type: string
+          description: The job title of the driver
+          example: CEO
+        gender:
+          description: The gender of the driver
+          $ref: '#/components/schemas/EnumValue'
+        personTitle:
+          description: The person title of the driver
+          $ref: '#/components/schemas/EnumValue'
+        driverAddresses:
+          type: array
+          description: A list of addresses of the driver
+          items:
+            $ref: '#/components/schemas/DriverAddress'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers of the driver
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          description: A list of internet references of the driver
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        contactCategories:
+          type: array
+          description: A list of contact categories of the driver
+          items:
+            $ref: '#/components/schemas/ContactCategory'
+        language:
+          description: The language of the driver
+          $ref: '#/components/schemas/DriverLanguage'
+        unitAccount:
+          description: The unit account information of the driver
+          $ref: '#/components/schemas/UnitAccount'
+        customer:
+          description: The customer linked to the driver
+          $ref: '#/components/schemas/Customer'
+        leasingCompany:
+          description: The leasing company of the driver
+          $ref: '#/components/schemas/LeasingCompany'
+        consents:
+          type: array
+          description: A list of user consents
+          items:
+            $ref: '#/components/schemas/Consent'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        userAccount:
+          description: The user account of the driver
+          $ref: '#/components/schemas/UserAccount'
+        manager:
+          description: A driver manager
+          $ref: '#/components/schemas/Manager'
+        isImpersonated:
+          type: boolean
+          description: Indicates whether the current driver is impersonated by a web support user
+    DataProcessingActivity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The data processing activity ID
+          example: '1830'
+        description:
+          type: string
+          description: The data processing activity description
+          example: Sales & Marketing
+      description: The data processing activity
+    Manager:
+      type: object
+      properties:
+        contactId:
+          type: string
+          description: The manager's contact ID
+          example: '100012'
+        identification:
+          type: string
+          description: The manager's identification
+          example: manager_identification_12
+        middleName:
+          type: string
+          description: The manager's middle name
+          example: Dane
+        firstName:
+          type: string
+          description: The manager's first name
+          example: John
+        lastName:
+          type: string
+          description: The manager's last name
+          example: Jackson
+        email:
+          type: string
+          description: The manager's email address
+          example: fred.blogs:@sofico.be
+      description: A driver manager
+    UserAccount:
+      type: object
+      properties:
+        userAccountId:
+          type: string
+          description: The user account ID
+          example: '100001'
+        signOn:
+          type: string
+          description: The sign-on ID for this user account
+          example: john.doe@sofico.be
+      description: The user account of the driver
+    GetMobilityPlanResponse:
+      type: object
+      properties:
+        mobilityPlan:
+          $ref: '#/components/schemas/MobilityPlan'
+    MobilityPlan:
+      type: object
+      properties:
+        mobilityPlanId:
+          type: string
+        availableFrom:
+          type: string
+          format: date
+          example: '2026-03-27'
+        availableTo:
+          type: string
+          format: date
+          example: '2026-03-27'
+        description:
+          type: string
+        name:
+          type: string
+        schemeId:
+          type: string
+          description: The ID of the salary sacrifice scheme
+          example: 43c47620-1997-4979-bfd1-25fb7763b9af
+        mobilityBudgetUnit:
+          $ref: '#/components/schemas/EnumValue'
+        priceVisibility:
+          $ref: '#/components/schemas/EnumValue'
+        leasePriceVisibility:
+          $ref: '#/components/schemas/EnumValue'
+        discountVisibility:
+          $ref: '#/components/schemas/EnumValue'
+        catalogPriceVisibility:
+          $ref: '#/components/schemas/EnumValue'
+        status:
+          $ref: '#/components/schemas/EnumValue'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        contactCategory:
+          $ref: '#/components/schemas/ContactCategory'
+        contactCategories:
+          type: array
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/ContactCategory'
+        defaultContactCategory:
+          $ref: '#/components/schemas/ContactCategory'
+        otherContactCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactCategory'
+        mobilityPlanParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/MobilityPlanPart'
+        thirdPartyMobilityPlanParts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThirdPartyMobilityPlanPart'
+        productRentalProfile:
+          description: Product rental profile
+          $ref: '#/components/schemas/ProductRentalProfile'
+    MobilityPlanPart:
+      type: object
+      properties:
+        mobilityPlanPartId:
+          type: string
+        maxDownPayment:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        maxDownPaymentPercentage:
+          type: number
+          format: double
+        mobilityBudget:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        mobilityPartType:
+          $ref: '#/components/schemas/EnumValue'
+        downPaymentInvoicing:
+          $ref: '#/components/schemas/EnumValue'
+        downPaymentParameter:
+          $ref: '#/components/schemas/EnumValue'
+        fleetPolicy:
+          $ref: '#/components/schemas/MobilityPlanPartFleetPolicy'
+        selectedQuotationTemplate:
+          description: The selected quotation template of the mobility part
+          $ref: '#/components/schemas/QuotationTemplate'
+    MobilityPlanPartFleetPolicy:
+      type: object
+      properties:
+        fleetPolicyId:
+          type: string
+        name:
+          type: string
+        fleetPolicyType:
+          $ref: '#/components/schemas/EnumValue'
+    ProductRentalProfile:
+      type: object
+      properties:
+        productRentalProfileId:
+          type: string
+          description: The product rental profile ID
+          example: '600023'
+        name:
+          description: The rental profile name
+          $ref: '#/components/schemas/MultiLanguageValue'
+        isDefault:
+          type: boolean
+          description: Indicates whether this rental profile is the default on the product
+          example: true
+      description: Product rental profile
+    QuotationTemplate:
+      type: object
+      properties:
+        quotationTemplateId:
+          type: string
+          description: The ID of the quotation template
+          example: '10001'
+        name:
+          description: The name of the quotation template
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The selected quotation template of the mobility part
+    ThirdPartyMobilityPlanPart:
+      type: object
+      properties:
+        mobilityPlanPartId:
+          type: string
+        maxDownPayment:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        maxDownPaymentPercentage:
+          type: number
+          format: double
+        mobilityBudget:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        mobilityPartType:
+          $ref: '#/components/schemas/EnumValue'
+        downPaymentInvoicing:
+          $ref: '#/components/schemas/EnumValue'
+        downPaymentParameter:
+          $ref: '#/components/schemas/EnumValue'
+        fleetPolicy:
+          $ref: '#/components/schemas/MobilityPlanPartFleetPolicy'
+        selectedQuotationTemplate:
+          description: The selected quotation template of the mobility part
+          $ref: '#/components/schemas/QuotationTemplate'
+        thirdPartyBudgetType:
+          $ref: '#/components/schemas/EnumValue'
+        frequencyType:
+          $ref: '#/components/schemas/EnumValue'
+        strategyType:
+          $ref: '#/components/schemas/EnumValue'
+        allocationMethod:
+          $ref: '#/components/schemas/EnumValue'
+        vatIncluded:
+          type: boolean
+        unlimited:
+          type: boolean
+    BikeConfiguration:
+      type: object
+      properties:
+        bikeConfigurationId:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        catalogBikeId:
+          type: string
+        makeId:
+          type: string
+        makeName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        modelName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        typeName:
+          type: string
+        modelYear:
+          type: string
+        frameType:
+          $ref: '#/components/schemas/EnumValue'
+        frameSize:
+          type: string
+        color:
+          type: string
+        wheelType:
+          type: string
+        gears:
+          type: string
+        lockStandard:
+          type: boolean
+        lockPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        extraInfo:
+          type: string
+        nature:
+          $ref: '#/components/schemas/EnumValue'
+        netPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        catalogPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumerPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        discountPercentage:
+          type: number
+          format: double
+        discountAmount:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        isDealerImposed:
+          type: boolean
+        supplier:
+          $ref: '#/components/schemas/Supplier'
+        totalOptionPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        vehicleOptionConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleOptionConfiguration'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+      description: The bike configuration in this quote
+    CarConfiguration:
+      type: object
+      properties:
+        carConfigurationId:
+          type: string
+          description: The ID of the car configuration
+          example: '2153'
+        acceleration:
+          type: number
+          description: The acceleration of the car
+          format: double
+          example: 2.1
+        bodyStyle:
+          description: The style of the body of the car
+          $ref: '#/components/schemas/EnumValue'
+        drive:
+          description: The drive of the car
+          $ref: '#/components/schemas/EnumValue'
+        emissionNorm:
+          description: The emission norm of the car
+          $ref: '#/components/schemas/EnumValue'
+        energyLabel:
+          description: The energy label of the car
+          $ref: '#/components/schemas/EnumValue'
+        fiscalPower:
+          type: integer
+          description: The fiscal power of the car
+          format: int32
+          example: 23
+        fiscalValue:
+          type: number
+          description: The fiscal value or list price of a vehicle.
+          format: double
+          example: 52000
+        height:
+          type: integer
+          description: The height of the car
+          format: int32
+          example: 25
+        length:
+          type: integer
+          description: The length of the car
+          format: int32
+          example: 475
+        width:
+          type: integer
+          description: The width of the car
+          format: int32
+          example: 89
+        maxLoad:
+          description: The maximum load of the car
+          $ref: '#/components/schemas/DoubleUnitValue'
+        netWeight:
+          description: The net weight of the car
+          $ref: '#/components/schemas/DoubleUnitValue'
+        modelYear:
+          type: string
+          description: The year of the model of the car
+          format: date
+          example: '2026-03-27'
+        maxWeight:
+          description: The maximum weight of the car
+          $ref: '#/components/schemas/DoubleUnitValue'
+        noxEmission:
+          type: integer
+          description: '(NOx) emissions is the nitrogen oxides that a car emits in mg/km '
+          format: int32
+          example: 151
+        numberOfCylinders:
+          type: integer
+          description: Number of cylinders the car has
+          format: int32
+          example: 4
+        numberOfDoors:
+          description: Number of doors the car has
+          $ref: '#/components/schemas/EnumValue'
+        tankContents:
+          type: number
+          description: The content of the tank
+          format: double
+          example: 55
+        tireSpecification:
+          type: string
+          description: The specification of the tire
+          example: 225 45 17 V
+        torque:
+          type: integer
+          description: The torque of the car in Nm
+          format: int32
+          example: 175
+        trailerLoadBraked:
+          description: Braked weight is the maximum weight of a trailer, caravan, boat trailer or horsebox that has its own brakes.
+          $ref: '#/components/schemas/DoubleUnitValue'
+        trailerLoadUnbraked:
+          description: Unbraked weight is the maximum weight of a trailer, caravan, boat trailer or horsebox that is not capable of braking independently.
+          $ref: '#/components/schemas/DoubleUnitValue'
+        wheelbase:
+          type: integer
+          description: The with of the wheelbase in mm
+          format: int32
+          example: 2578
+        description:
+          description: The description of the car
+          $ref: '#/components/schemas/MultiLanguageValue'
+        catalogCarId:
+          type: string
+          description: The catalog car ID
+          example: '604213'
+        makeId:
+          type: string
+          description: The ID of the make of the car
+          example: '456789123'
+        modelReference:
+          type: string
+          description: The reference of the model of the car
+          example: CAR-1002L
+        makeName:
+          description: The name of the make of the car
+          $ref: '#/components/schemas/MultiLanguageValue'
+        modelName:
+          description: The name of the model of the car
+          $ref: '#/components/schemas/MultiLanguageValue'
+        typeName:
+          type: string
+          description: The type of the car
+          example: 1.2 TFSI S TRONIC AMBITION PRO LINE SPOR
+        consumption:
+          description: How much the car consumes
+          $ref: '#/components/schemas/DoubleUnitValue'
+        co2Emission:
+          type: integer
+          description: The CO2 that the car emits in g/km
+          format: int32
+          example: 174
+        kW:
+          type: number
+          description: The power of the car in kw
+          format: double
+          example: 118
+        dinHp:
+          type: integer
+          description: The power of the car in DIN hp
+          format: int32
+          example: 160
+        cc:
+          type: number
+          description: The engine capacity measured in cubic centimeters
+          format: double
+          example: 1800
+        engineFuelType:
+          description: The kind of engine the car has
+          $ref: '#/components/schemas/EnumValue'
+        imagesPath:
+          type: string
+          description: The path to the image of the car
+          example: AUDI/A4/2017/5ES*
+        maximumNumberOfPassengers:
+          type: integer
+          description: The maximum number of passengers that can be carried by the vehicle, including extra foldable seats on top of the standard ones
+          format: int32
+          example: 7
+        numberOfPassengers:
+          type: integer
+          description: The standard number of passengers that can be carried by the vehicle
+          format: int32
+          example: 5
+        transmission:
+          description: The kind of transmission the car has
+          $ref: '#/components/schemas/EnumValue'
+        nature:
+          description: The nature
+          $ref: '#/components/schemas/EnumValue'
+        powertrain:
+          description: Kind of powertrain the car has
+          $ref: '#/components/schemas/EnumValue'
+        netPrice:
+          description: The net price for the car
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        catalogPrice:
+          description: The catalog price of the car
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumerPrice:
+          description: The consumer price of the car
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        discountPercentage:
+          type: number
+          description: Discount percentage
+          format: double
+          example: 0.25
+        discountAmount:
+          description: The amount of discount
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        isDealerImposed:
+          type: boolean
+          description: Indicates whether this specific dealership needs to be used
+        requestedDeliveryDate:
+          type: string
+          description: Requested date when the delivery should happen
+          format: date
+          example: '2026-03-27'
+        requestedDeliveryLocation:
+          type: string
+          description: The requested delivery location
+          example: Zwijnaarde
+        expectedDeliveryDate:
+          type: string
+          description: Expected date when the delivery should happen
+          format: date
+          example: '2026-03-27'
+        firstRegistrationDate:
+          type: string
+          description: First registration date of the vehicle
+          format: date
+          example: '2026-03-27'
+        mileage:
+          description: The mileage that the car has on the odometer
+          $ref: '#/components/schemas/DoubleUnitValue'
+        licensePlate:
+          type: string
+          description: License plate
+          example: AF25EDF
+        chassisNumber:
+          type: string
+          description: Chassis number
+          example: 1HGBH41JXMN109186
+        totalOptionPrice:
+          description: The total option price of all the options selected
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        vehicleOptionConfigurations:
+          type: array
+          description: A list of options for the vehicle
+          items:
+            $ref: '#/components/schemas/VehicleOptionConfiguration'
+        vehicleDiscountConfiguration:
+          description: Vehicle discount configuration
+          $ref: '#/components/schemas/VehicleDiscountConfiguration'
+        supplier:
+          description: The supplier
+          $ref: '#/components/schemas/Supplier'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+      description: The car configuration in this quote
+    MobilityPlanReference:
+      type: object
+      properties:
+        mobilityPlanId:
+          type: string
+        name:
+          type: string
+      description: The mobility plan linked with this quote
+    OrderedQuotation:
+      type: object
+      properties:
+        quoteId:
+          type: string
+          description: The Quote ID
+        quoteReference:
+          type: string
+          description: The Quote reference
+        baseQuoteId:
+          type: string
+          description: The quote this quote is based on
+        quoteStatus:
+          description: The status of the quote
+          $ref: '#/components/schemas/EnumValue'
+        vehicleNature:
+          description: The vehicle nature of the vehicle in this quote
+          $ref: '#/components/schemas/EnumValue'
+        vehicleCode:
+          type: string
+          description: The code of the vehicle linked to the quote
+          example: AB12CD
+        customer:
+          description: The customer for which this quote is
+          $ref: '#/components/schemas/Customer'
+        driver:
+          description: The driver for which this quote is
+          $ref: '#/components/schemas/FindDriver'
+        leasingCompany:
+          description: The leasing company in this quote
+          $ref: '#/components/schemas/LeasingCompany'
+        product:
+          description: The product in this quote
+          $ref: '#/components/schemas/Product'
+        carConfiguration:
+          description: The car configuration in this quote
+          $ref: '#/components/schemas/CarConfiguration'
+        bikeConfiguration:
+          description: The bike configuration in this quote
+          $ref: '#/components/schemas/BikeConfiguration'
+        contract:
+          description: The contract generated from this quote
+          $ref: '#/components/schemas/OrderedQuotationContract'
+        mobilityPlan:
+          description: The mobility plan linked with this quote
+          $ref: '#/components/schemas/MobilityPlanReference'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+        pricesHidden:
+          type: boolean
+          deprecated: true
+        leasePricesHidden:
+          type: boolean
+          description: Are lease prices hidden
+        discountsHidden:
+          type: boolean
+          description: Are discounts hidden
+        catalogPricesHidden:
+          type: boolean
+          description: Indicates whether catalog prices are hidden
+        quotationTemplate:
+          description: The quotation template of the quote
+          $ref: '#/components/schemas/QuoteQuotationTemplate'
+        vehicle:
+          description: The vehicle
+          $ref: '#/components/schemas/Vehicle'
+    Product:
+      type: object
+      properties:
+        productId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        distance:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        duration:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        proRataDistance:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        interestRate:
+          type: number
+          format: double
+        applicableLeasePrice:
+          $ref: '#/components/schemas/Price'
+        purchaseOptionValue:
+          $ref: '#/components/schemas/Price'
+        otherLeasePrices:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Price'
+        customerUpfront:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        driverUpfront:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        productComponent:
+          $ref: '#/components/schemas/ProductComponent'
+        productConfiguration:
+          $ref: '#/components/schemas/ProductConfiguration'
+        dynamicAttributes:
+          type: array
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+        dynamicAttributesMap:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+      description: The product in this quote
+    ProductComponent:
+      type: object
+      properties:
+        productComponentId:
+          type: string
+        name:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    ProductConfiguration:
+      type: object
+      properties:
+        reference:
+          type: string
+        productId:
+          type: string
+        prodSettings:
+          type: array
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/ProductSetting'
+        productSettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSetting'
+    ProductSetting:
+      type: object
+      properties:
+        reference:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSettingChoice'
+        qualSettings:
+          type: array
+          deprecated: true
+          items:
+            $ref: '#/components/schemas/QualifierSetting'
+        qualifierSettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/QualifierSetting'
+    ProductSettingChoice:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        selected:
+          type: boolean
+    QualifierSetting:
+      type: object
+      properties:
+        reference:
+          type: string
+        condition:
+          type: array
+          items:
+            type: string
+        minValue:
+          type: number
+          format: double
+        maxValue:
+          type: number
+          format: double
+        value:
+          type: string
+        dataType:
+          type: string
+        fix:
+          type: boolean
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/QualifierSettingChoice'
+    QualifierSettingChoice:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        selected:
+          type: boolean
+    QuoteQuotationTemplate:
+      type: object
+      properties:
+        quotationTemplateId:
+          type: string
+          description: The ID of the quotation template
+          example: '600080'
+        name:
+          description: The name of the quotation template
+          $ref: '#/components/schemas/MultiLanguageValue'
+      description: The quotation template of the quote
+    Supplier:
+      type: object
+      properties:
+        supplierId:
+          type: string
+        emailAddress:
+          type: string
+          deprecated: true
+        address:
+          $ref: '#/components/schemas/Address'
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        name:
+          type: string
+        reference:
+          type: string
+    UnnamedValue:
+      type: object
+      properties:
+        qualifier:
+          type: string
+        qualifierMultiLanguageId:
+          type: string
+        qualifierType:
+          type: string
+        qualifierDefaultValue:
+          type: string
+        value:
+          $ref: '#/components/schemas/AbstractValue'
+        multiLanguageId:
+          type: string
+        translation:
+          type: string
+        valueType:
+          type: integer
+          format: int32
+      description: Qualifier 3
+    Vehicle:
+      type: object
+      properties:
+        condition:
+          description: The vehicle condition
+          $ref: '#/components/schemas/EnumValue'
+      description: The vehicle
+    VehicleDiscountConfiguration:
+      type: object
+      properties:
+        vehicleDiscountConfigurationId:
+          type: string
+      description: Vehicle discount configuration
+    VehicleOptionConfiguration:
+      type: object
+      properties:
+        vehicleOptionConfigurationId:
+          type: string
+          description: The ID of the vehicle option configuration
+        catalogPrice:
+          description: The catalog price of the option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        consumerPrice:
+          description: The consumer price of the option
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        description:
+          description: The description of the option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        isStandard:
+          type: boolean
+          description: Is this a standard option
+        isSelected:
+          type: boolean
+          description: Is this option selected
+        optionCode:
+          type: string
+          description: The code of the option
+        vehicleOptionConfigurationPackId:
+          type: string
+          description: The ID of the option configuration pack
+        qualifier1:
+          description: Qualifier 1
+          $ref: '#/components/schemas/UnnamedValue'
+        qualifier2:
+          description: Qualifier 2
+          $ref: '#/components/schemas/UnnamedValue'
+        qualifier3:
+          description: Qualifier 3
+          $ref: '#/components/schemas/UnnamedValue'
+        vehicleConfigurationId:
+          type: string
+          description: The ID of the vehicle configuration to which this option belongs
+        annotations:
+          description: Additional annotations for this option
+          $ref: '#/components/schemas/MultiLanguageValue'
+        catalogVATCode:
+          description: The VAT catalog code
+          $ref: '#/components/schemas/EnumValue'
+        optionType:
+          description: The type of option
+          $ref: '#/components/schemas/EnumValue'
+        supplierId:
+          type: string
+          description: The ID of the supplier for this option
+        catalogOptionTypeId:
+          type: string
+          description: The catalog option type
+        genericOptionId:
+          type: string
+          description: The generic option ID
+        vehicleOptionConfigurationPacks:
+          type: array
+          description: The option configuration packs
+          items:
+            $ref: '#/components/schemas/VehicleOptionConfiguration'
+        vehicleOptionConfigurations:
+          type: array
+          description: Vehicle option configurations
+          items:
+            $ref: '#/components/schemas/VehicleOptionConfiguration'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+          x-miles-extra-description:
+            Included in response from detail_level: MEDIUM
+    DriverFleetVehicle:
+      type: object
+      properties:
+        vehicleId:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        cc:
+          type: number
+          format: double
+        chassisNumber:
+          type: string
+        co2Emission:
+          type: integer
+          format: int32
+        consumption:
+          $ref: '#/components/schemas/DoubleUnitValue'
+        dinHP:
+          type: integer
+          format: int32
+        firstRegistrationDate:
+          type: string
+          format: date
+          example: '2026-03-27'
+        licensePlate:
+          type: string
+        makeName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        modelName:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        numberOfPassengers:
+          type: integer
+          format: int32
+        trimLevel:
+          type: string
+        typeName:
+          type: string
+        tyreSpecification:
+          type: string
+        bodyStyle:
+          $ref: '#/components/schemas/EnumValue'
+        fleetVehicleStatus:
+          $ref: '#/components/schemas/EnumValue'
+        fuelType:
+          $ref: '#/components/schemas/EnumValue'
+        nature:
+          $ref: '#/components/schemas/EnumValue'
+        vehicleCategory:
+          $ref: '#/components/schemas/EnumValue'
+        transmission:
+          $ref: '#/components/schemas/EnumValue'
+        cilinders:
+          type: integer
+          format: int32
+        kW:
+          type: number
+          format: double
+        engineCapacity:
+          type: number
+          format: double
+        numberOfDoors:
+          $ref: '#/components/schemas/EnumValue'
+        energyLabel:
+          $ref: '#/components/schemas/EnumValue'
+        tankContents:
+          type: number
+          format: double
+        options:
+          $ref: '#/components/schemas/DriverFleetVehicleOptions'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+        tires:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverFleetVehicleTire'
+    DriverFleetVehicleOption:
+      type: object
+      properties:
+        catalogPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        catalogVAT:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        discountAmount:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        discountPercentage:
+          type: number
+          format: double
+        isPack:
+          type: boolean
+        isStandard:
+          type: boolean
+        optionCode:
+          type: string
+        optionType:
+          $ref: '#/components/schemas/EnumValue'
+        vehicleOptionId:
+          type: string
+    DriverFleetVehicleOptionPack:
+      type: object
+      properties:
+        catalogPrice:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        catalogVAT:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        discountAmount:
+          $ref: '#/components/schemas/MultiCurrencyValue'
+        discountPercentage:
+          type: number
+          format: double
+        isPack:
+          type: boolean
+        isStandard:
+          type: boolean
+        optionCode:
+          type: string
+        optionType:
+          $ref: '#/components/schemas/EnumValue'
+        vehicleOptionId:
+          type: string
+        optionPacks:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverFleetVehicleOptionPack'
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverFleetVehicleOption'
+    DriverFleetVehicleOptions:
+      type: object
+      properties:
+        optionPacks:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverFleetVehicleOptionPack'
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverFleetVehicleOption'
+    DriverFleetVehicleTire:
+      type: object
+      properties:
+        specification:
+          type: string
+        tireConstruction:
+          $ref: '#/components/schemas/EnumValue'
+        tireStatus:
+          $ref: '#/components/schemas/EnumValue'
+        tireType:
+          $ref: '#/components/schemas/EnumValue'
+        tireUse:
+          $ref: '#/components/schemas/EnumValue'
+        tireLocation:
+          $ref: '#/components/schemas/EnumValue'
+        vehicleTireId:
+          type: string
+    ListDriverFleetVehicleResponse:
+      type: object
+      properties:
+        vehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverFleetVehicle'
+        totalCount:
+          type: integer
+          format: int64
+    DriverManagerContact:
+      type: object
+      properties:
+        contactId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        title:
+          type: string
+        internetReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverAddress'
+    ListDriverContactsResponse:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriverManagerContact'
+    Filter:
+      type: object
+      properties:
+        filterId:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+        filterValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterValue'
+    FilterValue:
+      type: object
+      properties:
+        filterValueId:
+          type: string
+        description:
+          $ref: '#/components/schemas/MultiLanguageValue'
+    ListFiltersResponse:
+      type: object
+      properties:
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
+    ListMobilityPlansResponse:
+      type: object
+      properties:
+        mobilityPlans:
+          type: array
+          items:
+            $ref: '#/components/schemas/MobilityPlan'
+    Driver:
+      type: object
+      properties:
+        driverId:
+          type: string
+          description: The ID of the driver
+          example: '1234'
+        firstName:
+          type: string
+          description: The first name of the driver
+          example: John
+        middleName:
+          type: string
+          description: The middle name of the driver
+          example: Alfred
+        lastName:
+          type: string
+          description: The last name of the driver
+          example: Doe
+        identification:
+          type: string
+          description: The identification of the driver
+          example: John Doe
+        dateOfBirth:
+          type: string
+          description: The date of birth of the driver
+          format: date
+          example: '2026-03-27'
+        officialRegistration:
+          type: string
+          description: The official registration of the driver, removed since 2023-01-23 and version 3.43.0
+          deprecated: true
+        employeeNumber:
+          type: string
+          description: The employee number of the driver, removed since 2023-01-23 and version 3.43.0
+          deprecated: true
+        jobTitle:
+          type: string
+          description: The job title of the driver
+          example: CEO
+        gender:
+          description: The gender of the driver
+          $ref: '#/components/schemas/EnumValue'
+        personTitle:
+          description: The person title of the driver
+          $ref: '#/components/schemas/EnumValue'
+        driverAddresses:
+          type: array
+          description: A list of addresses of the driver
+          items:
+            $ref: '#/components/schemas/DriverAddress'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers of the driver
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          description: A list of internet references of the driver
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        contactCategories:
+          type: array
+          description: A list of contact categories of the driver
+          items:
+            $ref: '#/components/schemas/ContactCategory'
+        language:
+          description: The language of the driver
+          $ref: '#/components/schemas/DriverLanguage'
+        unitAccount:
+          description: The unit account information of the driver
+          $ref: '#/components/schemas/UnitAccount'
+        customer:
+          description: The customer of the driver
+          $ref: '#/components/schemas/Customer'
+        leasingCompany:
+          description: The leasing company of the driver
+          $ref: '#/components/schemas/LeasingCompany'
+        dynamicAttributes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DynamicAttributeValue'
+          description: A map of dynamic attributes
+    AddressRequest:
+      type: object
+      properties:
+        addressId:
+          type: string
+          description: The address ID
+          example: '23287213'
+        addressLine1:
+          description: Address line 1
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine1Number:
+          description: Address line 1 number
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine2:
+          description: Address line 2
+          $ref: '#/components/schemas/MultiLanguageValue'
+        addressLine3:
+          description: Address line 3
+          $ref: '#/components/schemas/MultiLanguageValue'
+        city:
+          description: City
+          $ref: '#/components/schemas/MultiLanguageValue'
+        postalCode:
+          type: string
+          description: The postal code of the address
+          example: '9000'
+        state:
+          description: The state of the address
+          $ref: '#/components/schemas/MultiLanguageValue'
+        isDeleted:
+          type: boolean
+          description: If the address must be deleted, only when the address ID is given
+          example: true
+          default: false
+        country:
+          maxLength: 3
+          minLength: 2
+          type: string
+          description: Country
+          format: ISO3166-1 alpha-2 or ISO3166-1 alpha-3
+          example: BE
+      description: Address of the driver
+    UpdateDriverRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The first name of the driver
+          example: John
+        middleName:
+          type: string
+          description: The middle name of the driver
+          example: Alfred
+        lastName:
+          type: string
+          description: The last name of the driver
+          example: Doe
+        dateOfBirth:
+          type: string
+          description: The date of birth of the driver
+          format: date
+          example: '2026-03-27'
+        officialRegistration:
+          type: string
+          description: The official registration of the driver, removed since 2023-01-09 and version 3.43.0
+          deprecated: true
+        employeeNumber:
+          type: string
+          description: The employee number of the driver, removed since 2023-01-09 and version 3.43.0
+          deprecated: true
+        jobTitle:
+          type: string
+          description: The job title of the driver
+          example: CEO
+        gender:
+          description: The gender of the driver
+          $ref: '#/components/schemas/EnumValue'
+        personTitle:
+          description: The person title of the driver
+          $ref: '#/components/schemas/EnumValue'
+        address:
+          description: Use driverAddress instead
+          $ref: '#/components/schemas/Address'
+        driverAddress:
+          type: array
+          description: A list of addresses for the driver
+          items:
+            $ref: '#/components/schemas/AddressRequest'
+        phoneNumbers:
+          type: array
+          description: A list of phone numbers
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+        internetReferences:
+          type: array
+          description: A list of internet references
+          items:
+            $ref: '#/components/schemas/InternetReference'
+        language:
+          description: The language for the driver
+          $ref: '#/components/schemas/DriverLanguage'
+  securitySchemes:
+    Roles:
+      type: openIdConnect
+      description: Users need to have certain roles to be able to access certain API endpoints. If there are no roles defined for the endpoint, * is shown. This means that every authorized user has access to the endpoint.
+      openIdConnectUrl: ''
+x-tagGroups:
+  - name: User experience-oriented endpoints
+    tags:
+      - ''
