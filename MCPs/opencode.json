@@ -1,0 +1,154 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "@warp-dot-dev/opencode-warp",
+    "@warp-dot-dev/opencode-warp@0.1.5",
+    "openrtk",
+    "opencode-token-monitor@latest",
+    "opencode-mobile@latest"
+  ],
+  "disabled_providers": [],
+  "provider": {
+    "nexumrouter": {
+      "name": "Nexum Router",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://www.dialagram.me/router/v1"
+      },
+      "models": {
+        "qwen-3.6-plus": {
+          "name": "Qwen 3.6 plus",
+          "id": "qwen-3.6-plus"
+        },
+        "qwen-3.6-plus-thinking": {
+          "name": "Qwen 3.6 plus thinking",
+          "id": "qwen-3.6-plus-thinking"
+        }
+      }
+    }
+  },
+  "mcp": {
+    "Memory": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "enabled": true
+    },
+    "Filesystem": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/marcio_oliveira/Development/teamwill/mobilize"
+      ],
+      "enabled": true
+    },
+    "Playwright": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@playwright/mcp@latest"
+      ],
+      "enabled": true
+    },
+    "Atlassian": {
+      "type": "local",
+      "command": [
+        "npx",
+        "mcp-remote",
+        "https://mcp.atlassian.com/v1/mcp"
+      ],
+      "enabled": true
+    },
+    "Tana": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "mcp-remote",
+        "http://127.0.0.1:8262/mcp"
+      ],
+      "enabled": true
+    },
+    "Onedrive": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@pnp/cli-microsoft365-mcp-server@latest"
+      ],
+      "enabled": true
+    },
+    "Figma": {
+      "type": "remote",
+      "url": "http://127.0.0.1:3845/mcp"
+    },
+    "GitNexus": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "gitnexus",
+        "mcp"
+      ],
+      "enabled": true
+    },
+    "Superset": {
+      "type": "remote",
+      "url": "https://api.superset.sh/api/v2/agent/mcp",
+      "oauth": {}
+    }
+  },
+  "permission": {
+    "bash": {
+      "npm run lint *": "allow",
+      "git diff *": "allow",
+      "head *": "allow",
+      "npm run dev *": "allow",
+      "git log *": "allow",
+      "git show *": "allow",
+      "sed *": "allow",
+      "sdk *": "allow",
+      "grep *": "allow",
+      "awk *": "allow",
+      "lsof *": "allow",
+      "curl *": "allow",
+      "sleep *": "allow"
+    },
+    "edit": {
+      "*": "deny"
+    },
+    "write": {
+      "*": "deny"
+    },
+    "patch": {
+      "*": "deny"
+    },
+    "Atlassian_getAccessibleAtlassianResources": {
+      "*": "allow"
+    },
+    "Atlassian_getJiraIssue": {
+      "*": "allow"
+    },
+    "Atlassian_createJiraIssue": {
+      "*": "deny"
+    },
+    "Atlassian_updateJiraIssue": {
+      "*": "deny"
+    },
+    "Atlassian_createConfluencePage": {
+      "*": "deny"
+    },
+    "Atlassian_updateConfluencePage": {
+      "*": "deny"
+    },
+    "Filesystem_read_text_file": {
+      "*": "allow"
+    }
+  }
+}
