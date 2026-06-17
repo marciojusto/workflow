@@ -35,7 +35,10 @@
         "-y",
         "@modelcontextprotocol/server-memory"
       ],
-      "enabled": true
+      "enabled": true,
+      "environment": {
+        "MEMORY_FILE_PATH": "/home/marcio/.config/opencode/memory.jsonl"
+        }
     },
     "Filesystem": {
       "type": "local",
