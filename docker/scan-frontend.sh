@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script para executar análise SonarQube para o projeto hyperfront (Nuxt/Vue)
-# Usage: ./scan-hyperfront.sh [options]
+# Usage: ./scan-frontend.sh [options]
 
 set -e
 
@@ -78,7 +78,7 @@ echo "Project Key: $SONAR_PROJECT_KEY"
 echo "Host: $SONAR_HOST"
 echo "Project Dir: $PROJECT_DIR"
 
-# Run SonarQube scanner using npx
+# Run SonarQube scanner using local binary
 cd "$PROJECT_DIR"
 
 # Build authentication parameters
@@ -89,8 +89,8 @@ else
   AUTH_ARGS="-Dsonar.login=$SONAR_USER -Dsonar.password=$SONAR_PASSWORD"
 fi
 
-# Using sonar-scanner via npx (or install locally via npm)
-npx -y sonar-scanner \
+# Using local sonar-scanner binary (ARM64)
+~/.local/bin/sonar-scanner \
   -Dsonar.host.url="$SONAR_HOST" \
   -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
   $AUTH_ARGS \

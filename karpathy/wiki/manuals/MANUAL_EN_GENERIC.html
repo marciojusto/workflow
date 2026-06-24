@@ -1,0 +1,2810 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Manual (Generic)</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-deep: #0a0e14;
+    --bg-primary: #0d1117;
+    --bg-secondary: #131920;
+    --bg-tertiary: #1a2129;
+    --bg-elevated: #21262d;
+    --border-subtle: #21262d;
+    --border-default: #30363d;
+    --border-strong: #484f58;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-tertiary: #6e7681;
+    --text-muted: #484f58;
+    --accent-blue: #58a6ff;
+    --accent-cyan: #39c5cf;
+    --accent-green: #3fb950;
+    --accent-yellow: #d29922;
+    --accent-orange: #db6d28;
+    --accent-red: #f85149;
+    --accent-purple: #a371f7;
+    --accent-pink: #db61a2;
+    --gradient-blue: linear-gradient(135deg, #1f6feb, #388bfd);
+    --gradient-green: linear-gradient(135deg, #238636, #3fb950);
+    --gradient-purple: linear-gradient(135deg, #a371f7, #db61a2);
+    --gradient-orange: linear-gradient(135deg, #d29922, #db6d28);
+    --gradient-cyan: linear-gradient(135deg, #0891b2, #39c5cf);
+    --glow-blue: rgba(56, 139, 253, 0.3);
+    --glow-green: rgba(63, 185, 80, 0.25);
+    --glow-purple: rgba(163, 113, 247, 0.25);
+    --glow-orange: rgba(219, 109, 40, 0.25);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 15px;
+    min-height: 100vh;
+}
+
+.app-container { display: flex; min-height: 100vh; }
+
+.sidebar {
+    width: 280px; background: var(--bg-primary);
+    border-right: 1px solid var(--border-subtle);
+    position: fixed; height: 100vh; overflow-y: auto;
+    z-index: 100; padding: 0;
+}
+
+.sidebar-header {
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.sidebar-logo {
+    display: flex; align-items: center; gap: 12px;
+}
+
+.sidebar-logo-icon {
+    width: 40px; height: 40px;
+    background: var(--gradient-blue);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 20px var(--glow-blue);
+}
+
+.sidebar-logo-text {
+    font-size: 18px; font-weight: 700;
+    background: var(--gradient-blue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.sidebar-version {
+    display: inline-block; margin-top: 8px;
+    padding: 4px 10px; background: var(--bg-tertiary);
+    border-radius: 20px; font-size: 11px;
+    color: var(--text-tertiary); font-weight: 500;
+}
+
+.sidebar-section {
+    padding: 16px 12px 8px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.sidebar-nav { padding: 4px 8px; }
+
+.nav-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px; font-weight: 500;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.nav-link.active {
+    background: var(--bg-tertiary);
+    color: var(--accent-blue);
+}
+
+.nav-icon { font-size: 16px; }
+
+.main-content {
+    margin-left: 280px;
+    flex: 1; padding: 40px 60px;
+    max-width: 900px;
+}
+
+h1 {
+    font-size: 32px; font-weight: 800;
+    margin-bottom: 16px;
+    background: var(--gradient-blue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    font-size: 24px; font-weight: 700;
+    margin: 48px 0 16px;
+    color: var(--text-primary);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+h3 {
+    font-size: 18px; font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--accent-blue);
+}
+
+h4 {
+    font-size: 16px; font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--text-primary);
+}
+
+p { margin-bottom: 16px; color: var(--text-secondary); }
+
+a {
+    color: var(--accent-blue);
+    text-decoration: none;
+}
+
+a:hover { text-decoration: underline; }
+
+code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-tertiary);
+    padding: 2px 6px; border-radius: 4px;
+    font-size: 13px;
+    color: var(--accent-cyan);
+}
+
+pre {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 16px 0;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    color: var(--text-primary);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+th {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+td { color: var(--text-secondary); }
+
+tr:hover td { background: var(--bg-secondary); }
+
+ul, ol {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+li {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+}
+
+blockquote {
+    border-left: 4px solid var(--accent-blue);
+    padding: 16px 20px;
+    margin: 16px 0;
+    background: var(--bg-secondary);
+    border-radius: 0 8px 8px 0;
+}
+
+blockquote p { margin-bottom: 0; }
+
+strong { color: var(--text-primary); }
+
+em { color: var(--accent-purple); }
+
+hr {
+    border: none;
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 32px 0;
+}
+
+@media (max-width: 1024px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; padding: 24px; }
+}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">📚</div>
+                    <div class="sidebar-logo-text">Workflow Manual
+(Generic)</div>
+                </div>
+                <div class="sidebar-version">Version 2.6</div>
+            </div>
+            <div class="sidebar-section">Contents</div>
+            <div class="sidebar-nav">
+                <ul>
+                <li><a href="#workflow-manual-english"
+                id="toc-workflow-manual-english">Workflow Manual
+                (English)</a>
+                <ul>
+                <li><a href="#overview" id="toc-overview">1.
+                Overview</a></li>
+                <li><a href="#workflow-flowchart"
+                id="toc-workflow-flowchart">2. Workflow
+                Flowchart</a></li>
+                <li><a href="#agent-descriptions-and-functions"
+                id="toc-agent-descriptions-and-functions">3. Agent
+                Descriptions and Functions</a></li>
+                <li><a href="#agent-delegation-table"
+                id="toc-agent-delegation-table">4. Agent Delegation
+                Table</a></li>
+                <li><a href="#skill-descriptions"
+                id="toc-skill-descriptions">5. Skill
+                Descriptions</a></li>
+                <li><a href="#can-agents-be-invoked-individually"
+                id="toc-can-agents-be-invoked-individually">6. Can
+                Agents Be Invoked Individually?</a></li>
+                <li><a href="#can-agents-be-invoked-without-prompt"
+                id="toc-can-agents-be-invoked-without-prompt">7. Can
+                Agents Be Invoked Without Prompt?</a></li>
+                <li><a href="#error-handling-and-recovery"
+                id="toc-error-handling-and-recovery">8. Error Handling
+                and Recovery</a></li>
+                <li><a href="#gitnexus---code-intelligence"
+                id="toc-gitnexus---code-intelligence">9. GitNexus - Code
+                Intelligence</a></li>
+                <li><a href="#directory-structure"
+                id="toc-directory-structure">10. Directory
+                Structure</a></li>
+                <li><a href="#complete-hierarchy-summary"
+                id="toc-complete-hierarchy-summary">11. Complete
+                Hierarchy Summary</a></li>
+                <li><a href="#diagnostics-and-troubleshooting"
+                id="toc-diagnostics-and-troubleshooting">12. Diagnostics
+                and Troubleshooting</a></li>
+                <li><a href="#model-pricing-summary"
+                id="toc-model-pricing-summary">13. Model Pricing
+                Summary</a></li>
+                <li><a href="#token-optimization-guide-v2.5"
+                id="toc-token-optimization-guide-v2.5">Token
+                Optimization Guide (v2.5)</a></li>
+                <li><a href="#parallel-e2e-execution-v2.6"
+                id="toc-parallel-e2e-execution-v2.6">Parallel E2E
+                Execution (v2.6)</a></li>
+                </ul></li>
+                </ul>
+            </div>
+        </nav>
+        <main class="main-content">
+            <h1 id="workflow-manual-english">Workflow Manual
+            (English)</h1>
+            <blockquote>
+            <p>Version: 2.5 | Last Updated: 2026-05-19</p>
+            </blockquote>
+            <h2 id="overview">1. Overview</h2>
+            <p>This workflow is an automated implementation system for
+            Jira tickets that coordinates multiple AI agents to analyze
+            requirements, implement features, and validate results using
+            Playwright E2E tests.</p>
+            <h2 id="workflow-flowchart">2. Workflow Flowchart</h2>
+            <pre><code>┌─────────────────┐
+│ USER            │
+│ Provides Jira   │
+│ Ticket ID       │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ workflow-       │
+│ orchestrator    │
+│ Model: deepseek │
+│ v4-flash        │
+│ Mode: PRIMARY   │
+│ Timeout: 10min  │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    │         │
+    ▼         ▼
+┌───────┐ ┌───────────────┐
+│ START │ │ MANUAL        │
+│ wiki- │ │ Invocation    │
+│ keeper│ │ @wiki-keeper  │
+│ Model:│ │ @miles-expert │
+│ qwen  │ │ @e2e-runner  │
+│ 3.5   │ └───────────────┘
+└──┬────┘
+   │
+   ▼
+┌──────────┐
+│ miles-   │
+│ expert   │
+│ Model:   │
+│ deepseek │
+│ v4-pro   │
+│ Timeout: │
+│ 15min    │
+└────┬─────┘
+     │
+     ▼
+┌──────────────────┐
+│ workflow-jira-   │
+│ ticket (SKILL)   │
+│ 8 steps          │
+│ Timeout: 30min   │
+└──────┬───────────┘
+       │
+       ▼
+┌──────────┐
+│ e2e-runner│
+│ Model:   │
+│ Step-3.5 │
+│ Flash    │
+│ Timeout: │
+│ 15min    │
+└────┬─────┘
+     │
+     ▼
+┌──────────┐
+│ END      │
+│ wiki-    │
+│ keeper   │
+│ Create   │
+│ ticket   │
+│ note     │
+└──────────┘</code></pre>
+            <h2 id="agent-descriptions-and-functions">3. Agent
+            Descriptions and Functions</h2>
+            <h3 id="workflow-orchestrator">3.1
+            workflow-orchestrator</h3>
+            <table>
+            <colgroup>
+            <col style="width: 61%" />
+            <col style="width: 38%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>workflow-orchestrator</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.0.3</td>
+            </tr>
+            <tr>
+            <td><strong>Model</strong></td>
+            <td>opencode/deepseek-v4-flash-free-free</td>
+            </tr>
+            <tr>
+            <td><strong>Fallback Model</strong></td>
+            <td>kilo/moonshotai/kimi-k2.7-code</td>
+            </tr>
+            <tr>
+            <td><strong>Timeout</strong></td>
+            <td>10 minutes</td>
+            </tr>
+            <tr>
+            <td><strong>Mode</strong></td>
+            <td><strong>primary</strong> (user invokes directly)</td>
+            </tr>
+            <tr>
+            <td><strong>Primary Function</strong></td>
+            <td>Coordinate the complete implementation workflow</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Responsibilities:</strong> - Receive user tasks
+            or Jira ticket IDs - Delegate tasks to appropriate agents in
+            sequence - Manage error handling and correction cycles -
+            Request human approval when needed - Maintain workflow state
+            and traceability</p>
+            <p><strong>Error Handling:</strong> 1. If timeout: retry
+            with same model (up to retry limit) 2. If model error:
+            switch to fallback model 3. Log the error in workflow
+            history 4. If all retries exhausted: request human
+            intervention</p>
+            <p><strong>Emergency Commands:</strong> - <code>/stop</code>
+            or <code>/cancel</code>: Cancel workflow at any time</p>
+            <p><strong>When invoked:</strong> 1. User provides a task or
+            Jira ticket ID 2. Orchestrator starts the workflow at step 1
+            (wiki-keeper) 3. Orchestrator delegates to miles-expert for
+            analysis 4. Orchestrator invokes workflow-jira-ticket for
+            implementation 5. Orchestrator delegates to e2e-runner for
+            testing 6. Orchestrator invokes wiki-keeper at END to create
+            ticket notes 7. If tests fail, orchestrator loops back to
+            miles-expert</p>
+            <h3 id="orchestrator-operation-modes">3.1.1 Orchestrator
+            Operation Modes</h3>
+            <p>The workflow-orchestrator supports three operation
+            modes:</p>
+            <div class="line-block">Mode | Command | Description |</div>
+            <p>|——|———|————-|| | <strong>Auto</strong> |
+            <code>auto</code> | Full workflow (planning + execution) | |
+            <strong>Plan</strong> | <code>plan</code> | Planning only,
+            no code execution | | <strong>Build</strong> |
+            <code>build</code> | Execution only, from existing plan
+            |</p>
+            <p><strong>Flow by mode:</strong></p>
+            <pre><code>┌─────────────────────────────────────────────────────────┐
+│              WORKFLOW ORCHESTRATOR v1.0.2               │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│  Question: &quot;Which mode? auto/plan/build&quot;                │
+└────────────────────┬────────────────────────────────────┘
+                     │
+        ┌────────────┼────────────┬────────────┐
+        ▼            ▼            ▼            ▼
+    [AUTO]       [PLAN]       [BUILD]      [/STOP]
+        │            │            │
+        ▼            ▼            ▼
+   ┌─────────┐  ┌─────────┐  ┌──────────┐
+   │  FULL   │  │ PLAN    │  │ BUILD    │
+   │WORKFLOW │  │ ONLY    │  │ ONLY     │
+   └─────────┘  └─────────┘  └──────────┘
+        │            │            │
+        │            ▼            ▼
+        │    ┌────────────┐  ┌──────────────┐
+        │    │ &quot;Planning │  │ Read plan    │
+        │    │ complete! │  │ from .json   │
+        │    │ Type      │  │              │
+        │    │ BUILD&quot;   │  │ request-     │
+        │    └────────────┘  │ human-       │
+        │                    │ approval     │
+        │                    └──────────────┘
+        │                           │
+        └──────────┬────────────────┘
+                   ▼
+         ┌─────────────────┐
+         │  E2E-RUNNER   │
+         │ + WIKI-KEEPER   │
+         └─────────────────┘</code></pre>
+            <p><strong>AUTO Mode (default):</strong> - Full workflow:
+            wiki-keeper → miles-expert → workflow-jira-ticket (full) →
+            e2e-runner → wiki-keeper</p>
+            <p><strong>PLAN Mode:</strong> - wiki-keeper → miles-expert
+            → workflow-jira-ticket (create-plan + validate-plan only) -
+            <strong>Stops here</strong> and notifies: “Planning
+            complete. Type BUILD to continue”</p>
+            <p><strong>BUILD Mode:</strong> - Reads plan from
+            <code>.workflow/history/{ticket_id}.json</code> -
+            request-human-approval → workflow-jira-ticket (execute-plan
+            only) → validator → wiki-keeper</p>
+            <p><strong>Plan Persistence:</strong> - Plans are saved to:
+            <code>.workflow/history/{jira_ticket_id}.json</code> - BUILD
+            mode reads this file to continue execution</p>
+            <h3 id="wiki-keeper">3.2 wiki-keeper</h3>
+            <table>
+            <colgroup>
+            <col style="width: 61%" />
+            <col style="width: 38%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>wiki-keeper</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.0.1</td>
+            </tr>
+            <tr>
+            <td><strong>Model</strong></td>
+            <td>kilo/qwen/qwen3.5-flash-02-23</td>
+            </tr>
+            <tr>
+            <td><strong>Fallback Model</strong></td>
+            <td>kilo/qwen/qwen3.6-flash</td>
+            </tr>
+            <tr>
+            <td><strong>Retry</strong></td>
+            <td>3</td>
+            </tr>
+            <tr>
+            <td><strong>Timeout</strong></td>
+            <td>5 minutes</td>
+            </tr>
+            <tr>
+            <td><strong>Mode</strong></td>
+            <td>subagent</td>
+            </tr>
+            <tr>
+            <td><strong>Primary Function</strong></td>
+            <td>Knowledge management using the Karpathy Method</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>PDF Reading Capability:</strong> - wiki-keeper
+            can read PDF files (text or image-based) - Uses
+            <code>pdftotext</code> for selectable text PDFs - Uses
+            <code>pdftoppm</code> + <code>tesseract</code> (OCR) for
+            scanned/image PDFs - Requires tools: <code>poppler</code>
+            and <code>tesseract</code> (via Homebrew)</p>
+            <p><strong>Email (.eml) Reading Capability:</strong> -
+            wiki-keeper can read .eml email files - Uses Python’s
+            <code>email</code> library for full parsing - Handles
+            multipart emails (text/plain + text/html) - Decodes headers
+            (From, To, Subject, Date) - Extracts and cleans body content
+            (removes HTML tags) - Automatically assigns domain tags:
+            #okta, #party, #offer, #stipulations, #contract, #delivery,
+            #catalog, #general - Creates notes in
+            <code>wiki/emails/</code> directory - Processes new emails
+            automatically at workflow START</p>
+            <p><strong>Responsibilities:</strong> - Manage personal wiki
+            in Markdown format - Query existing knowledge in the wiki -
+            Ingest new documents (PDFs, OpenAPIs, etc.) - Create ticket
+            notes after implementation - Perform health checks on wiki
+            structure - Track processed files in control/log.md</p>
+            <p><strong>Operations:</strong> 1. <strong>Query
+            (Search)</strong>: Search existing notes in wiki 2.
+            <strong>Ingestion</strong>: Process new documents and create
+            notes 3. <strong>Health Check</strong>: Find orphaned notes,
+            resolve contradictions 4. <strong>Ticket Note
+            Creation</strong>: Create documentation for implemented
+            tickets</p>
+            <p><strong>Wiki Structure:</strong></p>
+            <pre><code>~/Development/company/project/workflow/karpathy/
+├── raw/           # Original immutable documents
+├── wiki/         # Generated notes
+│   ├── concepts/   # Fundamental concepts
+│   ├── references/  # API references, documentation
+│   └── projects/    # Ticket implementation notes
+├── history/      # Historical records
+└── control/      # index.md, log.md</code></pre>
+            <h3 id="miles-expert">3.3 miles-expert</h3>
+            <table>
+            <colgroup>
+            <col style="width: 61%" />
+            <col style="width: 38%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>miles-expert</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.1.0</td>
+            </tr>
+            <tr>
+            <td><strong>Model</strong></td>
+            <td>kilo/deepseek/deepseek-v4-pro</td>
+            </tr>
+            <tr>
+            <td><strong>Fallback Model</strong></td>
+            <td>kilo/moonshotai/kimi-k2.7-code</td>
+            </tr>
+            <tr>
+            <td><strong>Retry</strong></td>
+            <td>2</td>
+            </tr>
+            <tr>
+            <td><strong>Timeout</strong></td>
+            <td>15 minutes</td>
+            </tr>
+            <tr>
+            <td><strong>Mode</strong></td>
+            <td>subagent</td>
+            </tr>
+            <tr>
+            <td><strong>Primary Function</strong></td>
+            <td>European automotive domain expert
+            (leasing/financing)</td>
+            </tr>
+            <tr>
+            <td><strong>Reasoning</strong></td>
+            <td>mode: all (deep reasoning for bug investigation and code
+            analysis)</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Responsibilities:</strong> - Deep analysis of
+            Jira tickets (user stories and bugs) - Identify affected MMP
+            APIs (Miles/Sofico Platform) - Consult RAG materials
+            (OpenAPI specs, local files) - Ask clarifying questions
+            before proceeding - Invoke workflow-jira-ticket for
+            implementation</p>
+            <p><strong>Domain Knowledge:</strong> - 10 MMP APIs:
+            Quotation, Car Quote, Catalog, Dealer POS, Contract, Credit
+            Retail, Customer, Document, Driver, Supplier - EU vehicle
+            lifecycle regulations - VAT and tax calculations - Contract
+            lifecycle: quote → pending → active → terminated</p>
+            <h3 id="e2e-runner">3.4 e2e-runner</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>e2e-runner</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.1.0</td>
+            </tr>
+            <tr>
+            <td><strong>Model</strong></td>
+            <td>opencode/deepseek-v4-flash-free</td>
+            </tr>
+            <tr>
+            <td><strong>Fallback Model</strong></td>
+            <td>openrouter/qwen-3.6-plus</td>
+            </tr>
+            <tr>
+            <td><strong>Retry</strong></td>
+            <td>2</td>
+            </tr>
+            <tr>
+            <td><strong>Timeout</strong></td>
+            <td>15 minutes</td>
+            </tr>
+            <tr>
+            <td><strong>Mode</strong></td>
+            <td>subagent</td>
+            </tr>
+            <tr>
+            <td><strong>Primary Function</strong></td>
+            <td>E2E testing with Playwright</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Two Operation Modes:</strong></p>
+            <table>
+            <colgroup>
+            <col style="width: 24%" />
+            <col style="width: 36%" />
+            <col style="width: 40%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Mode</th>
+            <th>Trigger</th>
+            <th>Behavior</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Standalone</strong></td>
+            <td>User invokes directly</td>
+            <td>Asks what to do: Screenshot Analysis or E2E Test</td>
+            </tr>
+            <tr>
+            <td><strong>Orchestrated</strong></td>
+            <td>Another agent invokes</td>
+            <td>Runs E2E tests immediately (no questions)</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Standalone Mode (by user):</strong> - Asks user
+            to choose: Screenshot Analysis or E2E Test - Screenshot
+            Analysis: captures/describes system screens in structured
+            Markdown - E2E Test: validates Acceptance Criteria with
+            Playwright</p>
+            <p><strong>Orchestrated Mode (by agent):</strong> - Executes
+            E2E tests based on structured context (ticket_id, ACs,
+            workflow_id) - Returns JSON with passed/failed results</p>
+            <p><strong>Responsibilities:</strong> - Execute Playwright
+            E2E tests - Validate Acceptance Criteria (AC) - Take
+            screenshots at key validation points - Provide clear
+            pass/fail feedback - Include contextId in error output for
+            debugging - Analyze screenshots and describe in structured
+            Markdown (standalone mode)</p>
+            <p><strong>Guidelines:</strong> - When login expires: let
+            user log in again - When Data Privacy popup: click “sending
+            by email” - When postal code required: use 35309 - Proposal
+            phase button enabled after clicking “send secci”</p>
+            <h2 id="agent-delegation-table">4. Agent Delegation
+            Table</h2>
+            <table>
+            <colgroup>
+            <col style="width: 13%" />
+            <col style="width: 30%" />
+            <col style="width: 16%" />
+            <col style="width: 16%" />
+            <col style="width: 23%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Task</th>
+            <th>Delegate To</th>
+            <th>Model</th>
+            <th>Retry</th>
+            <th>Timeout</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Knowledge management (start)</td>
+            <td><span class="citation"
+            data-cites="wiki-keeper">@wiki-keeper</span></td>
+            <td>kilo/qwen/qwen3.5-flash-02-23</td>
+            <td>3</td>
+            <td>5min</td>
+            </tr>
+            <tr>
+            <td>Knowledge management (end)</td>
+            <td><span class="citation"
+            data-cites="wiki-keeper">@wiki-keeper</span></td>
+            <td>kilo/qwen/qwen3.5-flash-02-23</td>
+            <td>3</td>
+            <td>5min</td>
+            </tr>
+            <tr>
+            <td>Deep domain analysis (default)</td>
+            <td><span class="citation"
+            data-cites="miles-expert">@miles-expert</span></td>
+            <td>kilo/moonshotai/kimi-k2.7-code</td>
+            <td>2</td>
+            <td>10min</td>
+            </tr>
+            <tr>
+            <td>Deep domain analysis (escalation)</td>
+            <td><span class="citation"
+            data-cites="miles-expert">@miles-expert</span></td>
+            <td>kilo/deepseek/deepseek-v4-pro</td>
+            <td>2</td>
+            <td>15min</td>
+            </tr>
+            <tr>
+            <td>Independent plan review</td>
+            <td><span class="citation"
+            data-cites="review-plan">@review-plan</span></td>
+            <td>kilo/z-ai/glm-5.2</td>
+            <td>2</td>
+            <td>10min</td>
+            </tr>
+            <tr>
+            <td>Architecture coherence validation</td>
+            <td><span class="citation"
+            data-cites="coherence-checker">@coherence-checker</span></td>
+            <td>kilo/moonshotai/kimi-k2.7-code</td>
+            <td>2</td>
+            <td>8min</td>
+            </tr>
+            <tr>
+            <td>Test execution</td>
+            <td><span class="citation"
+            data-cites="e2e-runner">@e2e-runner</span></td>
+            <td>opencode/deepseek-v4-flash-free</td>
+            <td>2</td>
+            <td>15min</td>
+            </tr>
+            <tr>
+            <td>Implementation workflow</td>
+            <td><span class="citation"
+            data-cites="workflow-jira-ticket">@workflow-jira-ticket</span></td>
+            <td>(skill)</td>
+            <td>2</td>
+            <td>30min</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="fallback-models">Fallback Models</h3>
+            <p>If primary model fails, use these in order: 1.
+            <strong>wiki-keeper</strong>: kilo/qwen/qwen3.6-flash →
+            kilo/qwen/qwen3.5-flash-02-23 2.
+            <strong>miles-expert</strong>: M2.7 default → V4 Pro
+            escalation (on complexity/ambiguity) → V4 Pro fallback (on
+            failure) 3. <strong>e2e-runner</strong>:
+            kilo/moonshotai/kimi-k2.7-code → openrouter/qwen-3.6-plus
+            (self-fallback)</p>
+            <h3 id="miles-expert-model-selection">Miles-Expert Model
+            Selection</h3>
+            <ul>
+            <li><strong>Default</strong>: Kimi K2.6 (204,800 tokens) for
+            low/medium complexity, single-module analysis</li>
+            <li><strong>Escalation</strong>: DeepSeek V4 Pro (1M tokens)
+            when: high ambiguity, cross-module, large context, high
+            risk</li>
+            <li><strong>Fallback</strong>: If M2.7 fails → escalate to
+            V4 Pro</li>
+            </ul>
+            <h2 id="skill-descriptions">5. Skill Descriptions</h2>
+            <h3 id="workflow-jira-ticket-skill">5.1 workflow-jira-ticket
+            (SKILL)</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>workflow-jira-ticket</td>
+            </tr>
+            <tr>
+            <td><strong>Type</strong></td>
+            <td>Skill (iterative workflow)</td>
+            </tr>
+            <tr>
+            <td><strong>Retry</strong></td>
+            <td>2</td>
+            </tr>
+            <tr>
+            <td><strong>Timeout</strong></td>
+            <td>30 minutes</td>
+            </tr>
+            <tr>
+            <td><strong>Purpose</strong></td>
+            <td>Implement Jira tickets AC by AC</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>4 Operation Modes:</strong></p>
+            <table>
+            <thead>
+            <tr>
+            <th>Mode</th>
+            <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><code>nova</code></td>
+            <td>Full implementation for story ticket with ACs</td>
+            </tr>
+            <tr>
+            <td><code>bug</code></td>
+            <td>Bug fix for ticket without ACs</td>
+            </tr>
+            <tr>
+            <td><code>validar</code></td>
+            <td>Validate existing branch (checklist + screenshots)</td>
+            </tr>
+            <tr>
+            <td><code>continuar</code></td>
+            <td>Resume incomplete implementation from history</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Auto-Detect Project Type:</strong></p>
+            <p>The workflow automatically detects the project type:</p>
+            <table style="width:100%;">
+            <colgroup>
+            <col style="width: 24%" />
+            <col style="width: 28%" />
+            <col style="width: 29%" />
+            <col style="width: 17%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Detected Type</th>
+            <th>File Indicator</th>
+            <th>Test Framework</th>
+            <th>Command</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>nuxt-frontend</td>
+            <td>package.json + playwright.config.ts</td>
+            <td>Playwright</td>
+            <td>npx playwright test</td>
+            </tr>
+            <tr>
+            <td>java-spring-backend</td>
+            <td>pom.xml + src/test/java</td>
+            <td>JUnit/Maven</td>
+            <td>./mvnw test</td>
+            </tr>
+            <tr>
+            <td>node-backend</td>
+            <td>package.json (no playwright)</td>
+            <td>Jest/Mocha</td>
+            <td>npm test</td>
+            </tr>
+            </tbody>
+            </table>
+            <p>Default paths: - Frontend:
+            ~/Development/company/project/frontend-app - Backend (Java):
+            ~/Development/company/project/backend-app - Backend (Node):
+            detected from project root</p>
+            <p><strong>Full Flow:</strong> 0.
+            <strong>mode-selection</strong>: User selects mode
+            (nova/bug/validar/continuar) 0.1
+            <strong>check-project-guidelines</strong>: Read AGENTS.md
+            for project guidelines 0.2
+            <strong>check-app-running</strong>: Check if app is running
+            (validate mode only) 0.3
+            <strong>extract-jira-ticket</strong>: Extract ticket
+            details, ACs, attachments 0.4
+            <strong>check-all-done</strong>: Check if all ACs completed
+            0.5 <strong>analyze-with-miles-expert</strong> (MANDATORY -
+            nova/bug/continuar modes only, NOT validar): - Deep domain
+            analysis via miles-expert (ALWAYS executed) - Input: title,
+            description, ACs, current_ac, project_type - Output:
+            domain_analysis, risk_areas, dependencies - Used to inform
+            create-plan regardless of complexity</p>
+            <p><strong>Validate Mode (1):</strong> 1.
+            <strong>validate-branch</strong>: Run e2e-validator with all
+            ACs → create wiki report → STOP</p>
+            <p><strong>Nova/Bug Modes (2-10):</strong> 2.
+            <strong>check-existing-plan</strong>: Verify if plan already
+            exists 3. <strong>create-plan</strong>: Generate
+            implementation plan for current AC 4.
+            <strong>validate-plan</strong>: Validate plan correctness (2
+            retries) 5. <strong>request-human-approval</strong>:
+            <strong>REQUIRED</strong> - Get approval before executing -
+            CRITICAL: NO code changes allowed before approved == true 6.
+            <strong>execute-plan</strong>: Implement the code (ONLY
+            AFTER approved == true) 7. <strong>e2e-validator</strong>:
+            Run E2E tests (calls e2e-runner agent) 7.5
+            <strong>generate-regression-test</strong>: Auto-generate
+            regression test after successful validation - Copies
+            template to
+            <code>playwright/tests/regression/{ticket_id}_ac{index}.spec.ts</code>
+            - Includes full ticket flow and validator assertions -
+            Automatically run in step 8c 8.
+            <strong>review-implementation</strong>: Review code changes
+            (2 retries) 8b. <strong>code-quality-checker</strong>: Check
+            code principles (DRY, KISS, YAGNI, SOLID, SoC) AND run
+            SonarQube automatically 8c.
+            <strong>run-regression-tests</strong>: Execute regression
+            tests 8d. <strong>log-history</strong>: Update
+            implementation history → next AC</p>
+            <h3 id="e2e-validator-skill">5.2 e2e-validator (SKILL)</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>e2e-validator</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.0.1</td>
+            </tr>
+            <tr>
+            <td><strong>Type</strong></td>
+            <td>Skill (validation)</td>
+            </tr>
+            <tr>
+            <td><strong>Purpose</strong></td>
+            <td>Test acceptance criteria using Playwright</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Inputs:</strong> - current_ac: The AC to validate
+            - scope: “current_only” or “all” - app_url: Target app URL
+            (default: http://localhost:3000)</p>
+            <p><strong>Outputs:</strong> - passed: Boolean -
+            screenshot_path: Path to screenshot - error_message: Error
+            description if failed - contextId: Debug identifier</p>
+            <h3 id="code-principles-verification">5.3 Code Principles
+            Verification</h3>
+            <p>During <strong>review-implementation</strong> step, the
+            workflow automatically verifies code principles AND runs
+            SonarQube:</p>
+            <table>
+            <colgroup>
+            <col style="width: 20%" />
+            <col style="width: 38%" />
+            <col style="width: 40%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Principle</th>
+            <th>Frontend (Nuxt/Vue)</th>
+            <th>Backend (Java/Spring)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>DRY</strong></td>
+            <td>Duplicated logic → extract to composables</td>
+            <td>Duplicated code → extract to services</td>
+            </tr>
+            <tr>
+            <td><strong>SoC</strong></td>
+            <td>API calls via bsClient (NOT direct fetch)</td>
+            <td>Proper layer separation (controller → service →
+            repository)</td>
+            </tr>
+            <tr>
+            <td><strong>KISS</strong></td>
+            <td>Functions &lt; 50 lines</td>
+            <td>Methods &lt; 30 lines</td>
+            </tr>
+            <tr>
+            <td><strong>YAGNI</strong></td>
+            <td>No unused imports</td>
+            <td>No unused imports/methods</td>
+            </tr>
+            <tr>
+            <td><strong>SOLID</strong></td>
+            <td>Component responsibility</td>
+            <td>DI, single responsibility per class</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Reference Files:</strong> - Frontend:
+            <code>frontend-app/AGENTS.md</code> - Backend:
+            <code>backend-app/AGENTS.md</code></p>
+            <p><strong>Step: review-implementation → step 2.5
+            verify-code-principles (code-quality-checker
+            v1.0.1)</strong> - Automatically verifies principles after
+            code usage check - If violations found → approved = false,
+            feedback with issues - If all principles pass → approved =
+            true</p>
+            <h3 id="skills-that-can-be-invoked-independently">5.4 Skills
+            That Can Be Invoked Independently</h3>
+            <p>All skills can be called directly via
+            <code>call: skill.skill-name</code>, without going through
+            workflow-jira-ticket. This enables modular use for specific
+            tasks.</p>
+            <h4 id="e2e-validator">5.4.1 e2e-validator</h4>
+            <table>
+            <colgroup>
+            <col style="width: 61%" />
+            <col style="width: 38%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>e2e-validator</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.0.1</td>
+            </tr>
+            <tr>
+            <td><strong>When to use</strong></td>
+            <td>“test this AC”, “test E2E”, “check UI”, “validate
+            implementation”</td>
+            </tr>
+            <tr>
+            <td><strong>Auto-detection</strong></td>
+            <td>NO - requires explicit inputs</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Inputs:</strong> - <code>current_ac</code>:
+            Acceptance criteria to test - <code>scope</code>:
+            “current_only” or “all” - <code>app_url</code>: App URL
+            (optional, default: http://localhost:3000)</p>
+            <p><strong>Example Call:</strong></p>
+            <div class="sourceCode" id="cb4"><pre
+            class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">call</span><span class="kw">:</span><span class="at"> skill.e2e-validator</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">input</span><span class="kw">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">current_ac</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;User can see deal status as approved&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">scope</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;current_only&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">app_url</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;http://localhost:3000&quot;</span></span></code></pre></div>
+            <h4 id="code-quality-checker">5.4.2
+            code-quality-checker</h4>
+            <table>
+            <colgroup>
+            <col style="width: 61%" />
+            <col style="width: 38%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>code-quality-checker</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.0.1</td>
+            </tr>
+            <tr>
+            <td><strong>When to use</strong></td>
+            <td>“check code principles”, “verify DRY”, “check SoC”,
+            “code review”, “run sonar”, “sonar scan”</td>
+            </tr>
+            <tr>
+            <td><strong>Auto-detection</strong></td>
+            <td>YES - detects project_type if not provided</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Inputs:</strong> - <code>files_modified</code>:
+            List of changed files - <code>project_type</code>:
+            “nuxt-frontend” | “java-spring-backend” | “node-backend” |
+            “auto” (default: auto) - <code>base_path</code>: Project
+            path (optional) - <code>scope</code>: “full” | “quick”
+            (default: quick) - <code>run_sonar</code>: boolean (default:
+            true) - <code>sonar_url</code>: SonarQube URL (default:
+            http://localhost:9002) - <code>sonar_token</code>:
+            Authentication token (default: pre-generated)</p>
+            <p><strong>Example Call:</strong></p>
+            <div class="sourceCode" id="cb5"><pre
+            class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">call</span><span class="kw">:</span><span class="at"> skill.code-quality-checker</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">input</span><span class="kw">:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">files_modified</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;src/components/DealStatus.vue&quot;</span><span class="kw">,</span><span class="at"> </span><span class="st">&quot;server/api/deals.ts&quot;</span><span class="kw">]</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">project_type</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;nuxt-frontend&quot;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">base_path</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;/Users/marcio_oliveira/Development/company/project/frontend-app&quot;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">run_sonar</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
+            <p><strong>Independent Call (without
+            project_type):</strong></p>
+            <div class="sourceCode" id="cb6"><pre
+            class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">call</span><span class="kw">:</span><span class="at"> skill.code-quality-checker</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">input</span><span class="kw">:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">files_modified</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;src/components/DealStatus.vue&quot;</span><span class="kw">]</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">project_type</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;auto&quot;</span><span class="co">  # Auto-detects via pom.xml/package.json</span></span></code></pre></div>
+            <h4 id="log-analyzer-pro">5.4.3 log-analyzer-pro</h4>
+            <table>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>log-analyzer-pro</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.1.0</td>
+            </tr>
+            <tr>
+            <td><strong>When to use</strong></td>
+            <td>“analyze logs”, “check errors”, “debug issue”</td>
+            </tr>
+            <tr>
+            <td><strong>Auto-detection</strong></td>
+            <td>NO - requires explicit inputs</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Inputs:</strong> - <code>log_path</code>: Path to
+            log file - <code>search_pattern</code>: Search pattern
+            (optional) - <code>error_only</code>: boolean (optional)</p>
+            <h4 id="tana-jira-sync">5.4.4 tana-jira-sync</h4>
+            <table>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>tana-jira-sync</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.1.0</td>
+            </tr>
+            <tr>
+            <td><strong>When to use</strong></td>
+            <td>“sync to Tana”, “create Tana node”, “Jira to Tana”</td>
+            </tr>
+            <tr>
+            <td><strong>Auto-detection</strong></td>
+            <td>NO - requires explicit inputs</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Inputs:</strong> - <code>jira_ticket_id</code>:
+            Jira ticket ID - <code>workspace</code>: Tana workspace
+            (optional)</p>
+            <h4 id="workflow-jira-ticket">5.4.5
+            workflow-jira-ticket</h4>
+            <table>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>workflow-jira-ticket</td>
+            </tr>
+            <tr>
+            <td><strong>Version</strong></td>
+            <td>v1.0.5</td>
+            </tr>
+            <tr>
+            <td><strong>When to use</strong></td>
+            <td>Full Jira ticket implementation</td>
+            </tr>
+            <tr>
+            <td><strong>Auto-detection</strong></td>
+            <td>YES - auto-detects project_type</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Note:</strong> This is the main workflow skill.
+            Can be called independently, but is more commonly invoked by
+            workflow-orchestrator or <span class="citation"
+            data-cites="miles-expert">@miles-expert</span>.</p>
+            <h3 id="tlc-spec-driven">5.4.6 tlc-spec-driven</h3>
+            <table>
+            <colgroup>
+            <col style="width: 61%" />
+            <col style="width: 38%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>tlc-spec-driven</td>
+            </tr>
+            <tr>
+            <td><strong>Type</strong></td>
+            <td>Skill (specification + design)</td>
+            </tr>
+            <tr>
+            <td><strong>Source</strong></td>
+            <td>Tech Lead’s Club (agent-skills.techleads.club)</td>
+            </tr>
+            <tr>
+            <td><strong>When to use</strong></td>
+            <td>Structured specification for Jira tickets, after ticket
+            data collection</td>
+            </tr>
+            <tr>
+            <td><strong>Auto-detection</strong></td>
+            <td>YES - auto-sizes depth by complexity</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Hybrid Integration:</strong> -
+            <strong>SPECIFY</strong> phase always runs after
+            miles-expert analysis → generates <code>spec.md</code> with
+            requirement IDs - <strong>DESIGN</strong> phase auto-sizes
+            (skipped for straightforward changes, runs only for
+            Large/Complex) - workflow-jira-ticket uses requirement IDs
+            from spec.md for traceability in create-plan</p>
+            <p><strong>Location:</strong>
+            <code>workflow/skills/tlc-spec-driven/SKILL.md</code></p>
+            <p><strong>Reference files:</strong> brownfield-mapping.md,
+            specify.md, design.md, implement.md, validate.md, tasks.md,
+            session-handoff.md, quick-mode.md</p>
+            <p><strong>Inputs:</strong> - <code>jira_ticket_id</code>:
+            Jira ticket ID - <code>mode</code>: “nova” | “bug” |
+            “validar” | “continuar”</p>
+            <h3 id="summary-how-to-invoke-skills-independently">5.5
+            Summary: How to Invoke Skills Independently</h3>
+            <table>
+            <colgroup>
+            <col style="width: 34%" />
+            <col style="width: 26%" />
+            <col style="width: 39%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Syntax</th>
+            <th>Type</th>
+            <th>Example</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><code>call: skill.name</code></td>
+            <td>Skill (inside workflow)</td>
+            <td><code>call: skill.e2e-validator</code></td>
+            </tr>
+            <tr>
+            <td><code>@agent</code></td>
+            <td>Agent (direct invocation)</td>
+            <td><code>@wiki-keeper</code></td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Important Note:</strong> - Skills are invoked
+            with <code>call: skill.name</code> <strong>inside a workflow
+            or skill</strong> - Agents are invoked with
+            <code>@agent</code> <strong>directly by the user</strong> -
+            The <code>code-quality-checker</code> skill can auto-detect
+            project type when called independently</p>
+            <h3 id="when-to-use-skill-vs-agent">5.6 When to Use Skill vs
+            Agent</h3>
+            <p>This section explains when it’s preferable to invoke a
+            <strong>skill</strong> in isolation versus an
+            <strong>agent</strong> directly.</p>
+            <h4 id="summary-skill-vs-agent">Summary: Skill vs Agent</h4>
+            <table>
+            <colgroup>
+            <col style="width: 36%" />
+            <col style="width: 31%" />
+            <col style="width: 31%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Aspect</th>
+            <th>Skill</th>
+            <th>Agent</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Invocation</strong></td>
+            <td><code>call: skill.name</code></td>
+            <td><code>@agent</code></td>
+            </tr>
+            <tr>
+            <td><strong>Context</strong></td>
+            <td>Inside workflow/skill</td>
+            <td>Direct by user</td>
+            </tr>
+            <tr>
+            <td><strong>Abstraction</strong></td>
+            <td>Higher (includes guidelines)</td>
+            <td>Lower (direct prompt)</td>
+            </tr>
+            <tr>
+            <td><strong>Complexity</strong></td>
+            <td>Multi-step workflows</td>
+            <td>Simple/direct tasks</td>
+            </tr>
+            <tr>
+            <td><strong>Example</strong></td>
+            <td><code>call: skill.e2e-validator</code></td>
+            <td><code>@wiki-keeper</code></td>
+            </tr>
+            </tbody>
+            </table>
+            <h4 id="when-to-use-skill-recommended">When to Use SKILL
+            (Recommended)</h4>
+            <p>Use skills when:</p>
+            <table>
+            <colgroup>
+            <col style="width: 27%" />
+            <col style="width: 51%" />
+            <col style="width: 21%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Scenario</th>
+            <th>Recommended Skill</th>
+            <th>Reason</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Test ACs from a ticket</td>
+            <td><code>skill.e2e-validator</code></td>
+            <td>Already includes guidelines (login, postal code,
+            etc)</td>
+            </tr>
+            <tr>
+            <td>Verify code principles</td>
+            <td><code>skill.code-quality-checker</code></td>
+            <td>Auto-detects project_type, runs SonarQube</td>
+            </tr>
+            <tr>
+            <td>Full Jira ticket analysis</td>
+            <td><code>skill.workflow-jira-ticket</code></td>
+            <td>Full flow with human approval</td>
+            </tr>
+            <tr>
+            <td>Structured specification</td>
+            <td><code>skill.tlc-spec-driven</code></td>
+            <td>Auto-sized SPECIFY + DESIGN with requirement IDs</td>
+            </tr>
+            <tr>
+            <td>Analyze error logs</td>
+            <td><code>skill.log-analyzer-pro</code></td>
+            <td>Automatic parsing and filtering</td>
+            </tr>
+            <tr>
+            <td>Sync to Tana</td>
+            <td><code>skill.tana-jira-sync</code></td>
+            <td>Direct Jira + Tana integration</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Skill Advantages:</strong> - Already include
+            guidelines and configurations - Auto-detection of parameters
+            when available - Optimized workflows for specific tasks -
+            Less need to specify details in prompt</p>
+            <h4 id="when-to-use-agent-recommended">When to Use AGENT
+            (Recommended)</h4>
+            <p>Use agents directly when:</p>
+            <table>
+            <colgroup>
+            <col style="width: 40%" />
+            <col style="width: 28%" />
+            <col style="width: 32%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Scenario</th>
+            <th>Agent</th>
+            <th>Reason</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Query wiki knowledge</td>
+            <td><code>@wiki-keeper</code></td>
+            <td>Simple query, no complex workflow</td>
+            </tr>
+            <tr>
+            <td>Automotive domain questions</td>
+            <td><code>@miles-expert</code></td>
+            <td>Direct analysis, no implementation</td>
+            </tr>
+            <tr>
+            <td>Administrative tasks</td>
+            <td><code>@workflow-orchestrator</code></td>
+            <td>When manual flow control is needed</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Agent Advantages:</strong> - More prompt
+            flexibility - Direct response without workflow overhead -
+            Ideal for quick questions or simple tasks</p>
+            <h4 id="decision-flow">Decision Flow</h4>
+            <pre><code>I need to do a task...
+         │
+         ▼
+┌─────────────────────────┐
+│ Is it a complex task    │
+│ with multiple steps?    │
+└────────┬────────────────┘
+         │
+    ┌────┴────┐
+    YES      NO
+    │         │
+    ▼         ▼
+┌──────────┐ ┌─────────────────┐
+│ USE      │ │ USE AGENT       │
+│ SKILL    │ │ DIRECTLY        │
+└──────────┘ └─────────────────┘
+     │
+     ▼
+┌─────────────────────────────────────┐
+│ What type of task?                  │
+├─────────────┬─────────────┬─────────┤
+│ Test AC    │ Code review │ Ticket  │
+│ e2e-validator│ code-quality-│workflow-│
+│             │ checker     │jira-ticket│
+└─────────────┴─────────────┴─────────┘</code></pre>
+            <h4 id="practical-example">Practical Example</h4>
+            <p><strong>Scenario:</strong> You want to test if an AC was
+            implemented correctly.</p>
+            <table>
+            <colgroup>
+            <col style="width: 26%" />
+            <col style="width: 46%" />
+            <col style="width: 26%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Option</th>
+            <th>How to Do It</th>
+            <th>Result</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Skill (Recommended)</strong></td>
+            <td><code>call: skill.e2e-validator</code> with inputs</td>
+            <td>Already knows login guidelines, postal code, privacy
+            popup</td>
+            </tr>
+            <tr>
+            <td><strong>Agent</strong></td>
+            <td><code>@e2e-runner</code> with prompt</td>
+            <td>Requires specifying guidelines in prompt</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Conclusion:</strong> For testing ACs, <strong>use
+            the skill</strong> because it already knows the guidelines
+            (login, postal code 35309, etc). For simple wiki queries,
+            <strong>use the agent</strong> directly.</p>
+            <h2 id="can-agents-be-invoked-individually">6. Can Agents Be
+            Invoked Individually?</h2>
+            <p><strong>YES</strong> - All agents can be invoked directly
+            without going through workflow-orchestrator.</p>
+            <h3 id="direct-invocation-examples">6.1 Direct Invocation
+            Examples</h3>
+            <p><strong><span class="citation"
+            data-cites="wiki-keeper">@wiki-keeper</span>:</strong></p>
+            <pre><code>Invoke @wiki-keeper to check if we have any knowledge about quotation API</code></pre>
+            <p><strong><span class="citation"
+            data-cites="miles-expert">@miles-expert</span>:</strong></p>
+            <pre><code>Analyze Jira ticket PROJECT-XXXX and identify affected APIs</code></pre>
+            <p><strong><span class="citation"
+            data-cites="e2e-runner">@e2e-runner</span>:</strong></p>
+            <pre><code>Validate AC: &quot;User can see deal status as approved after credit approval&quot;</code></pre>
+            <h3 id="example-prompts-for-individual-agents">6.2 Example
+            Prompts for Individual Agents</h3>
+            <h4 id="wiki-keeper-prompts">Wiki-keeper Prompts:</h4>
+            <table>
+            <colgroup>
+            <col style="width: 52%" />
+            <col style="width: 47%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Example</th>
+            <th>Prompt</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Query existing knowledge</td>
+            <td>“What do we know about the Quotation API?”</td>
+            </tr>
+            <tr>
+            <td>Health check</td>
+            <td>“Run a health check on the wiki”</td>
+            </tr>
+            <tr>
+            <td>Ingest new document</td>
+            <td>“Ingest the new OpenAPI spec for miles-contract-v2”</td>
+            </tr>
+            <tr>
+            <td>Create ticket note</td>
+            <td>“Create a ticket note for PROJECT-XXXX
+            implementation”</td>
+            </tr>
+            </tbody>
+            </table>
+            <h4 id="miles-expert-prompts">Miles-expert Prompts:</h4>
+            <table>
+            <colgroup>
+            <col style="width: 52%" />
+            <col style="width: 47%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Example</th>
+            <th>Prompt</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Analyze ticket</td>
+            <td>“Analyze Jira ticket PROJECT-XXXX: Create quote
+            workflow”</td>
+            </tr>
+            <tr>
+            <td>Identify APIs</td>
+            <td>“Which MMP APIs are affected by vehicle selection
+            feature?”</td>
+            </tr>
+            <tr>
+            <td>Clarifying questions</td>
+            <td>“I have questions about VAT handling for multi-country
+            fleets”</td>
+            </tr>
+            </tbody>
+            </table>
+            <h4 id="e2e-runner-prompts">e2e-runner Prompts:</h4>
+            <table>
+            <colgroup>
+            <col style="width: 52%" />
+            <col style="width: 47%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Example</th>
+            <th>Prompt</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Screenshot analysis</td>
+            <td>“Analyze the deal page screenshot” or “Capture and
+            describe the dashboard”</td>
+            </tr>
+            <tr>
+            <td>Test single AC</td>
+            <td>“Test AC: User can see deal status as approved”</td>
+            </tr>
+            <tr>
+            <td>Test all ACs</td>
+            <td>“Run all ACs for ticket PROJECT-XXXX”</td>
+            </tr>
+            <tr>
+            <td>Debug</td>
+            <td>“Test AC with contextId DEV-12345-67890”</td>
+            </tr>
+            </tbody>
+            </table>
+            <h2 id="can-agents-be-invoked-without-prompt">7. Can Agents
+            Be Invoked Without Prompt?</h2>
+            <p><strong>PARTIALLY</strong> - Agents require some form of
+            input, but can be invoked with minimal context:</p>
+            <table>
+            <colgroup>
+            <col style="width: 12%" />
+            <col style="width: 26%" />
+            <col style="width: 60%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Agent</th>
+            <th>Minimum Input</th>
+            <th>Can Work Without Explicit Prompt?</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>workflow-orchestrator</td>
+            <td>Jira Ticket ID or task description</td>
+            <td>YES - just provide ticket ID</td>
+            </tr>
+            <tr>
+            <td>wiki-keeper</td>
+            <td>Action type (query/ingest/health check)</td>
+            <td>YES - implicit actions</td>
+            </tr>
+            <tr>
+            <td>miles-expert</td>
+            <td>Ticket ID or domain question</td>
+            <td>NEEDS context - cannot work without input</td>
+            </tr>
+            <tr>
+            <td>e2e-runner</td>
+            <td>AC to test</td>
+            <td>NEEDS AC - cannot validate nothing</td>
+            </tr>
+            <tr>
+            <td>workflow-jira-ticket</td>
+            <td>Jira Ticket ID</td>
+            <td>NEEDS ticket - requires structured input</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Conclusion:</strong> The workflow-orchestrator
+            can work with just a ticket ID. Other agents need more
+            context but the system is designed to provide context
+            automatically through the workflow.</p>
+            <h2 id="error-handling-and-recovery">8. Error Handling and
+            Recovery</h2>
+            <h3 id="when-an-agent-fails">8.1 When an Agent Fails:</h3>
+            <ol type="1">
+            <li>Check if it’s a timeout or model error</li>
+            <li>If timeout: retry with same model (up to retry
+            limit)</li>
+            <li>If model error: switch to fallback model</li>
+            <li>Log the error in workflow history</li>
+            <li>If all retries exhausted: request human
+            intervention</li>
+            </ol>
+            <h3 id="rate-limiting">8.2 Rate Limiting</h3>
+            <ul>
+            <li>Each agent has request limits per minute</li>
+            <li>If rate limited: wait 30s before retry</li>
+            <li>If persistent: escalate to human</li>
+            </ul>
+            <h3 id="emergency-stop">8.3 Emergency Stop</h3>
+            <p>To cancel workflow at any time, user can type:
+            <code>/stop</code> or <code>/cancel</code> - Current agent
+            will finish gracefully - Progress will be logged for later
+            resume - User will be notified of incomplete state</p>
+            <h2 id="gitnexus---code-intelligence">9. GitNexus - Code
+            Intelligence</h2>
+            <p>GitNexus provides deep code analysis capabilities for the
+            workflow. It creates a knowledge graph of your codebase,
+            enabling blast radius analysis, dependency tracking, and
+            semantic code search.</p>
+            <h3 id="installation-and-setup">9.1 Installation and
+            Setup</h3>
+            <div class="sourceCode" id="cb11"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install CLI globally</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> gitnexus</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Index repositories (run from each repo root)</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Development/company/project/frontend-app <span class="kw">&amp;&amp;</span> <span class="ex">npx</span> gitnexus analyze</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Development/company/project/backend-app <span class="kw">&amp;&amp;</span> <span class="ex">npx</span> gitnexus analyze</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Start local server with web UI</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="ex">gitnexus</span> serve</span></code></pre></div>
+            <p><strong>Web UI:</strong> http://localhost:4747</p>
+            <h3 id="mcp-configuration">9.2 MCP Configuration</h3>
+            <p>GitNexus is configured via
+            <code>~/.config/opencode/opencode.json</code>:</p>
+            <div class="sourceCode" id="cb12"><pre
+            class="sourceCode json"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;mcp&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GitNexus&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;local&quot;</span><span class="fu">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;npx&quot;</span><span class="ot">,</span> <span class="st">&quot;-y&quot;</span><span class="ot">,</span> <span class="st">&quot;opencode-gitnexus&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;enabled&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+            <h3 id="available-tools">9.3 Available Tools</h3>
+            <table>
+            <colgroup>
+            <col style="width: 40%" />
+            <col style="width: 60%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Tool</th>
+            <th>Purpose</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><code>gitnexus_query</code></td>
+            <td>Semantic search across code</td>
+            </tr>
+            <tr>
+            <td><code>gitnexus_context</code></td>
+            <td>360° symbol view with refs and process
+            participation</td>
+            </tr>
+            <tr>
+            <td><code>gitnexus_impact</code></td>
+            <td>Blast radius analysis with depth grouping</td>
+            </tr>
+            <tr>
+            <td><code>gitnexus_detect_changes</code></td>
+            <td>Git-diff impact analysis</td>
+            </tr>
+            <tr>
+            <td><code>gitnexus_rename</code></td>
+            <td>Multi-file coordinated rename</td>
+            </tr>
+            <tr>
+            <td><code>gitnexus_cypher</code></td>
+            <td>Raw Cypher graph queries</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="usage-in-workflow">9.4 Usage in Workflow</h3>
+            <p>GitNexus is <strong>OPTIONAL</strong> and is invoked by
+            miles-expert after step 0.5 (analyze-with-miles-expert):</p>
+            <pre><code>step 0.5: analyze-with-miles-expert (MANDATORY)
+          │
+          ▼
+    miles-expert evaluates:
+    &quot;Should I suggest gitnexus-scan?&quot;
+          │
+          ▼
+    ┌─────────┴─────────┐
+    │                   │
+    ▼                   ▼
+NÃO USAR            USAR + PERGUNTAR
+(simple)          &quot;Deseja executar
+                   gitnexus-scan?&quot;
+                       │
+                       ▼
+            ┌─────────┴─────────┐
+            │                   │
+            ▼                   ▼
+      create-plan          GITNEXUS-SCAN
+      (basic only)         → enhanced context</code></pre>
+            <h3 id="heuristics-for-suggestion">9.5 Heuristics for
+            Suggestion</h3>
+            <p><strong>Use GitNexus when:</strong> - Impact multi-module
+            detected (affects &gt;1 cluster) - Bug with non-obvious root
+            cause - Refactoring structural changes - Low familiarity
+            with code zone - Need blast radius before planning - High
+            regression risk</p>
+            <p><strong>Don’t use when:</strong> - Small, localized
+            change - Clearly known area - Simple, isolated, low-risk
+            ticket</p>
+            <h3 id="gitnexus-scan-skill">9.6 gitnexus-scan Skill</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>Name</strong></td>
+            <td>gitnexus-scan</td>
+            </tr>
+            <tr>
+            <td><strong>Type</strong></td>
+            <td>Skill (optional)</td>
+            </tr>
+            <tr>
+            <td><strong>Location</strong></td>
+            <td><code>workflow/skills/gitnexus-scan/SKILL.md</code></td>
+            </tr>
+            <tr>
+            <td><strong>When</strong></td>
+            <td>After step 0.5, before create-plan</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Input:</strong> - project_type (frontend-app |
+            backend-app) - jira_ticket_id - domain_analysis (from
+            miles-expert) - risk_areas</p>
+            <p><strong>Output:</strong> - impact_analysis
+            (primary/secondary files, blast_radius) - symbol_analysis
+            (central symbols, call chains) - recommendations (files to
+            review, tests to verify)</p>
+            <h3 id="key-directories">9.7 Key Directories</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Directory</th>
+            <th>Purpose</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><code>~/.gitnexus/registry.json</code></td>
+            <td>Global registry of indexed repos</td>
+            </tr>
+            <tr>
+            <td><code>.gitnexus/</code> (in each repo)</td>
+            <td>Local index storage</td>
+            </tr>
+            <tr>
+            <td><code>frontend-app/.gitnexus/</code></td>
+            <td>frontend-app index</td>
+            </tr>
+            <tr>
+            <td><code>backend-app/.gitnexus/</code></td>
+            <td>backend-app index</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="important-notes">9.8 Important Notes</h3>
+            <ul>
+            <li><strong>ALL data is LOCAL</strong> - no cloud, no
+            external APIs</li>
+            <li>Index must be refreshed after major changes:
+            <code>gitnexus analyze --force</code></li>
+            <li>Web UI auto-detects local server at
+            http://localhost:4747</li>
+            </ul>
+            <hr />
+            <h2 id="directory-structure">10. Directory Structure</h2>
+            <pre><code>~/Development/company/project/workflow/
+├── agents/              # Agent definitions
+├── docker/              # Docker configuration for SonarQube scanning
+│   ├── docker-compose.yml
+│   ├── scan-frontend-app.sh   # SonarQube for frontend projects (Nuxt/Vue/Node)
+│   └── scan-backend-app.sh      # SonarQube for Java projects (backend-app)
+├── karpathy/            # Wiki system
+│   ├── control/          # index.md, log.md
+│   ├── history/          # Historical implementation records
+│   ├── raw/              # Source documents
+│   │   ├── files/        # PDFs, data files (PROJECT_XXXX, PROJECT_YYYY)
+│   │   └── openapi/      # 10 MMP API specifications
+│   └── wiki/             # Generated notes
+│       ├── concepts/     # Concept notes
+│       ├── references/   # API references
+│       ├── projects/     # Ticket implementation notes
+│       └── emails/       # Processed email notes (.eml)
+├── plans/                # Implementation plans
+├── scripts/              # Utility scripts
+│   └── read_excel.py     # Read Excel files from RAG
+├── .specs/              # Spec-driven development artifacts (tlc-spec-driven)
+│   ├── project/          # PROJECT.md, ROADMAP.md, STATE.md
+│   ├── codebase/         # Brownfield mapping (STACK, ARCH, CONVENTIONS, etc.)
+│   ├── features/         # Feature specs with requirement IDs
+│   └── quick/            # Ad-hoc task docs
+├── skills/              # Skill definitions
+│   ├── workflow-jira-ticket/      # Main implementation workflow
+│   ├── analyze-with-miles-expert/ # Step 0.5 (MANDATORY)
+│   ├── tlc-spec-driven/           # Specification + design (hybrid)
+│   ├── e2e-validator/            # Test ACs
+│   ├── code-quality-checker/     # DRY, SOLID, SonarQube
+│   ├── log-analyzer-pro/          # Log analysis
+│   ├── tana-jira-sync/            # Jira → Tana
+│   └── gitnexus-scan/             # Code analysis (OPTIONAL)
+├── tests/               # E2E test outputs
+├── MANUAL_EN.md         # English manual
+└── MANUAL_PT.md         # Portuguese manual</code></pre>
+            <h3 id="key-scripts">Key Scripts</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Script</th>
+            <th>Purpose</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><code>scripts/read_excel.py</code></td>
+            <td>Read Excel files from RAG materials</td>
+            </tr>
+            <tr>
+            <td><code>docker/scan-frontend-app.sh</code></td>
+            <td>Run SonarQube for frontend projects</td>
+            </tr>
+            <tr>
+            <td><code>docker/scan-backend-app.sh</code></td>
+            <td>Run SonarQube for Java projects</td>
+            </tr>
+            <tr>
+            <td><code>docker/docker-compose.yml</code></td>
+            <td>SonarQube container configuration</td>
+            </tr>
+            </tbody>
+            </table>
+            <h2 id="complete-hierarchy-summary">11. Complete Hierarchy
+            Summary</h2>
+            <h3 id="agents-4">Agents (4)</h3>
+            <table>
+            <colgroup>
+            <col style="width: 7%" />
+            <col style="width: 17%" />
+            <col style="width: 17%" />
+            <col style="width: 20%" />
+            <col style="width: 15%" />
+            <col style="width: 22%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>#</th>
+            <th>Agent</th>
+            <th>Model</th>
+            <th>Version</th>
+            <th>Mode</th>
+            <th>Timeout</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>1</td>
+            <td>workflow-orchestrator</td>
+            <td>deepseek-v4-flash-free</td>
+            <td>v1.0.3</td>
+            <td>primary</td>
+            <td>10min</td>
+            </tr>
+            <tr>
+            <td>2</td>
+            <td>wiki-keeper</td>
+            <td>deepseek-v4-flash-free</td>
+            <td>v1.0.3</td>
+            <td>subagent</td>
+            <td>5min</td>
+            </tr>
+            <tr>
+            <td>3</td>
+            <td>miles-expert</td>
+            <td>kimi-k2.7-code / V4 Pro</td>
+            <td>v1.1.0</td>
+            <td>subagent</td>
+            <td>10min</td>
+            </tr>
+            <tr>
+            <td>4</td>
+            <td>review-plan</td>
+            <td>kilo/z-ai/glm-5.2</td>
+            <td>v1.0.0</td>
+            <td>subagent</td>
+            <td>10min</td>
+            </tr>
+            <tr>
+            <td>5</td>
+            <td>coherence-checker</td>
+            <td>minimax-m2.7</td>
+            <td>v1.0.0</td>
+            <td>subagent</td>
+            <td>8min</td>
+            </tr>
+            <tr>
+            <td>6</td>
+            <td>e2e-runner</td>
+            <td>deepseek-v4-flash-free</td>
+            <td>v1.1.0</td>
+            <td>subagent</td>
+            <td>15min</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="skills-8">Skills (8)</h3>
+            <table>
+            <colgroup>
+            <col style="width: 11%" />
+            <col style="width: 25%" />
+            <col style="width: 22%" />
+            <col style="width: 40%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>#</th>
+            <th>Skill</th>
+            <th>Type</th>
+            <th>When Used</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>1</td>
+            <td>workflow-jira-ticket</td>
+            <td>Main workflow</td>
+            <td>Implementation</td>
+            </tr>
+            <tr>
+            <td>2</td>
+            <td>analyze-with-miles-expert</td>
+            <td>Step 0.5</td>
+            <td>nova/bug/continuar modes (MANDATORY)</td>
+            </tr>
+            <tr>
+            <td>3</td>
+            <td>tlc-spec-driven</td>
+            <td>Spec + Design</td>
+            <td>After step 0.5, SPECIFY + DESIGN</td>
+            </tr>
+            <tr>
+            <td>4</td>
+            <td>e2e-validator</td>
+            <td>Validation</td>
+            <td>Test ACs</td>
+            </tr>
+            <tr>
+            <td>5</td>
+            <td>code-quality-checker</td>
+            <td>Quality</td>
+            <td>DRY, SOLID, SonarQube</td>
+            </tr>
+            <tr>
+            <td>6</td>
+            <td>log-analyzer-pro</td>
+            <td>Debugging</td>
+            <td>Log analysis</td>
+            </tr>
+            <tr>
+            <td>7</td>
+            <td>tana-jira-sync</td>
+            <td>Integration</td>
+            <td>Jira → Tana</td>
+            </tr>
+            <tr>
+            <td>8</td>
+            <td>gitnexus-scan</td>
+            <td>Optional</td>
+            <td>After step 0.5 (OPTIONAL)</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="workflow-jira-ticket-steps">workflow-jira-ticket
+            Steps</h3>
+            <pre><code>0.  mode-selection
+0.1 check-project-guidelines
+0.2 check-app-running (validar only)
+0.3 extract-jira-ticket
+0.4 check-all-done
+0.5 analyze-with-miles-expert (MANDATORY - nova/bug/continuar)
+    → Optional: gitnexus-scan (if miles-expert suggests + user accepts)
+0.6 spec-driven-planning (tlc-spec-driven — hybrid)
+    → SPECIFY: .specs/features/{ticket_id}/spec.md
+    → DESIGN: .specs/features/{ticket_id}/design.md (Large/Complex only)
+
+1.  validate-branch (validar mode)
+
+2.  check-existing-plan
+3.  create-plan (with requirement IDs from spec.md)
+4.  validate-plan
+5.  request-human-approval (REQUIRED)
+6.  execute-plan
+7.  e2e-validator
+7.5 generate-regression-test (trace-to-playwright.py if test_trace available)
+8.  review-implementation
+8b. code-quality-checker
+8c. run-regression-tests
+8d. log-history</code></pre>
+            <h3 id="domain-tags-for-email">Domain Tags for Email</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Tag</th>
+            <th>Domain</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>#okta</td>
+            <td>Authentication, login</td>
+            </tr>
+            <tr>
+            <td>#party</td>
+            <td>Customer, driver, fleet</td>
+            </tr>
+            <tr>
+            <td>#offer</td>
+            <td>Quotation, pricing</td>
+            </tr>
+            <tr>
+            <td>#stipulations</td>
+            <td>Contract terms</td>
+            </tr>
+            <tr>
+            <td>#contract</td>
+            <td>Contracts, agreements</td>
+            </tr>
+            <tr>
+            <td>#delivery</td>
+            <td>Vehicle delivery</td>
+            </tr>
+            <tr>
+            <td>#catalog</td>
+            <td>Vehicle catalog</td>
+            </tr>
+            <tr>
+            <td>#general</td>
+            <td>No specific domain</td>
+            </tr>
+            </tbody>
+            </table>
+            <hr />
+            <h2 id="diagnostics-and-troubleshooting">12. Diagnostics and
+            Troubleshooting</h2>
+            <h3 id="quick-health-check">12.1 Quick Health Check</h3>
+            <p>Run to validate the entire harness:</p>
+            <div class="sourceCode" id="cb16"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> ~/Development/company/project/workflow/scripts/harness-health-check.py</span></code></pre></div>
+            <p>Expected output: ~66/67 checks passed (only SonarQube
+            fails if Docker not running).</p>
+            <h3 id="common-failure-scenarios">12.2 Common Failure
+            Scenarios</h3>
+            <table>
+            <colgroup>
+            <col style="width: 28%" />
+            <col style="width: 40%" />
+            <col style="width: 31%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Symptom</th>
+            <th>Likely Cause</th>
+            <th>Solution</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Agent not responding</td>
+            <td>Timeout (10-15min)</td>
+            <td>Orchestrator auto-retries 2x with fallback model. If
+            persistent → escalated to human.</td>
+            </tr>
+            <tr>
+            <td>“MCP not found”</td>
+            <td>MCP server not running</td>
+            <td>Check with <code>harness-health-check.py</code>. Start
+            with <code>npx gitnexus mcp</code> (GitNexus) or
+            <code>docker compose up</code> (SonarQube).</td>
+            </tr>
+            <tr>
+            <td>Plan rejected by review-plan</td>
+            <td>Incomplete/incoherent plan</td>
+            <td>miles-expert revises with review-plan feedback (max 2
+            iterations). If rejected 2x → human decides.</td>
+            </tr>
+            <tr>
+            <td>coherence-checker incoherent</td>
+            <td>Implementation doesn’t follow patterns</td>
+            <td>Workflow <strong>stops</strong>. Issues listed to human
+            for decision (manual fix / continue).</td>
+            </tr>
+            <tr>
+            <td>SonarQube quality gate failed</td>
+            <td>Blocker or critical issue</td>
+            <td>Auto-fix attempted; if impossible → reported to
+            human.</td>
+            </tr>
+            <tr>
+            <td>E2E tests failed 3x in a row</td>
+            <td>Bug not caught in analysis</td>
+            <td>Workflow <strong>escalates to human</strong>. No
+            infinite loop.</td>
+            </tr>
+            <tr>
+            <td><code>step-log.py</code> not writing</td>
+            <td><code>logs/</code> dir doesn’t exist</td>
+            <td><code>mkdir -p ~/Development/company/project/workflow/logs/</code></td>
+            </tr>
+            <tr>
+            <td>Orchestrator not advancing</td>
+            <td>Exit gate not passed</td>
+            <td>Check
+            <code>step-log.py status &lt;workflow_id&gt;</code> to see
+            which gate is blocked.</td>
+            </tr>
+            <tr>
+            <td>Wiki not syncing to Obsidian</td>
+            <td>sync-obsidian.sh didn’t run</td>
+            <td>Run manually:
+            <code>bash ~/Development/company/project/workflow/scripts/sync-obsidian.sh</code></td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="check-workflow-state">12.3 Check Workflow State</h3>
+            <div class="sourceCode" id="cb17"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View current step of a specific workflow</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> ~/Development/company/project/workflow/scripts/step-log.py status PROJECT-XXXX</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># View last 20 log entries</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> ~/Development/company/project/workflow/scripts/step-log.py view <span class="at">--tail</span> 20</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># View only failures</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> ~/Development/company/project/workflow/scripts/step-log.py view <span class="at">--status</span> failure</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># View stats for last 7 days</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> ~/Development/company/project/workflow/scripts/step-log.py stats <span class="at">--days</span> 7</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Update Excel dashboard with real metrics</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> ~/Development/company/project/workflow/scripts/log-metrics.py <span class="at">--update-excel</span></span></code></pre></div>
+            <h3 id="preventive-maintenance">12.4 Preventive
+            Maintenance</h3>
+            <table>
+            <colgroup>
+            <col style="width: 23%" />
+            <col style="width: 42%" />
+            <col style="width: 34%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Task</th>
+            <th>Frequency</th>
+            <th>Command</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Full health check</td>
+            <td>Weekly</td>
+            <td><code>python3 scripts/harness-health-check.py</code></td>
+            </tr>
+            <tr>
+            <td>Re-index GitNexus</td>
+            <td>After major changes</td>
+            <td><code>npx gitnexus analyze --force</code> in
+            frontend-app/ and backend-app/</td>
+            </tr>
+            <tr>
+            <td>Check wiki integrity</td>
+            <td>Monthly</td>
+            <td>Invoke <code>@wiki-keeper</code> with “Run a health
+            check on the wiki”</td>
+            </tr>
+            <tr>
+            <td>Update skills dashboard</td>
+            <td>After every prompt change</td>
+            <td>Add row in <code>ai-skills-dashboard.xlsx</code></td>
+            </tr>
+            <tr>
+            <td>Check failure logs</td>
+            <td>Daily (if workflow active)</td>
+            <td><code>python3 scripts/step-log.py view --status failure</code></td>
+            </tr>
+            <tr>
+            <td>Sync global skills → workflow</td>
+            <td>After any skill change</td>
+            <td><code>cp ~/.config/opencode/skills/* ~/workflow/skills/ -r</code></td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="workflow-reset">12.5 Workflow Reset</h3>
+            <p>If a workflow gets stuck or fails:</p>
+            <ol type="1">
+            <li><p>Check current state:</p>
+            <div class="sourceCode" id="cb18"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> ~/Development/company/project/workflow/scripts/step-log.py status <span class="op">&lt;</span>workflow_id<span class="op">&gt;</span></span></code></pre></div></li>
+            <li><p>If workflow is running but not advancing → use
+            <code>/stop</code> in chat</p></li>
+            <li><p>To restart from scratch:</p>
+            <ul>
+            <li>Remove entry from <code>_running.json</code>:</li>
+            </ul>
+            <div class="sourceCode" id="cb19"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-c</span> <span class="st">&quot;import json; d=json.load(open(&#39;~/Development/company/project/workflow/logs/_running.json&#39;)); d.pop(&#39;&lt;workflow_id&gt;&#39;, None); json.dump(d, open(&#39;~/Development/company/project/workflow/logs/_running.json&#39;, &#39;w&#39;))&quot;</span></span></code></pre></div></li>
+            <li><p>Restart the workflow normally in chat</p></li>
+            </ol>
+            <hr />
+            <h2 id="model-pricing-summary">13. Model Pricing
+            Summary</h2>
+            <table>
+            <colgroup>
+            <col style="width: 13%" />
+            <col style="width: 13%" />
+            <col style="width: 40%" />
+            <col style="width: 13%" />
+            <col style="width: 19%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Agent</th>
+            <th>Model</th>
+            <th>Cost (per 1M tokens)</th>
+            <th>Retry</th>
+            <th>Timeout</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>workflow-orchestrator</td>
+            <td>opencode/deepseek-v4-flash-free-free</td>
+            <td>~$0.40</td>
+            <td>-</td>
+            <td>10min</td>
+            </tr>
+            <tr>
+            <td>wiki-keeper</td>
+            <td>kilo/qwen/qwen3.5-flash-02-23</td>
+            <td>~$0.33</td>
+            <td>3</td>
+            <td>5min</td>
+            </tr>
+            <tr>
+            <td>miles-expert</td>
+            <td>kilo/deepseek/deepseek-v4-pro</td>
+            <td>~$0.70</td>
+            <td>2</td>
+            <td>15min</td>
+            </tr>
+            <tr>
+            <td>e2e-runner</td>
+            <td>opencode/deepseek-v4-flash-free</td>
+            <td>~$0.40</td>
+            <td>2</td>
+            <td>15min</td>
+            </tr>
+            </tbody>
+            </table>
+            <hr />
+            <p><em>Changes v2.5: e2e-runner v1.1.0 — dual mode
+            (standalone: screenshot analysis + E2E test; orchestrated:
+            E2E only). miles-expert model changed to Kimi K2.6. Removed
+            sonar-scanner Docker service (using native ARM64
+            binary).</em> <em>Changes v2.3: Added tlc-spec-driven skill
+            (hybrid SPECIFY+DESIGN). New step 0.6 in
+            workflow-jira-ticket. New Gate 1.5 (spec exists,
+            non-blocking). 8 skills total. New .specs/ directory with
+            brownfield mapping (STACK.md, ARCHITECTURE.md,
+            CONVENTIONS.md, STRUCTURE.md, TESTING.md, INTEGRATIONS.md,
+            CONCERNS.md). Updated orchestrator Exit Criteria table.</em>
+            <em>Changes v2.2: Added GitNexus (code intelligence with
+            knowledge graph). Added email (.eml) reading to wiki-keeper.
+            Updated models: workflow-orchestrator →
+            deepseek-v4-flash-free, miles-expert → deepseek-v4-pro
+            (mode: all). Added gitnexus-scan and
+            analyze-with-miles-expert skills.</em></p>
+            <p>*Changes v2.1: Wiki-keeper can read PDFs (text and image
+            via OCR). Requires poppler and tesseract.</p>
+            <p>*Changes v2.0: Workflow Orchestrator with 3 operation
+            modes (auto/plan/build). PLAN mode for planning only, BUILD
+            mode to execute from existing plan.</p>
+            <p><em>Changes v1.9: New code-quality-checker skill (v1.0.1)
+            with automatic SonarQube integration. Auto-detect project
+            when called independently.</em></p>
+            <p><em>Changes v1.8: Automatic code principles verification
+            (DRY, KISS, YAGNI, SOLID, SoC) in review-implementation
+            step. New AGENTS.md for backend-app.</em></p>
+            <p><em>Changes v1.7: Auto-detect project type
+            (frontend/backend Java/backend Node). Dynamic steps for
+            testing and validation.</em></p>
+            <p><em>Changes v1.6: Removed Frontend project references -
+            workflow is project-agnostic.</em></p>
+            <p><em>Changes v1.5: Auto-generate regression tests after
+            validation (step 7.5 generate-regression-test). Template at
+            playwright/tests/regression/template.spec.ts</em></p>
+            <p><em>Changes v1.4: 4 operation modes
+            (nova/bug/validar/continuar). request-human-approval
+            required before execute-plan. Branch validation
+            flow.</em></p>
+            <p><em>Changes v1.3: Centralized workflow folder with
+            agents/, skills/, and plans/ directories. validator →
+            Step-3.5 Flash (256K context, free)</em> ### RAG
+            Preprocessing with MarkItDown (v1.1.0)</p>
+            <p>Both <code>miles-expert</code> and
+            <code>wiki-keeper</code> use MarkItDown for document
+            preprocessing before RAG ingestion.</p>
+            <p><strong>Supported Formats:</strong> | Format | Extension
+            | Token Savings | |——–|———–|—————| | Excel | .xlsx, .xls |
+            ~98% (10MB → 200KB) | | Word | .docx | ~80% | | PowerPoint |
+            .pptx | ~85% | | PDF (text) | .pdf | ~70% | | PDF (image) |
+            .pdf | OCR required | | HTML/CSS | .html | ~60% | |
+            CSV/JSON/XML | .csv, .json, .xml | ~50% |</p>
+            <p><strong>Benefits:</strong> - <strong>Cleaner
+            context</strong>: No formatting noise = better LLM
+            understanding - <strong>Faster processing</strong>: Less
+            tokens = faster responses - <strong>Lower cost</strong>:
+            Fewer tokens = lower API costs</p>
+            <p><strong>Usage:</strong></p>
+            <div class="sourceCode" id="cb20"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert document to clean Markdown</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">markitdown</span> /path/to/document.xlsx <span class="op">&gt;</span> /tmp/output.md</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Then process with LLM</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /tmp/output.md <span class="kw">|</span> <span class="fu">head</span> <span class="at">-100</span>  <span class="co"># Preview first 100 lines</span></span></code></pre></div>
+            <p><strong>When to Use:</strong> - User asks about content
+            in a PDF, Excel, or Word file - Wiki-keeper provides a raw
+            file path - Need to extract specific data from documents</p>
+            <h2 id="token-optimization-guide-v2.5">Token Optimization
+            Guide (v2.5)</h2>
+            <h3 id="models-pricing">Models Pricing</h3>
+            <table>
+            <colgroup>
+            <col style="width: 17%" />
+            <col style="width: 17%" />
+            <col style="width: 20%" />
+            <col style="width: 20%" />
+            <col style="width: 23%" />
+            </colgroup>
+            <thead>
+            <tr>
+            <th>Model</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Cached</th>
+            <th>Used In</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><strong>deepseek-v4-flash-free</strong></td>
+            <td>$0.00</td>
+            <td>$0.00</td>
+            <td>$0.00</td>
+            <td>e2e-runner, wiki-keeper, orchestrator</td>
+            </tr>
+            <tr>
+            <td><strong>kimi-k2.7-code</strong></td>
+            <td>$0.95</td>
+            <td>$4.00</td>
+            <td>$0.16</td>
+            <td>miles-expert</td>
+            </tr>
+            <tr>
+            <td><strong>glm-5.2</strong></td>
+            <td>$0.60</td>
+            <td>$2.40</td>
+            <td>$0.10</td>
+            <td>review-plan, coherence-checker</td>
+            </tr>
+            <tr>
+            <td><strong>deepseek-v4-pro</strong></td>
+            <td>$0.50</td>
+            <td>$2.00</td>
+            <td>$0.05</td>
+            <td>fallback</td>
+            </tr>
+            <tr>
+            <td><strong>minimax-m2.7</strong></td>
+            <td>$0.30</td>
+            <td>$1.20</td>
+            <td>$0.05</td>
+            <td>fallback</td>
+            </tr>
+            <tr>
+            <td><strong>qwen-3.6-plus</strong></td>
+            <td>$0.40</td>
+            <td>$1.60</td>
+            <td>$0.08</td>
+            <td>fallback</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="savings-mechanisms-10-total">Savings Mechanisms (10
+            Total)</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>#</th>
+            <th>Mechanism</th>
+            <th>Savings</th>
+            <th>Impact</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>A</td>
+            <td><strong>MarkItDown</strong></td>
+            <td>70-98% per document</td>
+            <td>HIGH</td>
+            </tr>
+            <tr>
+            <td>B</td>
+            <td><strong>Fallback models</strong></td>
+            <td>50% on retries</td>
+            <td>MEDIUM</td>
+            </tr>
+            <tr>
+            <td>C</td>
+            <td><strong>Step Logging (NDJSON)</strong></td>
+            <td>Less context reprocessing</td>
+            <td>MEDIUM</td>
+            </tr>
+            <tr>
+            <td>D</td>
+            <td><strong>Page Objects</strong></td>
+            <td>~60% on E2E tests</td>
+            <td>MEDIUM</td>
+            </tr>
+            <tr>
+            <td>E</td>
+            <td><strong>Prompt versioning</strong></td>
+            <td>~70% per prompt</td>
+            <td>LOW</td>
+            </tr>
+            <tr>
+            <td>F</td>
+            <td><strong>Selective loading</strong></td>
+            <td>90% per query</td>
+            <td>HIGH</td>
+            </tr>
+            <tr>
+            <td>G</td>
+            <td><strong>Model tiering</strong></td>
+            <td>80% on simple tasks</td>
+            <td>HIGH</td>
+            </tr>
+            <tr>
+            <td>H</td>
+            <td><strong>Subagent invocation</strong></td>
+            <td>Avoids unnecessary calls</td>
+            <td>MEDIUM</td>
+            </tr>
+            <tr>
+            <td>I</td>
+            <td><strong>RTK (Run The Kit)</strong></td>
+            <td>30% on CLI commands</td>
+            <td>MEDIUM</td>
+            </tr>
+            <tr>
+            <td>J</td>
+            <td><strong>GitNexus</strong></td>
+            <td>80-90% on code queries</td>
+            <td>HIGH</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="mechanism-details">Mechanism Details</h3>
+            <p><strong>A. MarkItDown (Document
+            Preprocessing)</strong></p>
+            <div class="sourceCode" id="cb21"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Excel 10MB → Markdown 200KB = 98% token reduction</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">markitdown</span> ~/raw/files/PROJECT_XXXX/Asset\ Tab.xlsx <span class="op">&gt;</span> /tmp/asset.md</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Word 5MB → Markdown 1MB = 80% reduction</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="ex">markitdown</span> ~/raw/files/contract.docx <span class="op">&gt;</span> /tmp/contract.md</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># PDF 8MB → Markdown 2.4MB = 70% reduction</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="ex">markitdown</span> ~/raw/files/manual.pdf <span class="op">&gt;</span> /tmp/manual.md</span></code></pre></div>
+            <p><strong>B. Fallback Model Strategy</strong></p>
+            <pre><code>Flow: Primary Model → Cheaper Fallback → Abort
+Example: kimi-k2.7-code ($4.00) → deepseek-v4-pro ($2.00) = 50% savings on retry</code></pre>
+            <p><strong>C. Step Logging (NDJSON)</strong></p>
+            <pre><code>Format: NDJSON (not formatted JSON)
+Benefit: Reuse context without re-reading files
+Example: workflow logs stored in .workflow/logs/step-log.ndjson</code></pre>
+            <p><strong>D. Page Objects (Playwright)</strong></p>
+            <pre><code>Before: 1500 tokens per linear test
+After: 600 tokens per test with page objects = 60% savings
+Benefit: Code reuse, less repetition</code></pre>
+            <p><strong>E. Prompt Versioning</strong></p>
+            <pre><code>Example: workflow-jira-ticket v1.0.0 (356 lines) → v1.2.0 (~100 lines)
+Benefit: ~70% fewer tokens per prompt</code></pre>
+            <p><strong>F. Selective Knowledge Loading</strong></p>
+            <pre><code>Flow: wiki-keeper → load specific endpoints (not all)
+Example: 3 endpoints (50KB) vs 25 endpoints (500KB) = 90% savings</code></pre>
+            <p><strong>G. Model Tiering</strong></p>
+            <pre><code>Simple tasks: deepseek-v4-flash-free ($0.00)
+Medium tasks: glm-5.2 ($0.60/$2.40)
+Complex tasks: kimi-k2.7-code ($0.95/$4.00)</code></pre>
+            <p><strong>H. Subagent Invocation</strong></p>
+            <pre><code>Flow: Orchestrator decides if miles-expert is needed
+Benefit: Avoid unnecessary calls</code></pre>
+            <p><strong>I. RTK (Run The Kit)</strong></p>
+            <div class="sourceCode" id="cb29"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cache of frequent commands (npm, git, docker)</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Security filters (no dangerous commands)</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Project policies (timeout, automatic retries)</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="ex">rtk</span> npm install  <span class="co"># vs npm install = cache hit avoids re-download</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Economy: ~30% fewer tokens on CLI commands</span></span></code></pre></div>
+            <p><strong>J. GitNexus (Code Intelligence)</strong></p>
+            <div class="sourceCode" id="cb30"><pre
+            class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Query knowledge graph instead of sending entire files</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gitnexus_context</span>(<span class="st">&quot;DealService&quot;</span>)  <span class="co">// ~200 tokens vs file ~2000 tokens</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">gitnexus_impact</span>(<span class="st">&quot;DealService&quot;</span>)   <span class="co">// blast radius analysis without code</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">gitnexus_query</span>(<span class="st">&quot;vehicle search&quot;</span>) <span class="co">// semantic search on knowledge graph</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">gitnexus_cypher</span>()                <span class="co">// structured graph queries</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Economy: ~80-90% fewer tokens on code queries</span></span></code></pre></div>
+            <h3 id="total-savings">Total Savings</h3>
+            <p><strong>75-90% fewer tokens per complete
+            workflow</strong></p>
+            <table>
+            <thead>
+            <tr>
+            <th>Scenario</th>
+            <th>Before</th>
+            <th>After</th>
+            <th>Savings</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>Simple ticket (1 AC)</td>
+            <td>~30K tokens</td>
+            <td>~8K tokens</td>
+            <td>73%</td>
+            </tr>
+            <tr>
+            <td>Medium ticket (3 ACs)</td>
+            <td>~90K tokens</td>
+            <td>~22K tokens</td>
+            <td>76%</td>
+            </tr>
+            <tr>
+            <td>Complex ticket (5+ ACs)</td>
+            <td>~200K tokens</td>
+            <td>~45K tokens</td>
+            <td>78%</td>
+            </tr>
+            </tbody>
+            </table>
+            <p><strong>Average cost per ticket: ~4× cheaper</strong></p>
+            <h2 id="parallel-e2e-execution-v2.6">Parallel E2E Execution
+            (v2.6)</h2>
+            <h3 id="overview-1">Overview</h3>
+            <p>E2E tests can now run in parallel using multiple agents,
+            reducing execution time by 50-67%.</p>
+            <h3 id="how-it-works">How It Works</h3>
+            <ol type="1">
+            <li><strong>AC Partitioning</strong>: Acceptance Criteria
+            are divided into batches (2-3 ACs each)</li>
+            <li><strong>Parallel Execution</strong>: Multiple e2e-runner
+            agents execute batches simultaneously</li>
+            <li><strong>Result Aggregation</strong>: Results are
+            consolidated into a single report</li>
+            </ol>
+            <h3 id="batch-distribution">Batch Distribution</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>Total ACs</th>
+            <th>Batches</th>
+            <th>Time Savings</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>1-2</td>
+            <td>1</td>
+            <td>0% (sequential)</td>
+            </tr>
+            <tr>
+            <td>3-4</td>
+            <td>2</td>
+            <td>~50%</td>
+            </tr>
+            <tr>
+            <td>5-6</td>
+            <td>3</td>
+            <td>~67%</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="configuration">Configuration</h3>
+            <p>No configuration needed - parallel execution is automatic
+            when: - Ticket has 3+ Acceptance Criteria - All tests are
+            parallel-safe (unique test data)</p>
+            <h3 id="files">Files</h3>
+            <table>
+            <thead>
+            <tr>
+            <th>File</th>
+            <th>Purpose</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td><code>scripts/run-e2e-batch.ts</code></td>
+            <td>Run a batch of tests</td>
+            </tr>
+            <tr>
+            <td><code>scripts/aggregate-e2e-results.ts</code></td>
+            <td>Aggregate batch results</td>
+            </tr>
+            <tr>
+            <td><code>playwright/reports/batches/</code></td>
+            <td>Batch results storage</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="monitoring">Monitoring</h3>
+            <p>Check parallel execution status:</p>
+            <div class="sourceCode" id="cb31"><pre
+            class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View batch results</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> workflow/scripts/step-log.py view <span class="op">&lt;</span>workflow_id<span class="op">&gt;</span> --filter e2e-runner</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># View aggregated results</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> playwright/reports/batches/aggregated.json</span></code></pre></div>
+            <h3 id="limitations">Limitations</h3>
+            <ul>
+            <li>Maximum 3 parallel batches (resource constraint)</li>
+            <li>Each batch runs in isolated Playwright instance</li>
+            <li>Screenshots saved per-batch in
+            <code>playwright/reports/batches/&lt;batch-id&gt;/</code></li>
+            </ul>
+        </main>
+    </div>
+</body>
+</html>

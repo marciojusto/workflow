@@ -1,0 +1,101 @@
+{
+  "TEST-001": {
+    "started_at": "2026-05-17T16:18:25.618779+00:00",
+    "steps": [
+      {
+        "step": "bootstrap",
+        "agent": "orchestrator",
+        "started_at": "2026-05-17T16:18:25.618788+00:00",
+        "status": "success",
+        "ended_at": "2026-05-17T16:18:28.913211+00:00",
+        "duration_ms": 3295
+      },
+      {
+        "step": "analyze",
+        "agent": "miles-expert",
+        "started_at": "2026-05-17T16:18:26.673895+00:00",
+        "status": "success",
+        "ended_at": "2026-05-17T16:18:28.874736+00:00",
+        "duration_ms": 2200
+      },
+      {
+        "step": "validate",
+        "agent": "review-plan",
+        "started_at": "2026-05-17T16:18:27.735830+00:00",
+        "status": "success",
+        "ended_at": "2026-05-17T16:18:28.813494+00:00",
+        "duration_ms": 1076
+      }
+    ],
+    "current_step": null,
+    "status": "completed"
+  },
+  "MMH-1496": {
+    "started_at": "2026-05-25T17:26:14.516455+00:00",
+    "steps": [
+      {
+        "step": "plan",
+        "agent": "orchestrator",
+        "started_at": "2026-05-25T17:26:14.516488+00:00",
+        "status": "completed",
+        "ended_at": "2026-05-25T17:45:10.671693+00:00",
+        "duration_ms": 1136158
+      },
+      {
+        "step": "build",
+        "agent": "orchestrator",
+        "started_at": "2026-05-26T13:49:30.919639+00:00",
+        "status": "completed",
+        "ended_at": "2026-05-26T13:57:41.956861+00:00",
+        "duration_ms": 491036
+      }
+    ],
+    "current_step": null,
+    "status": "running"
+  },
+  "MMH-1544": {
+    "started_at": "2026-06-12T09:32:29.664492+00:00",
+    "steps": [
+      {
+        "step": "wiki-keeper-start",
+        "agent": "orchestrator",
+        "started_at": "2026-06-12T09:32:29.664505+00:00",
+        "status": "completed",
+        "ended_at": "2026-06-12T09:33:47.326309+00:00",
+        "duration_ms": 77663
+      },
+      {
+        "step": "miles-expert-analysis",
+        "agent": "orchestrator",
+        "started_at": "2026-06-12T09:33:47.885844+00:00",
+        "status": "completed",
+        "ended_at": "2026-06-12T09:38:46.574193+00:00",
+        "duration_ms": 298688
+      },
+      {
+        "step": "workflow-jira-ticket-plan",
+        "agent": "orchestrator",
+        "started_at": "2026-06-12T09:38:47.065441+00:00",
+        "status": "completed",
+        "ended_at": "2026-06-12T09:53:47.277024+00:00",
+        "duration_ms": 900206
+      },
+      {
+        "step": "execute-plan",
+        "agent": "orchestrator",
+        "started_at": "2026-06-12T15:45:59.843751+00:00",
+        "status": "in_progress"
+      },
+      {
+        "step": "wiki-keeper-end",
+        "agent": "orchestrator",
+        "started_at": "2026-06-12T15:50:26.020223+00:00",
+        "status": "completed",
+        "ended_at": "2026-06-12T15:51:11.708023+00:00",
+        "duration_ms": 45692
+      }
+    ],
+    "current_step": null,
+    "status": "running"
+  }
+}

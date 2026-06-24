@@ -43,6 +43,33 @@ Valida se o plano respeita cada princípio. Se alguma falhar → is_valid = fals
 - **SoC**: Todas as chamadas API respeitam o padrão bsClient? Layers separados?
   - Exemplo de falha: "fetch() direto no template em vez de bsClient → server/api/ → store"
 
+### Clean Code Validation
+Valida se o plano segue boas práticas de Clean Code:
+
+- **Small Functions**: Funções propostas têm <20 linhas?
+  - Exemplo de falha: "Função processDealProposal com 80 linhas — extrair em funções menores"
+- **Descriptive Names**: Nomes são descritivos sem abreviações?
+  - Exemplo de falha: "Variável `pdc` em vez de `proposalDocumentCount`"
+- **Max 3 Parameters**: Funções têm no máximo 3 parâmetros?
+  - Exemplo de falha: "Função createDeal(id, type, status, metadata) — usar objeto"
+- **Early Return**: Usado para reduzir aninhamento?
+  - Exemplo de falha: "5 níveis de if/else — usar guard clauses"
+- **English Only**: Variáveis e funções em inglês?
+  - Exemplo de falha: "Variável `quantidade` em vez de `quantity`"
+- **Readability First**: Código é claro e legível para humanos?
+  - Exemplo de falha: "Usar bitshift tricks em vez de multiplicação clara"
+  - Exemplo de falha: "Variável `x` em vez de `totalPrice"`
+
+### Testing Strategy Validation
+Valida se o plano define uma estratégia de testes adequada:
+
+- **Given-When-Then**: Testes de comportamento usam este padrão?
+  - Exemplo de falha: "Teste sem estrutura clara — adicionar Given/When/Then"
+- **Arrange-Act-Assert**: Testes unitários usam este padrão?
+  - Exemplo de falha: "Teste com lógica misturada — separar Arrange/Act/Assert"
+- **Test Names**: Nomes descrevem o cenário?
+  - Exemplo de falha: "Teste `test1()` em vez de `shouldCalculateTotalWhenItemsAreSelected()`"
+
 Regras:
 - Se o plano não tem secção "Code Principles Adherence" → is_valid = false, issue = "Plano não documenta Code Principles Adherence (secção 5 obrigatória)"
 - Se algum princípio é violado pelo plano → is_valid = false, issue específica
@@ -58,6 +85,19 @@ Formato:
     "yagni": "ok" | {"issue": "..."},
     "solid": "ok" | {"issue": "..."},
     "soc": "ok" | {"issue": "..."}
+  },
+  "clean_code": {
+    "small_functions": "ok" | {"issue": "..."},
+    "descriptive_names": "ok" | {"issue": "..."},
+    "max_parameters": "ok" | {"issue": "..."},
+    "early_return": "ok" | {"issue": "..."},
+    "english_only": "ok" | {"issue": "..."},
+    "readability_first": "ok" | {"issue": "..."}
+  },
+  "testing_strategy": {
+    "given_when_then": "ok" | {"issue": "..."},
+    "arrange_act_assert": "ok" | {"issue": "..."},
+    "test_names": "ok" | {"issue": "..."}
   }
 }
 ```
@@ -84,8 +124,23 @@ Se code_principles tiver alguma falha → is_valid = false, e a issue é adicion
         - YAGNI: só implementa o que a AC pede?
         - SOLID: responsabilidade única por componente?
         - SoC: bsClient respeitado? Layers separados?
+      - validate Clean Code Compliance (secção 6 do plano):
+        - Small Functions: funções <20 linhas?
+        - Descriptive Names: nomes descritivos sem abreviações?
+        - Max Parameters: máximo 3 parâmetros por função?
+        - Early Return: guard clauses usadas?
+        - English Only: variáveis e funções em inglês?
+        - Readability First: código claro e legível para humanos?
+      - validate Testing Strategy (secção 7 do plano):
+        - Given-When-Then: testes de comportamento usam padrão?
+        - Arrange-Act-Assert: testes unitários usam padrão?
+        - Test Names: nomes descrevem cenário?
       - se o plano não tem secção "Code Principles Adherence" → is_valid = false
+      - se o plano não tem secção "Clean Code Compliance" → is_valid = false
+      - se o plano não tem secção "Testing Strategy" → is_valid = false
       - se alguma validação de princípio falha → is_valid = false, issue prefixada com [PRINCIPLE]
+      - se alguma validação Clean Code falha → is_valid = false, issue prefixada com [CLEAN_CODE]
+      - se alguma validação Testing falha → is_valid = false, issue prefixada com [TESTING]
       - return is_valid + list of issues + code_principles result
    - input: plan, current_ac
    - logic:

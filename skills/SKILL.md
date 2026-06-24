@@ -252,7 +252,7 @@ O workflow termina quando todas as ACs estão concluídas — nesse momento perg
           ```
           docker compose -f .workflow/docker/docker-compose.yml up -d sonarqube
           ```
-        - Run: .workflow/docker/scan-hyperfront.sh (auto-detects token)
+        - Run: .workflow/docker/scan-frontend.sh (auto-detects token)
         - if critical: go_to create-plan.md
 
 # Backend (Java/Spring)
@@ -266,7 +266,7 @@ O workflow termina quando todas as ACs estão concluídas — nesse momento perg
         - report issues to user
         - if critical: go_to create-plan.md
       - run SonarQube analysis (optional):
-        - Run: .workflow/docker/scan-deal-bs.sh
+        - Run: .workflow/docker/scan-backend.sh
         - if critical: go_to create-plan.md
       - run SonarQube analysis (optional):
         - Run: .workflow/docker/scan.sh
@@ -280,7 +280,7 @@ O workflow termina quando todas as ACs estão concluídas — nesse momento perg
         ```
       - if fails: go_to create-plan.md
       - run SonarQube analysis (optional):
-        - Run: .workflow/docker/scan-hyperfront.sh (ou criar scan-node.sh específico)
+        - Run: .workflow/docker/scan-frontend.sh (ou criar scan-node.sh específico)
 
 8c. run-regression-tests
     description: Executa testes de regressão - dinâmico baseado no project_type

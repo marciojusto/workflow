@@ -10,7 +10,7 @@
 - **control/**: Governance files (this index, log)
 
 ## Last Updated
-2026-05-22
+2026-06-05
 
 ## Wiki Contents
 
@@ -23,6 +23,8 @@
 - **MMH-1373.md**: Fix for modify button accessibility on terminal status deals (canceled, rejected, expired) + hyper_front_status deep investigation
 - **MMH-1494.md**: Fallback mock PDF in printQuote when template not found — base64 PDF in JSON response, removed separate GET endpoint
 - **MMH-1496.md**: Customer data missing in deal list after save — Miles disabled enumGroupId, fixed entity inference and 4 bypass paths in partyMapper.ts + dealPayloadBuilder.ts
+- **MMH-1516.md**: CLONE — User Hyperfront as a Seller (Seller RBAC) — deal filtering by `x-seller-id`, reattribute gating, commission visibility, middleware auth infrastructure
+- **MMH-1544.md**: Company & Seller Filter Missing in BFF Endpoints — `buildAccessFilter()` utility, 3 BFF endpoints fixed, DRY refactor of deals.get and deal-list.get
 
 ### Conversations
 - **deal-submission-and-reassignment.md**: Deal submission and reassignment process review (29/Jan/2026) - Marcio & Rania discussion on deal lifecycle, reassignment limitations, and Sofico ticket

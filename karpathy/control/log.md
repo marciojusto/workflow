@@ -122,6 +122,36 @@
 - **Testing Results**: 64/67 tests pass (3 pre-existing zipcode failures unrelated)
 - **Status**: Implemented and tested
 
+## 2026-06-05 - Seller RBAC Implementation (MMH-1516)
+- **Ticket**: MMH-1516 — CLONE - User Hyperfront as a Seller
+- **AC01**: Deal filtering by owner via `x-seller-id` header + manager bypass
+- **AC03**: Navigation menu & offer access — `Roles.SELLER` added to offer/edit
+- **AC04**: Cannot reattribute deals — `hiddenActions` prop + `canReattribute` gate
+- **AC06**: Commission visibility — `canSeeCommissions` gate in OfferDetails.vue
+- **Cross-cutting**: Middleware `matchRoute()` parameterized paths, 3-tier `getAccessToken()` fallback, `BFF_ROUTE_ROLES` extended
+- **Testing**: 86/87 tests pass (1 pre-existing timeout), new 29-test regression suite `MMH-1516-rbac-full-flow.spec.ts`, browser E2E validated with `ds40153`
+- **Cleanup**: Removed `auth/api.ts`, `requests/useApi.ts`, `plugins/axios.client.ts`, axios from noExternal
+- **Wiki Updates**:
+  - Created `wiki/projects/MMH-1516.md` — Full implementation note
+  - Updated `control/index.md` with new project entry
+  - Updated `control/log.md` with this entry
+- **Status**: Implemented and tested
+
+## 2026-06-12 — MMH-1544: Company & Seller Filter Missing in BFF Endpoints
+- **Ticket**: MMH-1544 — Company & Seller Filter Missing in BFF Endpoints
+- **Problem**: `x-brokers` (company filter) and `x-seller-id` (seller filter) headers were missing in 3 BFF endpoints
+- **Fix Applied**:
+  - Created `server/utils/accessControl.ts` with `buildAccessFilter(event)` shared utility
+  - Refactored `deals.get.ts` and `deal-list.get.tsx` to use shared utility
+  - Fixed `deals/[id].get.ts`, `dashboard/stats.get.ts`, `deals/pick-list.post.ts` — added missing filters
+- **Wiki Updates**:
+  - Created `wiki/projects/MMH-1544.md` — Ticket implementation note
+  - Updated `control/index.md` with new project entry
+  - Updated `control/log.md` with this entry
+  - Synced with Obsidian vault
+- **Testing**: All 14 existing tests pass, coherence checker approved
+- **Status**: Implemented and tested
+
 ## 2026-04-30 - Health Check
 - **OpenAPI specs**: 10 files present (miles-car-quote, miles-catalog, miles-contract, miles-credit-retail, miles-customer, miles-dealer-pos, miles-document, miles-driver, miles-quotation, miles-supplier)
 - **MMH_1435**: 1 file (Asset Tab V1.xlsx)

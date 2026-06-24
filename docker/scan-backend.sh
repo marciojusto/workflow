@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script para executar análise SonarQube para o projeto deal-bs (Java/Spring Boot)
-# Usage: ./scan-deal-bs.sh [options]
+# Usage: ./scan-backend.sh [options]
 
 set -e
 

@@ -109,7 +109,7 @@ orchestrator (auto mode):
 3. miles-expert generates plan → invokes @review-plan (independent validation)
 4. On approval: Invoke @workflow-jira-ticket (BUILD mode):
    - execute-plan → coherence-checker → review-implementation
-   - generate-regression-test → run-regression-tests → log-history
+   - generate-regression-test (extracts test_trace from step 7, runs trace-to-playwright.py) → run-regression-tests → log-history
 5. Delegate test execution to @validator
 6. If tests fail: analyze errors → delegate fixes to @miles-expert
 7. Repeat until tests pass or human intervention needed
@@ -156,7 +156,7 @@ orchestrator (build mode):
    - coherence-checker (YES - architecture validation)
    - playwright-ac-validator (YES)
    - review-implementation (YES)
-   - generate-regression-test → run-regression-tests → log-history
+   - generate-regression-test (via trace-to-playwright.py from test_trace) → run-regression-tests → log-history
 6. Delegate test execution to @validator
 7. END: Invoke @wiki-keeper to create ticket note
 ```
@@ -206,7 +206,7 @@ When Playwright tests fail:
 | Preflight validation | orchestrator (direct) | (bash) | 0 | 10s |
 | Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
-| Test execution (Playwright) | @validator | kilo/stepfun/step-3.5-flash:free | 2 | 15min |
+| Test execution (Playwright) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
 | Implementation workflow | @workflow-jira-ticket | (skill) | 2 | 30min |
 
 ## Agent Delegation (Backend - Java/Node)
@@ -217,7 +217,7 @@ When Playwright tests fail:
 | Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Knowledge management (end) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
-| Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.5-flash:free | 2 | 15min |
+| Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
 | Implementation workflow | @workflow-jira-ticket | (skill) | 2 | 30min |
 
 ## Agent Delegation (Backend - Java/Node)
@@ -227,7 +227,7 @@ When Playwright tests fail:
 | Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Knowledge management (end) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
-| Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.5-flash:free | 2 | 15min |
+| Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
 | Implementation workflow | @workflow-jira-ticket | (skill) | 2 | 30min |
 
 ## Fallback Models
@@ -235,7 +235,7 @@ When Playwright tests fail:
 If primary model fails, use these in order:
 1. wiki-keeper: kilo/qwen/qwen3.6-flash → kilo/qwen/qwen3.5-flash-02-23
 2. miles-expert: kilo/minimax/minimax-m2.7 → openrouter/qwen-3.6-plus
-3. validator: kilo/stepfun/step-3.5-flash:free → kilo/minimax/minimax-m2.7
+3. validator: kilo/stepfun/step-3.7-flash:free → kilo/minimax/minimax-m2.7
 
 ## Workflow Integration
 
@@ -364,7 +364,8 @@ Build mode reads from these files to continue execution.
 | Execução | workflow-jira-ticket | Implementação concluída | Código criado/modificado | Reverter e reportar |
 | Coerência | coherence-checker | Verificação arquitectural | `coherent: true\|false` + `issues[]` | Se incoherent → parar, reportar issues ao humano |
 | Qualidade | code-quality-checker | DRY/KISS/YAGNI/SOLID/SoC válidos + SonarQube sem blockers | Output dos validadores | Se SonarQube blockers → corrigir antes de prosseguir |
-| E2E | e2e-runner | Todos os ACs passam | JSON com `passed: true` + `ac_results` | Falha → loop análise+correcção (até 3 iterações) |
+| E2E | e2e-runner | Todos os ACs passam | JSON com `passed: true` + `ac_results` + `test_trace` | Falha → loop análise+correcção (até 3 iterações) |
+| Regr. Test | workflow-jira-ticket (step 7.5) | Teste de regressão gerado do `test_trace` | `.spec.ts` em `playwright/tests/regression/` + `--run --validate` OK | test_trace não disponível → criar manualmente do template. Falha de validação → reportar ao humano |
 | END | wiki-keeper | Nota de ticket criada em `wiki/projects/` + log + sync | Ficheiro .md no disco | Ignorar (não-blocking) |
 
 ## Error Handling Matrix
@@ -413,6 +414,7 @@ Gate 3 (plan approved) → review-plan: approved=true + humano: "approve"
 Gate 4 (code coherent) → coherence-checker: coherent=true
 Gate 5 (code quality OK) → SonarQube sem blockers, princípios OK
 Gate 6 (E2E passed) → e2e-runner: passed=true
+Gate 6.5 (regression test generated) → `test_trace` disponível no output do step 7 (não-bloqueante — fallback: template manual)
 Gate 7 (knowledge recorded) → wiki-keeper criou nota (não-bloqueante)
 ```
 
@@ -445,3 +447,87 @@ To cancel workflow at any time, user can type: /stop or /cancel
 - Progress will be logged for later resume
 - Log failure state with: `$LOG end <workflow_id> orchestrator <fase> cancelled "Cancelado pelo usuário"`
 - User will be notified of incomplete state
+## Parallel E2E Execution (NEW - v1.0.4)
+
+When executing E2E tests for tickets with 3+ Acceptance Criteria, use parallel execution to reduce time by 50-67%.
+
+### AC Partitioning Logic
+
+When test execution step is reached, partition ACs into batches:
+
+| Total ACs | Batches | Distribution |
+|-----------|---------|--------------|
+| 1-2 | 1 | All ACs in single batch (sequential) |
+| 3-4 | 2 | [AC1,AC2] + [AC3,AC4] |
+| 5-6 | 3 | [AC1,AC2] + [AC3,AC4] + [AC5,AC6] |
+| 7+ | 3 | [AC1-3] + [AC4-6] + [AC7+] |
+
+### Parallel Invocation
+
+```bash
+# Example: 4 ACs → 2 batches
+
+# Batch 1
+@e2e-runner batch_mode=true \
+  ticket_id=MMH-1435 \
+  workflow_id=<workflow_id> \
+  ac_indices=[1,2] \
+  app_url=http://localhost:3000
+
+# Batch 2 (parallel)
+@e2e-runner batch_mode=true \
+  ticket_id=MMH-1435 \
+  workflow_id=<workflow_id> \
+  ac_indices=[3,4] \
+  app_url=http://localhost:3000
+```
+
+### Result Aggregation
+
+After all batches complete:
+
+1. **Collect batch results** from each e2e-runner
+2. **Merge ac_results** into single result
+3. **Calculate overall pass/fail**
+4. **Generate consolidated screenshot report**
+5. **Log final result to step-log**
+
+### Aggregated Result Format
+
+```json
+{
+  "ticket_id": "MMH-1435",
+  "total_acs": 4,
+  "passed_acs": 4,
+  "failed_acs": 0,
+  "overall_passed": true,
+  "batches": [
+    {"batch_id": "batch-1-2", "passed": true, "duration_ms": 45000},
+    {"batch_id": "batch-3-4", "passed": true, "duration_ms": 52000}
+  ],
+  "total_duration_ms": 52000,
+  "screenshots": ["/path/to/screenshot1.png", "/path/to/screenshot2.png"]
+}
+```
+
+### Batch Execution Flow
+
+```
+orchestrator:
+1. Count ACs from ticket
+2. If ACs >= 3:
+   a. Partition into batches
+   b. Invoke @e2e-runner for each batch (parallel)
+   c. Wait for all batches to complete
+   d. Aggregate results
+   e. Continue workflow with aggregated result
+3. If ACs < 3:
+   a. Use sequential execution (existing flow)
+```
+
+### Error Handling
+
+- If one batch fails, continue with other batches
+- Aggregate results include all batch outcomes
+- If any batch fails, overall result is fail
+- Retry logic applies per-batch, not globally

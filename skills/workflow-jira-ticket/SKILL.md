@@ -71,12 +71,22 @@ Invoke: `create-plan.md`
 Input: title, description, current_ac, jira_ticket_id, current_ac_index
 Input (if spec-driven-planning ran): requirement IDs from `.specs/features/{ticket_id}/spec.md`
 Output: plan object with traceable requirement IDs (e.g. `req: RQ-001`)
-**Code Principles**: O plano DEVE incluir a secção "Code Principles Adherence" (secção 5) que documenta como DRY/KISS/YAGNI/SOLID/SoC serão respeitados. Sem esta secção o validate-plan rejeitará o plano.
+**Code Principles**: O plano DEVE incluir:
+1. Secção 5 "Code Principles Adherence" — DRY/KISS/YAGNI/SOLID/SoC
+2. Secção 6 "Clean Code Compliance" — Funções <20 linhas, nomes descritivos, early return
+3. Secção 7 "Testing Strategy" — TDD, Given-When-Then, Arrange-Act-Assert
+
+Sem estas secções o validate-plan rejeitará o plano.
 
 ## Step 4: validate-plan
 Invoke: `validate-plan.md`
 Input: plan, current_ac
-**Code Principles**: validate-plan verifica secção 5 do plano (DRY/KISS/YAGNI/SOLID/SoC). Se a secção não existe ou se algum princípio é violado → is_valid = false, issue prefixada com `[PRINCIPLE]`.
+**Code Principles**: validate-plan verifica:
+1. Secção 5 (DRY/KISS/YAGNI/SOLID/SoC) — issue prefixada com `[PRINCIPLE]`
+2. Secção 6 (Clean Code) — issue prefixada com `[CLEAN_CODE]`
+3. Secção 7 (Testing) — issue prefixada com `[TESTING]`
+
+Se alguma secção não existe ou se algum princípio é violado → is_valid = false.
 If invalid → loop back to create-plan (max 2 iterations)
 
 ## Step 5: request-human-approval
@@ -91,16 +101,20 @@ Input: approved plan
 
 ## Step 7: run-tests
 If `nuxt-frontend` → invoke `e2e-validator` with current AC
+   → Capture `test_trace` from e2e-validator output and store in context for step 7.5
 If `java-spring-backend` → `./mvnw test`
 If `node-backend` → `npm test`
 If failed → loop to create-plan
 
 ## Step 7.5: generate-regression-test
-If spec-trace (`test_trace` JSON from e2e-runner) is available:
-  → `python3 ~/Development/teamwill/mobilize/workflow/scripts/trace-to-playwright.py --trace <trace.json> --output <spec.ts> --run --validate`
+Source: `test_trace` captured from e2e-validator output in step 7 (or step 1 for validar mode).
+
+If `test_trace` is available:
+  → Save trace to `.workflow/traces/{ticket_id}_ac{ac_index}.json`
+  → Run: `python3 ~/Development/teamwill/mobilize/workflow/scripts/trace-to-playwright.py --trace .workflow/traces/{ticket_id}_ac{ac_index}.json --output playwright/tests/regression/{ticket_id}_ac{ac_index}.spec.ts --run --validate`
 
 Otherwise, create based on project_type:
-- Frontend: Playwright spec from template
+- Frontend: Playwright spec from template (`playwright/tests/regression/template.spec.ts`)
 - Java: JUnit test class
 - Node: Jest/Mocha test file
 

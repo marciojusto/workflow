@@ -48,6 +48,18 @@ O plano DEVE incluir:
    - **YAGNI**: Implementa apenas o que a AC pede. Nada de "preparar para o futuro", "deixar extensível", ou código não especificado.
    - **SOLID**: Cada componente/ficheiro tem uma única responsabilidade. Separa UI de lógica. Usa composables para lógica reutilizável.
    - **SoC**: Todas as chamadas API via bsClient (nunca fetch direto em componentes). Dados em Pinia stores. Lógica de negócio em composables ou server/api/.
+6. **Clean Code Compliance** — Documenta como o código seguirá boas práticas:
+   - **Small Functions**: Funções com no máximo 20 linhas
+   - **Descriptive Names**: Nomes descritivos sem abreviações (ex: `user` não `u`, `count` não `cnt`)
+   - **Max 3 Parameters**: Usar objeto se mais de 3 parâmetros
+   - **Early Return**: Usar guard clauses para reduzir aninhamento
+   - **English Only**: Todas as variáveis, funções e comentários em inglês
+   - **Readability First**: Código escrito para humanos — claro, legível, sem truques inteligentes
+7. **Testing Strategy** — Define a estratégia de testes:
+   - **TDD**: Test-Driven Development quando aplicável
+   - **Given-When-Then**: Para testes de comportamento
+   - **Arrange-Act-Assert**: Para testes unitários
+   - **Test Names**: Nomes que descrevem o cenário, não a implementação
 
 Exemplo de estrutura no plano:
 ```markdown

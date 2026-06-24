@@ -1,6 +1,6 @@
 # Workflow Manual (English)
 
->  Version: 2.4 | Last Updated: 2026-05-19
+>  Version: 2.5 | Last Updated: 2026-05-19
 
 ## 1. Overview
 
@@ -86,7 +86,7 @@ This workflow is an automated implementation system for Jira tickets that coordi
 | **Name** | workflow-orchestrator |
 | **Version** | v1.0.3 |
 | **Model** | opencode/deepseek-v4-flash-free-free |
-| **Fallback Model** | kilo/minimax/minimax-m2.7 |
+| **Fallback Model** | kilo/moonshotai/kimi-k2.7-code |
 | **Timeout** | 10 minutes |
 | **Mode** | **primary** (user invokes directly) |
 | **Primary Function** | Coordinate the complete implementation workflow |
@@ -241,9 +241,9 @@ The workflow-orchestrator supports three operation modes:
 | Attribute | Value |
 |-----------|-------|
 | **Name** | miles-expert |
-| **Version** | v1.0.2 |
+| **Version** | v1.1.0 |
 | **Model** | kilo/deepseek/deepseek-v4-pro |
-| **Fallback Model** | kilo/minimax/minimax-m2.7 |
+| **Fallback Model** | kilo/moonshotai/kimi-k2.7-code |
 | **Retry** | 2 |
 | **Timeout** | 15 minutes |
 | **Mode** | subagent |
@@ -268,13 +268,29 @@ The workflow-orchestrator supports three operation modes:
 | Attribute | Value |
 |-----------|-------|
 | **Name** | e2e-runner |
-| **Version** | v1.0.3 |
-| **Model** | kilo/stepfun/step-3.5-flash:free |
-| **Fallback Model** | kilo/minimax/minimax-m2.7 |
+| **Version** | v1.1.0 |
+| **Model** | opencode/deepseek-v4-flash-free |
+| **Fallback Model** | openrouter/qwen-3.6-plus |
 | **Retry** | 2 |
 | **Timeout** | 15 minutes |
 | **Mode** | subagent |
 | **Primary Function** | E2E testing with Playwright |
+
+**Two Operation Modes:**
+
+| Mode | Trigger | Behavior |
+|------|---------|----------|
+| **Standalone** | User invokes directly | Asks what to do: Screenshot Analysis or E2E Test |
+| **Orchestrated** | Another agent invokes | Runs E2E tests immediately (no questions) |
+
+**Standalone Mode (by user):**
+- Asks user to choose: Screenshot Analysis or E2E Test
+- Screenshot Analysis: captures/describes system screens in structured Markdown
+- E2E Test: validates Acceptance Criteria with Playwright
+
+**Orchestrated Mode (by agent):**
+- Executes E2E tests based on structured context (ticket_id, ACs, workflow_id)
+- Returns JSON with passed/failed results
 
 **Responsibilities:**
 - Execute Playwright E2E tests
@@ -282,6 +298,7 @@ The workflow-orchestrator supports three operation modes:
 - Take screenshots at key validation points
 - Provide clear pass/fail feedback
 - Include contextId in error output for debugging
+- Analyze screenshots and describe in structured Markdown (standalone mode)
 
 **Guidelines:**
 - When login expires: let user log in again
@@ -295,21 +312,21 @@ The workflow-orchestrator supports three operation modes:
 |------|-------------|-------|-------|----------|
 | Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Knowledge management (end) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
-| Deep domain analysis (default) | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
+| Deep domain analysis (default) | @miles-expert | kilo/moonshotai/kimi-k2.7-code | 2 | 10min |
 | Deep domain analysis (escalation) | @miles-expert | kilo/deepseek/deepseek-v4-pro | 2 | 15min |
-| Independent plan review | @review-plan | kilo/z-ai/glm-5.1 | 2 | 10min |
-| Architecture coherence validation | @coherence-checker | kilo/minimax/minimax-m2.7 | 2 | 8min |
-| Test execution | @e2e-runner | kilo/stepfun/step-3.5-flash:free | 2 | 15min |
+| Independent plan review | @review-plan | kilo/z-ai/glm-5.2 | 2 | 10min |
+| Architecture coherence validation | @coherence-checker | kilo/moonshotai/kimi-k2.7-code | 2 | 8min |
+| Test execution | @e2e-runner | opencode/deepseek-v4-flash-free | 2 | 15min |
 | Implementation workflow | @workflow-jira-ticket | (skill) | 2 | 30min |
 
 ### Fallback Models
 If primary model fails, use these in order:
 1. **wiki-keeper**: kilo/qwen/qwen3.6-flash → kilo/qwen/qwen3.5-flash-02-23
 2. **miles-expert**: M2.7 default → V4 Pro escalation (on complexity/ambiguity) → V4 Pro fallback (on failure)
-3. **e2e-runner**: kilo/minimax/minimax-m2.7 → openrouter/qwen-3.6-plus (self-fallback)
+3. **e2e-runner**: kilo/moonshotai/kimi-k2.7-code → openrouter/qwen-3.6-plus (self-fallback)
 
 ### Miles-Expert Model Selection
-- **Default**: MiniMax M2.7 (204,800 tokens) for low/medium complexity, single-module analysis
+- **Default**: Kimi K2.6 (204,800 tokens) for low/medium complexity, single-module analysis
 - **Escalation**: DeepSeek V4 Pro (1M tokens) when: high ambiguity, cross-module, large context, high risk
 - **Fallback**: If M2.7 fails → escalate to V4 Pro
 
@@ -412,6 +429,7 @@ During **review-implementation** step, the workflow automatically verifies code 
 | **KISS** | Functions < 50 lines | Methods < 30 lines |
 | **YAGNI** | No unused imports | No unused imports/methods |
 | **SOLID** | Component responsibility | DI, single responsibility per class |
+| **Readability First** | Code for humans: clear, readable, no clever tricks | Code for humans: clear, readable, no clever tricks |
 
 **Reference Files:**
 - Frontend: `hyperfront/AGENTS.md`
@@ -421,6 +439,25 @@ During **review-implementation** step, the workflow automatically verifies code 
 - Automatically verifies principles after code usage check
 - If violations found → approved = false, feedback with issues
 - If all principles pass → approved = true
+
+### 5.3.1 Clean Code & Readability Standards
+
+| Standard | Description |
+|----------|-------------|
+| **Small Functions** | Max 20 lines per function/method |
+| **Descriptive Names** | No abbreviations (use `user` not `u`, `count` not `cnt`) |
+| **Max 3 Parameters** | Use DTO/object if more than 3 parameters |
+| **Early Return** | Use guard clauses to reduce nesting |
+| **English Only** | All variable names, function names, and comments in English |
+| **Readability First** | Code for humans: clear, readable, no clever tricks |
+
+### 5.3.2 Testing Patterns
+
+| Pattern | When to Use |
+|---------|-------------|
+| **Given-When-Then** | For behavior tests |
+| **Arrange-Act-Assert** | For unit tests |
+| **Test Names** | Describe scenario, not implementation |
 
 ### 5.4 Skills That Can Be Invoked Independently
 
@@ -490,7 +527,7 @@ All skills can be called directly via `call: skill.skill-name`, without going th
 | Attribute | Value |
 |-----------|-------|
 | **Name** | log-analyzer-pro |
-| **Version** | v1.0.0 |
+| **Version** | v1.1.0 |
 | **When to use** | "analyze logs", "check errors", "debug issue" |
 | **Auto-detection** | NO - requires explicit inputs |
 
@@ -504,7 +541,7 @@ All skills can be called directly via `call: skill.skill-name`, without going th
 | Attribute | Value |
 |-----------|-------|
 | **Name** | tana-jira-sync |
-| **Version** | v1.0.0 |
+| **Version** | v1.1.0 |
 | **When to use** | "sync to Tana", "create Tana node", "Jira to Tana" |
 | **Auto-detection** | NO - requires explicit inputs |
 
@@ -691,6 +728,7 @@ Validate AC: "User can see deal status as approved after credit approval"
 
 | Example | Prompt |
 |---------|--------|
+| Screenshot analysis | "Analyze the deal page screenshot" or "Capture and describe the dashboard" |
 | Test single AC | "Test AC: User can see deal status as approved" |
 | Test all ACs | "Run all ACs for ticket MMH-1435" |
 | Debug | "Test AC with contextId DEV-12345-67890" |
@@ -862,8 +900,8 @@ NÃO USAR            USAR + PERGUNTAR
 ├── agents/              # Agent definitions
 ├── docker/              # Docker configuration for SonarQube scanning
 │   ├── docker-compose.yml
-│   ├── scan-hyperfront.sh   # SonarQube for frontend projects (Nuxt/Vue/Node)
-│   └── scan-deal-bs.sh      # SonarQube for Java projects (deal-bs)
+│   ├── scan-frontend.sh   # SonarQube for frontend projects (Nuxt/Vue/Node)
+│   └── scan-backend.sh      # SonarQube for Java projects (deal-bs)
 ├── karpathy/            # Wiki system
 │   ├── control/          # index.md, log.md
 │   ├── history/          # Historical implementation records
@@ -902,8 +940,8 @@ NÃO USAR            USAR + PERGUNTAR
 | Script | Purpose |
 |--------|---------|
 | `scripts/read_excel.py` | Read Excel files from RAG materials |
-| `docker/scan-hyperfront.sh` | Run SonarQube for frontend projects |
-| `docker/scan-deal-bs.sh` | Run SonarQube for Java projects |
+| `docker/scan-frontend.sh` | Run SonarQube for frontend projects |
+| `docker/scan-backend.sh` | Run SonarQube for Java projects |
 | `docker/docker-compose.yml` | SonarQube container configuration |
 
 ## 11. Complete Hierarchy Summary
@@ -914,10 +952,10 @@ NÃO USAR            USAR + PERGUNTAR
 |---|-------|-------|--------|------|---------|
 | 1 | workflow-orchestrator | deepseek-v4-flash-free | v1.0.3 | primary | 10min |
 | 2 | wiki-keeper | deepseek-v4-flash-free | v1.0.3 | subagent | 5min |
-| 3 | miles-expert | minimax-m2.7 / V4 Pro | v1.1.0 | subagent | 10min |
-| 4 | review-plan | kilo/z-ai/glm-5.1 | v1.0.0 | subagent | 10min |
+| 3 | miles-expert | kimi-k2.7-code / V4 Pro | v1.1.0 | subagent | 10min |
+| 4 | review-plan | kilo/z-ai/glm-5.2 | v1.0.0 | subagent | 10min |
 | 5 | coherence-checker | minimax-m2.7 | v1.0.0 | subagent | 8min |
-| 6 | e2e-runner | step-3.5-flash | v1.0.3 | subagent | 15min |
+| 6 | e2e-runner | deepseek-v4-flash-free | v1.1.0 | subagent | 15min |
 
 ### Skills (8)
 
@@ -1056,10 +1094,11 @@ If a workflow gets stuck or fails:
 | workflow-orchestrator | opencode/deepseek-v4-flash-free-free | ~$0.40 | - | 10min |
 | wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | ~$0.33 | 3 | 5min |
 | miles-expert | kilo/deepseek/deepseek-v4-pro | ~$0.70 | 2 | 15min |
-| e2e-runner | kilo/stepfun/step-3.5-flash:free | FREE | 2 | 15min |
+| e2e-runner | opencode/deepseek-v4-flash-free | ~$0.40 | 2 | 15min |
 
 ---
 
+*Changes v2.5: e2e-runner v1.1.0 — dual mode (standalone: screenshot analysis + E2E test; orchestrated: E2E only). miles-expert model changed to Kimi K2.6. Removed sonar-scanner Docker service (using native ARM64 binary).*
 *Changes v2.3: Added tlc-spec-driven skill (hybrid SPECIFY+DESIGN). New step 0.6 in workflow-jira-ticket. New Gate 1.5 (spec exists, non-blocking). 8 skills total. New .specs/ directory with brownfield mapping (STACK.md, ARCHITECTURE.md, CONVENTIONS.md, STRUCTURE.md, TESTING.md, INTEGRATIONS.md, CONCERNS.md). Updated orchestrator Exit Criteria table.*
 *Changes v2.2: Added GitNexus (code intelligence with knowledge graph). Added email (.eml) reading to wiki-keeper. Updated models: workflow-orchestrator → deepseek-v4-flash-free, miles-expert → deepseek-v4-pro (mode: all). Added gitnexus-scan and analyze-with-miles-expert skills.*
 
@@ -1080,3 +1119,205 @@ If a workflow gets stuck or fails:
 *Changes v1.4: 4 operation modes (nova/bug/validar/continuar). request-human-approval required before execute-plan. Branch validation flow.*
 
 *Changes v1.3: Centralized workflow folder with agents/, skills/, and plans/ directories. validator → Step-3.5 Flash (256K context, free)*
+### RAG Preprocessing with MarkItDown (v1.1.0)
+
+Both `miles-expert` and `wiki-keeper` use MarkItDown for document preprocessing before RAG ingestion.
+
+**Supported Formats:**
+| Format | Extension | Token Savings |
+|--------|-----------|---------------|
+| Excel | .xlsx, .xls | ~98% (10MB → 200KB) |
+| Word | .docx | ~80% |
+| PowerPoint | .pptx | ~85% |
+| PDF (text) | .pdf | ~70% |
+| PDF (image) | .pdf | OCR required |
+| HTML/CSS | .html | ~60% |
+| CSV/JSON/XML | .csv, .json, .xml | ~50% |
+
+**Benefits:**
+- **Cleaner context**: No formatting noise = better LLM understanding
+- **Faster processing**: Less tokens = faster responses
+- **Lower cost**: Fewer tokens = lower API costs
+
+**Usage:**
+```bash
+# Convert document to clean Markdown
+markitdown /path/to/document.xlsx > /tmp/output.md
+
+# Then process with LLM
+cat /tmp/output.md | head -100  # Preview first 100 lines
+```
+
+**When to Use:**
+- User asks about content in a PDF, Excel, or Word file
+- Wiki-keeper provides a raw file path
+- Need to extract specific data from documents
+
+## Token Optimization Guide (v2.5)
+
+### Models Pricing
+
+| Model | Input | Output | Cached | Used In |
+|-------|-------|--------|--------|---------|
+| **deepseek-v4-flash-free** | $0.00 | $0.00 | $0.00 | e2e-runner, wiki-keeper, orchestrator |
+| **kimi-k2.7-code** | $0.95 | $4.00 | $0.16 | miles-expert |
+| **glm-5.2** | $0.60 | $2.40 | $0.10 | review-plan, coherence-checker |
+| **deepseek-v4-pro** | $0.50 | $2.00 | $0.05 | fallback |
+| **minimax-m2.7** | $0.30 | $1.20 | $0.05 | fallback |
+| **qwen-3.6-plus** | $0.40 | $1.60 | $0.08 | fallback |
+
+### Savings Mechanisms (10 Total)
+
+| # | Mechanism | Savings | Impact |
+|---|-----------|---------|--------|
+| A | **MarkItDown** | 70-98% per document | HIGH |
+| B | **Fallback models** | 50% on retries | MEDIUM |
+| C | **Step Logging (NDJSON)** | Less context reprocessing | MEDIUM |
+| D | **Page Objects** | ~60% on E2E tests | MEDIUM |
+| E | **Prompt versioning** | ~70% per prompt | LOW |
+| F | **Selective loading** | 90% per query | HIGH |
+| G | **Model tiering** | 80% on simple tasks | HIGH |
+| H | **Subagent invocation** | Avoids unnecessary calls | MEDIUM |
+| I | **RTK (Run The Kit)** | 30% on CLI commands | MEDIUM |
+| J | **GitNexus** | 80-90% on code queries | HIGH |
+
+### Mechanism Details
+
+**A. MarkItDown (Document Preprocessing)**
+```bash
+# Excel 10MB → Markdown 200KB = 98% token reduction
+markitdown ~/raw/files/MMH_1435/Asset\ Tab.xlsx > /tmp/asset.md
+
+# Word 5MB → Markdown 1MB = 80% reduction
+markitdown ~/raw/files/contract.docx > /tmp/contract.md
+
+# PDF 8MB → Markdown 2.4MB = 70% reduction
+markitdown ~/raw/files/manual.pdf > /tmp/manual.md
+```
+
+**B. Fallback Model Strategy**
+```
+Flow: Primary Model → Cheaper Fallback → Abort
+Example: kimi-k2.7-code ($4.00) → deepseek-v4-pro ($2.00) = 50% savings on retry
+```
+
+**C. Step Logging (NDJSON)**
+```
+Format: NDJSON (not formatted JSON)
+Benefit: Reuse context without re-reading files
+Example: workflow logs stored in .workflow/logs/step-log.ndjson
+```
+
+**D. Page Objects (Playwright)**
+```
+Before: 1500 tokens per linear test
+After: 600 tokens per test with page objects = 60% savings
+Benefit: Code reuse, less repetition
+```
+
+**E. Prompt Versioning**
+```
+Example: workflow-jira-ticket v1.0.0 (356 lines) → v1.2.0 (~100 lines)
+Benefit: ~70% fewer tokens per prompt
+```
+
+**F. Selective Knowledge Loading**
+```
+Flow: wiki-keeper → load specific endpoints (not all)
+Example: 3 endpoints (50KB) vs 25 endpoints (500KB) = 90% savings
+```
+
+**G. Model Tiering**
+```
+Simple tasks: deepseek-v4-flash-free ($0.00)
+Medium tasks: glm-5.2 ($0.60/$2.40)
+Complex tasks: kimi-k2.7-code ($0.95/$4.00)
+```
+
+**H. Subagent Invocation**
+```
+Flow: Orchestrator decides if miles-expert is needed
+Benefit: Avoid unnecessary calls
+```
+
+**I. RTK (Run The Kit)**
+```bash
+# Cache of frequent commands (npm, git, docker)
+# Security filters (no dangerous commands)
+# Project policies (timeout, automatic retries)
+rtk npm install  # vs npm install = cache hit avoids re-download
+# Economy: ~30% fewer tokens on CLI commands
+```
+
+**J. GitNexus (Code Intelligence)**
+```javascript
+// Query knowledge graph instead of sending entire files
+gitnexus_context("DealService")  // ~200 tokens vs file ~2000 tokens
+gitnexus_impact("DealService")   // blast radius analysis without code
+gitnexus_query("vehicle search") // semantic search on knowledge graph
+gitnexus_cypher()                // structured graph queries
+// Economy: ~80-90% fewer tokens on code queries
+```
+
+### Total Savings
+
+**75-90% fewer tokens per complete workflow**
+
+| Scenario | Before | After | Savings |
+|----------|--------|-------|---------|
+| Simple ticket (1 AC) | ~30K tokens | ~8K tokens | 73% |
+| Medium ticket (3 ACs) | ~90K tokens | ~22K tokens | 76% |
+| Complex ticket (5+ ACs) | ~200K tokens | ~45K tokens | 78% |
+
+**Average cost per ticket: ~4× cheaper**
+
+## Parallel E2E Execution (v2.6)
+
+### Overview
+
+E2E tests can now run in parallel using multiple agents, reducing execution time by 50-67%.
+
+### How It Works
+
+1. **AC Partitioning**: Acceptance Criteria are divided into batches (2-3 ACs each)
+2. **Parallel Execution**: Multiple e2e-runner agents execute batches simultaneously
+3. **Result Aggregation**: Results are consolidated into a single report
+
+### Batch Distribution
+
+| Total ACs | Batches | Time Savings |
+|-----------|---------|--------------|
+| 1-2 | 1 | 0% (sequential) |
+| 3-4 | 2 | ~50% |
+| 5-6 | 3 | ~67% |
+
+### Configuration
+
+No configuration needed - parallel execution is automatic when:
+- Ticket has 3+ Acceptance Criteria
+- All tests are parallel-safe (unique test data)
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `scripts/run-e2e-batch.ts` | Run a batch of tests |
+| `scripts/aggregate-e2e-results.ts` | Aggregate batch results |
+| `playwright/reports/batches/` | Batch results storage |
+
+### Monitoring
+
+Check parallel execution status:
+```bash
+# View batch results
+python3 workflow/scripts/step-log.py view <workflow_id> --filter e2e-runner
+
+# View aggregated results
+cat playwright/reports/batches/aggregated.json
+```
+
+### Limitations
+
+- Maximum 3 parallel batches (resource constraint)
+- Each batch runs in isolated Playwright instance
+- Screenshots saved per-batch in `playwright/reports/batches/<batch-id>/`
