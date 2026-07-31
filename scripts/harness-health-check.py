@@ -85,10 +85,6 @@ REQUIRED_AGENTS = [
 business_expert = state.get("business_expert", {}).get("name")
 if business_expert:
     REQUIRED_AGENTS.append(business_expert)
-else:
-    # Fallback for backward compatibility
-    if os.path.exists(os.path.join(AGENTS_DIR, "miles-expert.md")):
-        REQUIRED_AGENTS.append("miles-expert")
 
 # Other required agents
 REQUIRED_AGENTS.extend([

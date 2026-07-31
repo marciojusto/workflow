@@ -7,7 +7,6 @@ MANUALS_DIR = os.path.expanduser(
     "~/Development/teamwill/mobilize/workflow/karpathy/wiki/manuals"
 )
 
-# Files to update
 PT = os.path.join(MANUALS_DIR, "MANUAL_PT.md")
 EN = os.path.join(MANUALS_DIR, "MANUAL_EN.md")
 PT_GENERIC = os.path.join(MANUALS_DIR, "MANUAL_PT_GENERIC.md")
@@ -25,7 +24,6 @@ def write_file(path: str, content: str) -> None:
 
 
 def update_common(content: str) -> str:
-    # Front matter
     content = content.replace(
         '---\nSPECS_DIR="~/Development/teamwill/mobilize/workflow/.specs"\n',
         '---\nSPECS_DIR="{{SPECS_DIR}}"\n',
@@ -38,20 +36,14 @@ def update_common(content: str) -> str:
         'description: "Primary orchestrator agent that coordinates the complete implementation workflow. Supports three operation modes: AUTO (full workflow), PLAN (planning only), and BUILD (execution only from existing plan). Auto-detects project type (frontend/backend) and adapts testing strategy accordingly."',
         'description: "Primary orchestrator agent that coordinates the complete implementation workflow. Supports three operation modes: AUTO (full workflow), PLAN (planning only), and BUILD (execution only from existing plan). Auto-detects project type (frontend/backend) and adapts testing strategy accordingly. Business expert name and paths are loaded from installer state file."',
     )
-
-    # Step Logging paths
     content = content.replace(
         'LOG="python3 ~/Development/teamwill/mobilize/workflow/scripts/step-log.py"',
         'LOG="python3 $WORKFLOW_ROOT/scripts/step-log.py"',
     )
-
-    # Preflight paths
     content = content.replace(
         "python3 ~/Development/teamwill/mobilize/workflow/scripts/harness-health-check.py --preflight",
         "python3 $WORKFLOW_ROOT/scripts/harness-health-check.py --preflight",
     )
-
-    # Project paths — remove hardcoded TeamWill paths
     content = content.replace(
         "- Frontend (Nuxt): ~/Development/teamwill/mobilize/hyperfront\n"
         "- Backend (Java): ~/Development/teamwill/mobilize/deal-bs\n"
@@ -60,25 +52,17 @@ def update_common(content: str) -> str:
         "- Backend (Java): detected from project root or $WORKFLOW_ROOT\n"
         "- Backend (Node): detected from project root",
     )
-
-    # miles-expert → generic
     content = content.replace("@miles-expert", "@$BUSINESS_EXPERT")
     content = content.replace("miles-expert generates plan", "$BUSINESS_EXPERT generates plan")
     content = content.replace("miles-expert)", "$BUSINESS_EXPERT)")
-
-    # Plan paths
     content = content.replace(
         "1. READ existing plan from ~/Development/teamwill/mobilize/workflow/plans/{ticket_id}.json",
         "1. READ existing plan from $WORKFLOW_ROOT/plans/{ticket_id}.json",
     )
-
-    # Spec paths
     content = content.replace(
         "`~/Development/teamwill/mobilize/workflow/.specs/features/{ticket_id}/spec.md`",
         "`$SPECS_DIR/features/{ticket_id}/spec.md`",
     )
-
-    # Grill paths
     content = content.replace(
         "workflow/.specs/grill/{ticket_id_or_topic}/",
         "$SPECS_DIR/grill/{ticket_id_or_topic}/",
@@ -91,18 +75,14 @@ def update_common(content: str) -> str:
         "workflow/.specs/grill/auto-{timestamp}/",
         "$SPECS_DIR/grill/auto-{timestamp}/",
     )
-
-    # Plans dir in messages
     content = content.replace(
         "- Análise de domínio (miles-expert)",
         "- Análise de domínio ($BUSINESS_EXPERT)",
     )
-
     return content
 
 
 def update_pt_specific(content: str) -> str:
-    """PT-specific path replacements."""
     content = content.replace(
         "Plano em `workflow/plans/` ou objecto no output",
         "Plano em `$WORKFLOW_ROOT/plans/` ou objecto no output",
@@ -111,7 +91,6 @@ def update_pt_specific(content: str) -> str:
 
 
 def update_en_specific(content: str) -> str:
-    """EN-specific path replacements."""
     content = content.replace(
         "Plano em `workflow/plans/` ou objecto no output",
         "Plano em `$WORKFLOW_ROOT/plans/` ou objecto no output",
@@ -119,8 +98,17 @@ def update_en_specific(content: str) -> str:
     return content
 
 
+def normalize_config_block(config_block: str) -> str:
+    return (
+        config_block
+        .replace("# Load business expert name (fallback to miles-expert for backward compatibility)", "# Load business expert name from installer state file")
+        .replace('print(json.load(open(\'$STATE_FILE\')).get(\'business_expert\', {}).get(\'name\', \'miles-expert\'))', 'print(json.load(open(\'$STATE_FILE\')).get(\'business_expert\', {}).get(\'name\', \'\'))')
+        .replace("    BUSINESS_EXPERT=\"miles-expert\"\n    WORKFLOW_ROOT=\"~/Development/teamwill/mobilize/workflow\"\n", "")
+        .replace("**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names.", "**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY.")
+    )
+
+
 def add_config_section(content: str, lang: str = "en") -> str:
-    """Add Configuration Loading section after front matter."""
     config_block = """## Configuration Loading (REQUIRED)
 
 Before any workflow operation, load configuration from the installer state file:
@@ -128,14 +116,10 @@ Before any workflow operation, load configuration from the installer state file:
 ```bash
 STATE_FILE="$HOME/.workflow-installer-state.json"
 
-# Load business expert name (fallback to miles-expert for backward compatibility)
+# Load business expert name from installer state file
 if [ -f "$STATE_FILE" ]; then
-    BUSINESS_EXPERT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('business_expert', {}).get('name', 'miles-expert'))")
+    BUSINESS_EXPERT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('business_expert', {}).get('name', ''))")
     WORKFLOW_ROOT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('workflow_root', ''))")
-else
-    # Fallback for existing TeamWill installations
-    BUSINESS_EXPERT="miles-expert"
-    WORKFLOW_ROOT="~/Development/teamwill/mobilize/workflow"
 fi
 
 # Resolve paths
@@ -143,20 +127,29 @@ SPECS_DIR="$WORKFLOW_ROOT/.specs"
 SCRIPTS_DIR="$WORKFLOW_ROOT/scripts"
 ```
 
-**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names.
+**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY.
 
 ---
 
 """
 
-    # Insert after the closing --- of front matter
+    config_block = normalize_config_block(config_block)
+
     if lang == "pt":
         intro = "## Configuração do Ambiente (OBRIGATÓRIO)"
         config_block = config_block.replace("**CRITICAL**:", "**CRÍTICO**:")
     else:
         intro = "## Configuration Loading (REQUIRED)"
 
-    # Find the second --- (end of front matter)
+    # Remove existing config section if present
+    for marker in ["## Configuration Loading (REQUIRED)", "## Configuração do Ambiente (OBRIGATÓRIO)"]:
+        start = content.find(marker)
+        if start != -1:
+            end = content.find("---", start + 4)
+            if end != -1:
+                content = content[:start] + content[end + 3 :]
+
+    # Insert after front matter
     idx = content.find("---", 4)
     if idx != -1:
         end_idx = content.find("---", idx + 3)

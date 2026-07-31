@@ -42,14 +42,10 @@ Before any workflow operation, load configuration from the installer state file:
 ```bash
 STATE_FILE="$HOME/.workflow-installer-state.json"
 
-# Load business expert name (fallback to miles-expert for backward compatibility)
+# Load business expert name from installer state file
 if [ -f "$STATE_FILE" ]; then
-    BUSINESS_EXPERT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('business_expert', {}).get('name', 'miles-expert'))")
+    BUSINESS_EXPERT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('business_expert', {}).get('name', ''))")
     WORKFLOW_ROOT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('workflow_root', ''))")
-else
-    # Fallback for existing TeamWill installations
-    BUSINESS_EXPERT="miles-expert"
-    WORKFLOW_ROOT="~/Development/teamwill/mobilize/workflow"
 fi
 
 # Resolve paths
@@ -57,9 +53,15 @@ SPECS_DIR="$WORKFLOW_ROOT/.specs"
 SCRIPTS_DIR="$WORKFLOW_ROOT/scripts"
 ```
 
-**CRÍTICO**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names.
+**CRÍTICO**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY.
 
 ---
+
+
+
+
+
+
 
 
 
