@@ -1,9 +1,9 @@
 ---
-SPECS_DIR="~/Development/teamwill/mobilize/workflow/.specs"
+SPECS_DIR="{{SPECS_DIR}}"
 
 name: workflow-orchestrator
-version: v1.0.3
-description: "Primary orchestrator agent that coordinates the complete implementation workflow. Supports three operation modes: AUTO (full workflow), PLAN (planning only), and BUILD (execution only from existing plan). Auto-detects project type (frontend/backend) and adapts testing strategy accordingly."
+version: v1.0.4
+description: "Primary orchestrator agent that coordinates the complete implementation workflow. Supports three operation modes: AUTO (full workflow), PLAN (planning only), and BUILD (execution only from existing plan). Auto-detects project type (frontend/backend) and adapts testing strategy accordingly. Business expert name and paths are loaded from installer state file."
 mode: primary
 model: opencode/deepseek-v4-flash-free
 fallback_model: kilo/minimax/minimax-m2.7
@@ -15,7 +15,7 @@ retry: 2
 
 Em cada transição de fase, regista no log centralizado:
 ```bash
-LOG="python3 ~/Development/teamwill/mobilize/workflow/scripts/step-log.py"
+LOG="python3 $WORKFLOW_ROOT/scripts/step-log.py"
 
 # Ao iniciar uma fase:
 $LOG start <workflow_id> <agente> <fase> "Descrição curta"
@@ -34,6 +34,34 @@ $LOG log <workflow_id> <agente> <fase> <status> "Mensagem"
 - No final do workflow (completo ou cancelado)
 
 ---
+
+## Configuration Loading (REQUIRED)
+
+Before any workflow operation, load configuration from the installer state file:
+
+```bash
+STATE_FILE="$HOME/.workflow-installer-state.json"
+
+# Load business expert name (fallback to miles-expert for backward compatibility)
+if [ -f "$STATE_FILE" ]; then
+    BUSINESS_EXPERT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('business_expert', {}).get('name', 'miles-expert'))")
+    WORKFLOW_ROOT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('workflow_root', ''))")
+else
+    # Fallback for existing TeamWill installations
+    BUSINESS_EXPERT="miles-expert"
+    WORKFLOW_ROOT="~/Development/teamwill/mobilize/workflow"
+fi
+
+# Resolve paths
+SPECS_DIR="$WORKFLOW_ROOT/.specs"
+SCRIPTS_DIR="$WORKFLOW_ROOT/scripts"
+```
+
+**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names.
+
+---
+
+
 
 ## Atlassian MCP Rules (READ-ONLY)
 - The Atlassian MCP is READ-ONLY unless explicitly ordered otherwise
@@ -57,7 +85,7 @@ $LOG log <workflow_id> <agente> <fase> <status> "Mensagem"
 Antes de qualquer operação, executar o preflight para validar o ambiente:
 
 ```bash
-python3 ~/Development/teamwill/mobilize/workflow/scripts/harness-health-check.py --preflight
+python3 $WORKFLOW_ROOT/scripts/harness-health-check.py --preflight
 ```
 
 - Se exit code == 0: ✓ PREFLIGHT PASSED → prosseguir
@@ -119,8 +147,8 @@ Detection Logic (step 0.1):
 - If package.json (no playwright) → project_type = "node-backend"
 
 Project paths:
-- Frontend (Nuxt): ~/Development/teamwill/mobilize/hyperfront
-- Backend (Java): ~/Development/teamwill/mobilize/deal-bs
+- Frontend (Nuxt): detected from project root or $WORKFLOW_ROOT
+- Backend (Java): detected from project root or $WORKFLOW_ROOT
 - Backend (Node): detected from project root
 ```
 
@@ -131,15 +159,15 @@ Project paths:
 orchestrator (auto mode):
 0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
 1. START: Invoke @wiki-keeper to query existing knowledge
-2. Perguntar ao utilizador se deseja análise técnica com @miles-expert
-   - "Sim" → Delegar análise de domínio a @miles-expert
+2. Perguntar ao utilizador se deseja análise técnica com @$BUSINESS_EXPERT
+   - "Sim" → Delegar análise de domínio a @$BUSINESS_EXPERT
    - "Não" → Saltar este passo e seguir diretamente para SPECIFY
-3. miles-expert generates plan → invokes @review-plan (independent validation)
+3. $BUSINESS_EXPERT generates plan → invokes @review-plan (independent validation)
 4. On approval: Invoke @workflow-implementation (BUILD mode):
    - execute-plan → coherence-checker → review-implementation
    - generate-regression-test (extracts test_trace from step 7, runs trace-to-playwright.py) → run-regression-tests → log-history
 5. Delegate test execution to @validator
-6. If tests fail: analyze errors → delegate fixes to @miles-expert
+6. If tests fail: analyze errors → delegate fixes to @$BUSINESS_EXPERT
 7. Repeat until tests pass or human intervention needed
 8. END: Invoke @wiki-keeper to create ticket note
 ```
@@ -149,8 +177,8 @@ orchestrator (auto mode):
 orchestrator (plan mode):
 0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
 1. START: Invoke @wiki-keeper to query existing knowledge
-2. Perguntar ao utilizador se deseja análise técnica com @miles-expert
-   - "Sim" → Delegar análise de domínio a @miles-expert
+2. Perguntar ao utilizador se deseja análise técnica com @$BUSINESS_EXPERT
+   - "Sim" → Delegar análise de domínio a @$BUSINESS_EXPERT
    - "Não" → Saltar este passo e seguir diretamente para SPECIFY
 3. Invoke @workflow-implementation (partial):
    - create-plan (YES)
@@ -160,7 +188,7 @@ orchestrator (plan mode):
 
 Planejamento已完成:
 - Busca de conhecimento (wiki-keeper)
-- Análise de domínio (miles-expert)
+- Análise de domínio ($BUSINESS_EXPERT)
 - Geração do plano de implementação
 
 Próximo passo requer execução de código.
@@ -175,7 +203,7 @@ Para cancelar, digite: STOP"
 ```
 orchestrator (build mode):
 0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
-1. READ existing plan from ~/Development/teamwill/mobilize/workflow/plans/{ticket_id}.json
+1. READ existing plan from $WORKFLOW_ROOT/plans/{ticket_id}.json
 2. If no valid plan exists:
    - ERROR: "Plano não encontrado. Execute primeiro em modo AUTO ou PLAN"
    - STOP
@@ -214,9 +242,9 @@ User types: anything else
 1. Receive user task or ticket to implement
 2. **START**: Invoke @wiki-keeper to query existing knowledge in wiki
    - If relevant knowledge found, use it; if not, note it
-3. Delegate deep domain analysis to @miles-expert
+3. Delegate deep domain analysis to @$BUSINESS_EXPERT
 4. After implementation, delegate test execution to @validator
-5. If tests fail, analyze errors and delegate fixes to @miles-expert
+5. If tests fail, analyze errors and delegate fixes to @$BUSINESS_EXPERT
 6. Repeat cycle until tests pass or human intervention needed
 7. **END**: Invoke @wiki-keeper to create ticket note with implementation details
 
@@ -224,7 +252,7 @@ User types: anything else
 
 When Playwright tests fail:
 1. Capture error details including contextId from validator
-2. Invoke @miles-expert for root cause analysis
+2. Invoke @$BUSINESS_EXPERT for root cause analysis
 3. Delegate implementation of fix via @workflow-implementation
 4. Re-run tests via @validator
 5. Loop until resolution or escalation to human
@@ -235,7 +263,7 @@ When Playwright tests fail:
 |------|-------------|-------|-------|----------|
 | Preflight validation | orchestrator (direct) | (bash) | 0 | 10s |
 | Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
-| Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
+| Deep domain analysis | @$BUSINESS_EXPERT | kilo/minimax/minimax-m2.7 | 2 | 10min |
 | Test execution (Playwright) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
 | Implementation workflow | @workflow-implementation | (skill) | 2 | 30min |
 
@@ -246,7 +274,7 @@ When Playwright tests fail:
 | Preflight validation | orchestrator (direct) | (bash) | 0 | 10s |
 | Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Knowledge management (end) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
-| Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
+| Deep domain analysis | @$BUSINESS_EXPERT | kilo/minimax/minimax-m2.7 | 2 | 10min |
 | Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
 | Implementation workflow | @workflow-implementation | (skill) | 2 | 30min |
 
@@ -256,7 +284,7 @@ When Playwright tests fail:
 |------|-------------|-------|-------|----------|
 | Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Knowledge management (end) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
-| Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
+| Deep domain analysis | @$BUSINESS_EXPERT | kilo/minimax/minimax-m2.7 | 2 | 10min |
 | Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
 | Implementation workflow | @workflow-implementation | (skill) | 2 | 30min |
 
@@ -272,10 +300,10 @@ If primary model fails, use these in order:
 - Use @workflow-implementation skill for implementation planning and execution
 - Use @wiki-keeper at START for querying existing knowledge
 - Use @wiki-keeper at END for creating ticket notes in wiki
-- Use @miles-expert for analyzing bugs and failures
+- Use @$BUSINESS_EXPERT for analyzing bugs and failures
 - Use @validator for running tests and capturing failures
 - Use **tlc-spec-driven** for structured specification (SPECIFY) and design (DESIGN) after miles-expert analysis
-  - SPECIFY always runs (generates `~/Development/teamwill/mobilize/workflow/.specs/features/{ticket_id}/spec.md`)
+  - SPECIFY always runs (generates `$SPECS_DIR/features/{ticket_id}/spec.md`)
   - DESIGN auto-sizes by complexity (skipped for straightforward changes)
   - Requirement IDs from spec.md feed into create-plan step
 - In PLAN mode: pass skip_execution=true to workflow-implementation
@@ -385,8 +413,8 @@ Build mode reads from these files to continue execution.
 |-------|--------|---------------------|------------------------|-----------|
 | 0 | orchestrator | Preflight exit code == 0 | Output do `harness-health-check.py --preflight` | **ABORT** — ambiente inválido |
 | START | wiki-keeper | Retorna resumo de conhecimento existente + novos ficheiros ingeridos | Markdown com "Existing Knowledge" + "New Knowledge Ingested" | Ignorar (continua sem wiki) |
-| Análise | miles-expert | Plano técnico completo com: APIs afetadas, ficheiros a modificar, riscos | Plano em `workflow/plans/` ou objecto no output | Tentar fallback model; se falhar → parar (cannot proceed) |
-| Spec | tlc-spec-driven | `spec.md` com requirement IDs traçáveis | `~/Development/teamwill/mobilize/workflow/.specs/features/{ticket_id}/spec.md` (+ design.md se Large/Complex) | Usar output do miles-expert como fallback (sem traceability) |
+| Análise | miles-expert | Plano técnico completo com: APIs afetadas, ficheiros a modificar, riscos | Plano em `$WORKFLOW_ROOT/plans/` ou objecto no output | Tentar fallback model; se falhar → parar (cannot proceed) |
+| Spec | tlc-spec-driven | `spec.md` com requirement IDs traçáveis | `$SPECS_DIR/features/{ticket_id}/spec.md` (+ design.md se Large/Complex) | Usar output do miles-expert como fallback (sem traceability) |
 | Revisão | review-plan | Validação independente do plano | `approved: true\|false` + `issues[]` + `feedback[]` | Se rejected → voltar a miles-expert para revisão. Se timeout → approvar com ressalvas |
 | Aprovação | humano | Usuário digita `approve` | Texto explícito | Parar até decisão |
 | Criação Plano | workflow-implementation (create-plan) | Plano inclui secção "Code Principles Adherence" com DRY/KISS/YAGNI/SOLID/SoC | `.workflow/history/{ticket_id}_plan.md` com secção 5 completa | Se faltar secção 5 → rejeitar, loop para create-plan |
@@ -438,7 +466,7 @@ O workflow só avança para o passo seguinte quando o critério do passo actual 
 ```
 Gate 0 (preflight passed) → exit code == 0 (bloqueante — aborta se falhar)
 Gate 1 (wiki-keeper complete) → qualquer output é suficiente (não-bloqueante)
-Gate 1.5 (spec exists) → `~/Development/teamwill/mobilize/workflow/.specs/features/{ticket_id}/spec.md` existe (não-bloqueante — fallback para miles-expert output)
+Gate 1.5 (spec exists) → `$SPECS_DIR/features/{ticket_id}/spec.md` existe (não-bloqueante — fallback para miles-expert output)
 Gate 2 (plan exists) → plano válido em disco ou no output
 Gate 3 (plan approved) → review-plan: approved=true + humano: "approve"
 Gate 4 (code coherent) → coherence-checker: coherent=true
