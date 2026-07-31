@@ -1,0 +1,12 @@
+{
+  "name": "OpenRouter",
+  "type": "openai-compatible",
+  "baseURL": "https://openrouter.ai/api/v1",
+  "envVar": "OPENROUTER_API_KEY",
+  "models": [
+    { "id": "qwen/qwen-3.6-plus", "name": "Qwen 3.6 Plus", "free": false },
+    { "id": "qwen/qwen-3.6-plus-thinking", "name": "Qwen 3.6 Plus Thinking", "free": false },
+    { "id": "deepseek/deepseek-v4-flash:free", "name": "DeepSeek V4 Flash (free)", "free": true },
+    { "id": "google/gemini-2.5-flash-free", "name": "Gemini 2.5 Flash (free)", "free": true }
+  ]
+}

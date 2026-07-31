@@ -9,6 +9,11 @@ Uso:
   python3 harness-health-check.py --preflight       # Preflight rápido (passo 0 do workflow)
   python3 harness-health-check.py --watch           # Monitorização contínua (Ctrl+C para sair)
   python3 harness-health-check.py --watch --interval 30  # A cada 30s
+
+Environment Variables:
+  WORKFLOW_ROOT          Caminho para o diretório do workflow
+  WORKFLOW_CONFIG_DIR    Caminho para o diretório de config da tool (ex: ~/.config/opencode)
+  WORKFLOW_STATE_FILE    Caminho para o state file do instalador (default: ~/.workflow-installer-state.json)
 """
 
 import json
@@ -19,9 +24,46 @@ import sys
 import time
 from datetime import datetime, timezone
 
-# ── Paths ──
-WORKFLOW = os.path.expanduser("~/Development/teamwill/mobilize/workflow")
-CONFIG_DIR = os.path.expanduser("~/.config/opencode")
+# ── Dynamic Paths (env vars > state file > defaults) ──
+WORKFLOW = os.environ.get("WORKFLOW_ROOT", "")
+CONFIG_DIR = os.environ.get("WORKFLOW_CONFIG_DIR", "")
+STATE_FILE = os.environ.get("WORKFLOW_STATE_FILE", os.path.expanduser("~/.workflow-installer-state.json"))
+
+
+def _load_state():
+    """Load installer state file if it exists."""
+    if not WORKFLOW or not CONFIG_DIR:
+        if os.path.exists(STATE_FILE):
+            try:
+                with open(STATE_FILE) as f:
+                    state = json.load(f)
+                return state
+            except Exception:
+                pass
+    return {}
+
+
+def _get_state_path(key, default=""):
+    """Get a path from state file with fallback."""
+    state = _load_state()
+    val = state.get(key, default)
+    if val:
+        return os.path.expanduser(val)
+    return default
+
+
+# Resolve paths from state file if not set via env vars
+if not WORKFLOW:
+    WORKFLOW = _get_state_path("workflow_root", os.path.expanduser("~/Development/teamwill/mobilize/workflow"))
+if not CONFIG_DIR:
+    # Try to infer from tools config
+    state = _load_state()
+    tools = state.get("tools", {})
+    if "opencode" in tools:
+        CONFIG_DIR = os.path.expanduser(tools["opencode"].get("config_dir", "~/.config/opencode"))
+    else:
+        CONFIG_DIR = os.path.expanduser("~/.config/opencode")
+
 AGENTS_DIR = os.path.join(CONFIG_DIR, "agents")
 SKILLS_DIR = os.path.join(CONFIG_DIR, "skills")
 OPENCODE_JSON = os.path.join(CONFIG_DIR, "opencode.json")
@@ -31,34 +73,46 @@ KARPATHY = os.path.join(WORKFLOW, "karpathy")
 OBSIDIAN = os.path.expanduser("~/Obsidian/workflow-wiki")
 SYNC_SCRIPT = os.path.join(WORKFLOW, "scripts", "sync-obsidian.sh")
 
+# ── Dynamic Required Lists ──
+state = _load_state()
+
 REQUIRED_AGENTS = [
     "workflow-orchestrator",
     "wiki-keeper",
-    "miles-expert",
+]
+
+# Add business expert if configured
+business_expert = state.get("business_expert", {}).get("name")
+if business_expert:
+    REQUIRED_AGENTS.append(business_expert)
+else:
+    # Fallback for backward compatibility
+    if os.path.exists(os.path.join(AGENTS_DIR, "miles-expert.md")):
+        REQUIRED_AGENTS.append("miles-expert")
+
+# Other required agents
+REQUIRED_AGENTS.extend([
     "review-plan",
     "coherence-checker",
     "e2e-runner",
-]
+])
 
 REQUIRED_SKILLS = [
+    "tlc-spec-driven",
+    "workflow-implementation",
+]
+
+# Optional skills
+OPTIONAL_SKILLS = [
     "code-quality-checker",
     "convert-conversation",
     "e2e-validator",
-    "extract-jira-ticket",
     "gitnexus-scan",
     "log-analyzer-pro",
-    "release-tickets",
-    "tana-jira-sync",
-    "workflow-jira-ticket",
 ]
 
 REQUIRED_SCRIPTS = [
     "step-log.py",
-    "log-metrics.py",
-    "create-excel.py",
-    "md-to-html.py",
-    "read_excel.py",
-    "sync-obsidian.sh",
     "harness-health-check.py",
 ]
 
@@ -66,7 +120,6 @@ REQUIRED_MCP = [
     "Memory",
     "Filesystem",
     "Playwright",
-    "Atlassian",
     "GitNexus",
 ]
 
@@ -165,6 +218,10 @@ def run_checks():
     for skill in REQUIRED_SKILLS:
         skill_path = os.path.join(SKILLS_DIR, skill, "SKILL.md") if os.path.isdir(os.path.join(SKILLS_DIR, skill)) else os.path.join(SKILLS_DIR, f"{skill}.md")
         check(f"skill/{skill}", os.path.isfile(skill_path), "ficheiro não encontrado", section=section)
+    for skill in OPTIONAL_SKILLS:
+        skill_path = os.path.join(SKILLS_DIR, skill, "SKILL.md") if os.path.isdir(os.path.join(SKILLS_DIR, skill)) else os.path.join(SKILLS_DIR, f"{skill}.md")
+        if os.path.isfile(skill_path):
+            info(f"  skill opcional: {skill}")
 
     section = "Scripts"
     for script in REQUIRED_SCRIPTS:
@@ -179,14 +236,13 @@ def run_checks():
         for mcp_name in REQUIRED_MCP:
             exists = mcp_name in mcp_servers
             check(f"MCP {mcp_name} configurado", exists, section=section)
-    check_mcp_port("GitNexus", 4747, "gitnexus serve", section=section)
 
     section = "GitNexus"
     try:
         result = subprocess.run(
             ["npx", "gitnexus", "status"],
             capture_output=True, text=True, timeout=15,
-            cwd=os.path.expanduser("~/Development/teamwill/mobilize/hyperfront")
+            cwd=WORKFLOW
         )
         check("GitNexus CLI", result.returncode == 0, result.stderr[:100], section=section)
     except FileNotFoundError:
@@ -202,12 +258,6 @@ def run_checks():
         (os.path.join(WORKFLOW, "scripts"), "workflow/scripts/"),
         (os.path.join(WORKFLOW, "logs"), "workflow/logs/"),
         (os.path.join(WORKFLOW, "plans"), "workflow/plans/"),
-        (os.path.join(WORKFLOW, "karpathy"), "workflow/karpathy/"),
-        (os.path.join(WORKFLOW, "karpathy", "wiki"), "workflow/karpathy/wiki/"),
-        (os.path.join(WORKFLOW, "karpathy", "raw"), "workflow/karpathy/raw/"),
-        (os.path.join(WORKFLOW, "karpathy", "raw", "files"), "workflow/karpathy/raw/files/"),
-        (os.path.join(WORKFLOW, "karpathy", "raw", "openapi"), "workflow/karpathy/raw/openapi/"),
-        (os.path.join(WORKFLOW, "karpathy", "control"), "workflow/karpathy/control/"),
     ]
     for dir_path, label in dirs:
         check(f"diretorios/{label}", os.path.isdir(dir_path), section=section)
@@ -229,43 +279,6 @@ def run_checks():
             warn("step-log.ndjournal", f"erro ao ler: {e}", section=section)
     else:
         check("step-log.ndjournal", False, "vazio", section=section)
-
-    section = "Wiki Integrity"
-    wiki_dirs = {
-        "concepts": os.path.join(KARPATHY, "wiki", "concepts"),
-        "references": os.path.join(KARPATHY, "wiki", "references"),
-        "projects": os.path.join(KARPATHY, "wiki", "projects"),
-        "emails": os.path.join(KARPATHY, "wiki", "emails"),
-        "conversations": os.path.join(KARPATHY, "wiki", "conversations"),
-        "manuals": os.path.join(KARPATHY, "wiki", "manuals"),
-    }
-    for label, path in wiki_dirs.items():
-        if os.path.isdir(path):
-            count = len([f for f in os.listdir(path) if f.endswith((".md", ".xlsx"))])
-            check(f"wiki/{label}", True, f"{count} ficheiros", section=section)
-        else:
-            check(f"wiki/{label}", False, section=section)
-    for fname in ["index.md", "log.md"]:
-        fpath = os.path.join(KARPATHY, "control", fname)
-        check(f"control/{fname}", os.path.isfile(fpath), section=section)
-
-    section = "SonarQube"
-    try:
-        result = subprocess.run(
-            ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", "http://localhost:9002"],
-            capture_output=True, text=True, timeout=5
-        )
-        check("SonarQube (porta 9002)", result.stdout == "200",
-              f"HTTP {result.stdout}" if result.stdout else "timeout", section=section)
-    except Exception:
-        warn("SonarQube", "não acessível", section=section)
-
-    section = "Obsidian Sync"
-    check("sync-obsidian.sh", os.path.isfile(SYNC_SCRIPT), section=section)
-    check("Obsidian vault", os.path.isdir(OBSIDIAN), section=section)
-    if os.path.isfile(SYNC_SCRIPT):
-        executable = os.access(SYNC_SCRIPT, os.X_OK)
-        check("sync-obsidian.sh executável", executable, section=section)
 
     return results
 
@@ -341,7 +354,7 @@ def run_preflight_checks():
         print(f"  {FAIL} agentes em falta: {', '.join(missing_agents)}")
         ok = False
     else:
-        print(f"  {PASS} 6 agentes encontrados")
+        print(f"  {PASS} {len(REQUIRED_AGENTS)} agentes encontrados")
 
     # Skills (CRITICAL)
     missing_skills = []
@@ -353,7 +366,7 @@ def run_preflight_checks():
         print(f"  {FAIL} skills em falta: {', '.join(missing_skills)}")
         ok = False
     else:
-        print(f"  {PASS} 9 skills encontradas")
+        print(f"  {PASS} {len(REQUIRED_SKILLS)} skills encontradas")
 
     # Scripts (CRITICAL)
     missing_scripts = []
@@ -364,30 +377,13 @@ def run_preflight_checks():
         print(f"  {FAIL} scripts em falta: {', '.join(missing_scripts)}")
         ok = False
     else:
-        print(f"  {PASS} 7 scripts encontrados")
-
-    # MCP Config (CRITICAL)
-    if os.path.isfile(OPENCODE_JSON):
-        with open(OPENCODE_JSON) as f:
-            config = json.load(f)
-        mcp_servers = config.get("mcp", {})
-        missing_mcp = [m for m in REQUIRED_MCP if m not in mcp_servers]
-        if missing_mcp:
-            print(f"  {FAIL} MCP não configurados: {', '.join(missing_mcp)}")
-            ok = False
-        else:
-            print(f"  {PASS} 5 MCP configurados")
-    else:
-        print(f"  {FAIL} opencode.json não encontrado")
-        ok = False
+        print(f"  {PASS} {len(REQUIRED_SCRIPTS)} scripts encontrados")
 
     # Workflow directories (CRITICAL)
     required_dirs = [
         WORKFLOW,
         os.path.join(WORKFLOW, "logs"),
         os.path.join(WORKFLOW, "plans"),
-        os.path.join(WORKFLOW, "karpathy"),
-        os.path.join(WORKFLOW, "karpathy", "wiki"),
     ]
     missing_dirs = [d for d in required_dirs if not os.path.isdir(d)]
     if missing_dirs:

@@ -1,28 +1,27 @@
 ---
 name: workflow-installer
-version: v1.0.0
-description: Install and bootstrap the complete workflow with all dependencies, skills, agents, and configuration. Run once on a fresh machine to set up the entire development environment.
+version: v2.0.0
+description: Install and bootstrap the workflow with all dependencies, skills, agents, and configuration. Tool-agnostic installer supporting OpenCode, Claude Code, Cursor, Codex, Windsurf, and custom AI coding tools. Run once on a fresh machine to set up the entire development environment.
 ---
 
 # Workflow Installer
 
-Install the complete workflow stack with one command. Handles dependencies, skills, agents, configuration, and verification.
+Install the complete workflow stack with one command. Handles dependencies, skills, agents, configuration, and verification for any AI coding tool.
 
 ## What This Installs
 
 | Component | Destination | Purpose |
 |-----------|-------------|---------|
-| `tlc-spec-driven` | `~/.config/opencode/skills/` | Spec-driven development skill (4-phase planning) |
-| `workflow-implementation` | `~/.config/opencode/skills/` | Main implementation workflow skill |
-| `workflow-orchestrator` | `~/.config/opencode/agents/` | Primary orchestrator agent |
-| `miles-expert` | `~/.config/opencode/agents/` | Domain analysis agent (Kimi K2.5) |
-| `coherence-checker` | `~/.config/opencode/agents/` | Architecture validation agent |
-| `review-plan` | `~/.config/opencode/agents/` | Plan review agent (GLM 5.1) |
-| `e2e-runner` | `~/.config/opencode/agents/` | E2E test runner agent |
-| `vision-describer` | `~/.config/opencode/agents/` | Vision/image analysis agent |
-| `wiki-keeper` | `~/.config/opencode/agents/` | Knowledge management agent |
-| `validator` | `~/.config/opencode/agents/` | Test execution agent |
-| `grill-with-docs` | `~/.config/opencode/skills/` | Interview/ADR skill (optional) |
+| `tlc-spec-driven` | Selected tools' skills dir | Spec-driven development skill (4-phase planning) |
+| `workflow-implementation` | Selected tools' skills dir | Main implementation workflow skill |
+| `workflow-orchestrator` | Selected tools' agents dir | Primary orchestrator agent |
+| `business-expert-*` | Workflow agents dir | Custom domain analysis agent (optional) |
+| `coherence-checker` | Selected tools' agents dir | Architecture validation agent |
+| `review-plan` | Selected tools' agents dir | Plan review agent |
+| `e2e-runner` | Selected tools' agents dir | E2E test runner agent |
+| `wiki-keeper` | Selected tools' agents dir | Knowledge management agent |
+| `vision-describer` | Selected tools' agents dir | Vision/image analysis agent |
+| `grill-with-docs` | Selected tools' skills dir | Interview/ADR skill (optional) |
 | `GitNexus` | npm global | Code intelligence/knowledge graph |
 | `playwright` | npm global | Browser automation/E2E testing |
 | `sonar-scanner` | `~/.local/bin/` | SonarQube code analysis (native ARM64) |
@@ -38,264 +37,239 @@ Before installing, verify these are present:
 | Git | >= 2.30 | `git --version` | https://git-scm.com |
 | Python | >= 3.10 | `python3 --version` | https://python.org |
 | Docker | >= 24 | `docker --version` | https://docker.com |
-| OpenCode | latest | `opencode --version` | https://opencode.ai |
 
-## Installation Steps
+## Installation
 
-### Step 1: Clone Workflow Repository
+### Quick Start
 
 ```bash
 # Clone the workflow repository
-git clone https://github.com/marciojusto/workflow.git ~/Development/teamwill/mobilize/workflow
-cd ~/Development/teamwill/mobilize/workflow
+git clone https://github.com/marciojusto/workflow.git ~/workflow
+cd ~/workflow
+
+# Run the interactive installer
+bash scripts/install-workflow.sh
 ```
 
-### Step 2: Install Global npm Packages
+### Windows (PowerShell)
 
-```bash
-# Install GitNexus (code intelligence)
-npm install -g gitnexus
+```powershell
+# Clone the repository
+git clone https://github.com/marciojusto/workflow.git $HOME\workflow
+cd $HOME\workflow
 
-# Install Playwright (browser automation)
-npm install -g @playwright/mcp@latest
-npx playwright install --with-deps chromium
+# Run the PowerShell wrapper
+.\scripts\Install-Workflow.ps1
 ```
 
-### Step 3: Install SonarQube Scanner
+## Installation Steps
 
-```bash
-# Download native ARM64 sonar-scanner
-mkdir -p ~/.local/bin
-curl -L -o ~/.local/bin/sonar-scanner.zip \
-  "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-arm64.zip"
-unzip -q ~/.local/bin/sonar-scanner.zip -d ~/.local/bin/
-mv ~/.local/bin/sonar-scanner-8.1.0.6389-linux-arm64 ~/.local/bin/sonar-scanner
-chmod +x ~/.local/bin/sonar-scanner/sonar-scanner
-rm ~/.local/bin/sonar-scanner.zip
-```
+The installer guides you through 8 sequential steps:
 
-### Step 4: Configure OpenCode
+### Step 1: Workflow Directory
 
-```bash
-# Create OpenCode config directory
-mkdir -p ~/.config/opencode
+Choose where to install the workflow:
+- `~/workflow` (recommended — global, shared across projects)
+- `./workflow` (in current project directory)
+- Custom path
 
-# Copy example config (if exists) or create minimal config
-if [ -f workflow/MCPs/opencode.json ]; then
-  cp workflow/MCPs/opencode.json ~/.config/opencode/opencode.json
-else
-  # Create minimal config with Kilo Gateway
-  cat > ~/.config/opencode/opencode.json << 'EOF'
-{
-  "model": "kilogateway/kimi-k2.5",
-  "provider": {
-    "kilogateway": {
-      "name": "Kilo Gateway",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "https://api.kilo.ai/api/gateway"
-      },
-      "models": {
-        "kimi-k2.5": { "name": "Kimi K2.5", "id": "moonshotai/kimi-k2.5" },
-        "kimi-k2.7-code": { "name": "Kimi K2.7 Code", "id": "moonshotai/kimi-k2.7-code" },
-        "glm-5.2": { "name": "GLM 5.2", "id": "z-ai/glm-5.2" },
-        "deepseek-v4-flash:free": { "name": "DeepSeek V4 Flash (free)", "id": "deepseek/deepseek-v4-flash:free" },
-        "step-3.7-flash:free": { "name": "StepFun 3.7 Flash (free)", "id": "stepfun/step-3.7-flash:free" }
-      }
-    }
-  },
-  "mcp": {
-    "Memory": {
-      "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
-      "enabled": true
-    },
-    "Filesystem": {
-      "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/Users/marcio_oliveira/Development"],
-      "enabled": true
-    },
-    "Playwright": {
-      "type": "local",
-      "command": ["npx", "-y", "@playwright/mcp@latest"],
-      "enabled": true
-    },
-    "GitNexus": {
-      "type": "local",
-      "command": ["npx", "-y", "gitnexus", "mcp"],
-      "enabled": true
-    }
-  }
-}
-EOF
-fi
-```
+If an existing installation is detected, you can:
+- Use existing (skip)
+- Overwrite (with automatic backup)
+- Cancel
 
-**Note:** Update the Filesystem path in `opencode.json` to match your home directory if not `/Users/marcio_oliveira`.
+### Step 2: Global Packages
 
-### Step 5: Install OpenCode Skills
+Installs required global npm packages:
+- GitNexus (code intelligence)
+- Playwright MCP (browser automation)
+- SonarQube scanner (code analysis)
 
-```bash
-# Create skills directories
-mkdir -p ~/.config/opencode/skills
-mkdir -p ~/.config/opencode/agents
+### Step 3: Business Expert (Optional)
 
-# Install tlc-spec-driven v3.1.0
-cp -r workflow/skills/tlc-spec-driven ~/.config/opencode/skills/
+Configure a custom domain expert agent:
+- Name (e.g., `finance-expert`, `healthcare-expert`)
+- Description
+- Knowledge paths (docs, wikis, specs)
+- Primary model
+- Fallback model
 
-# Install workflow-implementation
-cp -r workflow/skills/workflow-implementation ~/.config/opencode/skills/
+If skipped, the workflow functions without a domain expert.
 
-# Install agents
-cp -r workflow/agents/* ~/.config/opencode/agents/
+### Step 4: AI Coding Tools
 
-# Install grill-with-docs (optional)
-mkdir -p ~/.config/opencode/skills/grill-with-docs
-cat > ~/.config/opencode/skills/grill-with-docs/SKILL.md << 'EOF'
----
-name: grill-with-docs
-description: A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go.
-disable-model-invocation: true
----
+Select which AI coding tools to configure:
+- OpenCode
+- Claude Code
+- Cursor
+- Codex
+- Windsurf
+- Custom (provide name + config directory)
 
-Run a `/grilling` session, using the `/domain-modeling` skill.
-EOF
-```
+For each tool:
+- Config directory (auto-detected or custom)
+- Install mode: `symlink` (single source of truth) or `copy` (isolated)
+- Config file: provide existing file or let installer generate
 
-### Step 6: Create Workflow Directories
+### Step 5: LLM Providers
 
-```bash
-# Create .specs structure
-mkdir -p workflow/.specs/{project,codebase,features,quick,grill}
+Select which LLM providers to configure:
+- Kilo Gateway
+- OpenAI
+- Anthropic
+- Google
+- OpenRouter
+- Ollama (local)
+- Custom (provide baseURL + format)
 
-# Create plans directory
-mkdir -p workflow/plans
+For each provider:
+- API key (optional, can be configured later)
+- Default model (chosen from provider's model list)
 
-# Create scripts directory
-mkdir -p workflow/scripts
+### Step 6: Tool Configuration
 
-# Create logs directory
-mkdir -p workflow/logs
-```
+The installer generates/updates config files for each selected tool based on the chosen providers.
 
-### Step 7: Install Project-Specific Skills
+### Step 7: Workflow Directories
 
-```bash
-# Install in hyperfront
-mkdir -p ~/Development/teamwill/mobilize/hyperfront/.claude/skills
-cp -r workflow/skills/tlc-spec-driven ~/Development/teamwill/mobilize/hyperfront/.claude/skills/
-cp -r workflow/skills/workflow-implementation ~/Development/teamwill/mobilize/hyperfront/.claude/skills/
-cp workflow/agents/*.md ~/Development/teamwill/mobilize/hyperfront/
+Creates the workflow directory structure:
+- `.specs/{project,codebase,features,quick,grill}/`
+- `plans/`
+- `scripts/`
+- `logs/`
 
-# Install in deal-bs
-mkdir -p ~/Development/teamwill/mobilize/deal-bs/.claude/skills
-cp -r workflow/skills/tlc-spec-driven ~/Development/teamwill/mobilize/deal-bs/.claude/skills/
-cp -r workflow/skills/workflow-implementation ~/Development/teamwill/mobilize/deal-bs/.claude/skills/
-cp workflow/agents/*.md ~/Development/teamwill/mobilize/deal-bs/
-```
+### Step 8: Verification
 
-### Step 8: Configure SonarQube (Optional)
-
-```bash
-# Start SonarQube container
-cd workflow/docker
-docker compose up -d sonarqube
-
-# Wait for SonarQube to be ready (about 2 minutes)
-# Access at http://localhost:9000
-# Default credentials: admin / admin
-```
-
-### Step 9: Verify Installation
-
-```bash
-# Verify OpenCode can see all skills
-opencode skill list
-
-# Verify agents are loaded
-opencode agent list
-
-# Verify GitNexus is working
-gitnexus --version
-
-# Verify Playwright is working
-npx playwright --version
-
-# Verify sonar-scanner is working
-~/.local/bin/sonar-scanner/sonar-scanner --version
-```
+Checks that all components are correctly installed and configured.
 
 ## Post-Installation
 
-### 1. Set Kilo API Key
+### 1. Configure API Keys
+
+Add API keys to your shell rc file (`.bashrc`, `.zshrc`, etc.):
 
 ```bash
 export KILO_API_KEY="your-api-key-here"
-# Add to ~/.zshrc or ~/.bashrc for persistence
+export OPENAI_API_KEY="your-api-key-here"
+# etc.
 ```
 
-Get your API key at: https://kilo.ai/gateway
+### 2. Restart Your AI Tool
 
-### 2. Configure Git (if not already done)
+Close and reopen your AI coding tool to load all new skills and agents.
+
+### 3. Verify Installation
 
 ```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
+# For OpenCode
+opencode skill list
+opencode agent list
+
+# Check state file
+cat ~/.workflow-installer-state.json
 ```
-
-### 3. Restart OpenCode Desktop
-
-Close and reopen OpenCode Desktop to load all new skills and agents.
 
 ### 4. First Run
 
 ```bash
 # Test the workflow
-opencode run "Hello, testing workflow installation" --model=kilogateway/kimi-k2.5
+opencode run "Hello, workflow!" --model=kilogateway/kimi-k2.5
 ```
+
+## State File
+
+The installer creates `~/.workflow-installer-state.json` to track:
+
+```json
+{
+  "version": "2.0.0",
+  "workflow_root": "~/workflow",
+  "tools": {
+    "opencode": {
+      "config_dir": "~/.config/opencode",
+      "install_mode": "symlink",
+      "config_file": "opencode.json"
+    }
+  },
+  "providers": {
+    "kilogateway": {
+      "default_model": "kimi-k2.5"
+    }
+  },
+  "business_expert": {
+    "name": "finance-expert",
+    "description": "...",
+    "model": "kilogateway/kimi-k2.5"
+  },
+  "installed_at": "2026-01-15T10:00:00Z"
+}
+```
+
+## Re-Execution
+
+You can re-run the installer at any time:
+- Detects existing installation via state file
+- Allows adding/removing tools, providers, or business expert
+- Creates backups before modifying existing configs
+
+## Migration
+
+If you have an existing TeamWill installation, the installer will automatically detect it and offer to migrate:
+
+```
+Detectada instalação antiga do OpenCode
+Deseja migrar para o novo formato? (s/n)
+```
+
+Migration preserves:
+- Existing workflow files
+- Business expert configuration (miles-expert)
+- Provider settings
+- Tool configurations
 
 ## Uninstallation
 
 To remove the workflow completely:
 
 ```bash
-# Remove OpenCode skills and agents
-rm -rf ~/.config/opencode/skills/tlc-spec-driven
-rm -rf ~/.config/opencode/skills/workflow-implementation
-rm -rf ~/.config/opencode/skills/grill-with-docs
-rm -rf ~/.config/opencode/agents/*
+# Remove workflow directory
+rm -rf ~/workflow
 
-# Remove workflow repository
-rm -rf ~/Development/teamwill/mobilize/workflow
+# Remove state file
+rm ~/.workflow-installer-state.json
+
+# Remove global npm packages
+npm uninstall -g gitnexus
+npm uninstall -g @playwright/mcp
 
 # Remove sonar-scanner
 rm -rf ~/.local/bin/sonar-scanner
 
-# Remove npm packages
-npm uninstall -g gitnexus
-npm uninstall -g @playwright/mcp
+# Remove tool-specific configs (optional)
+rm -rf ~/.config/opencode/skills/tlc-spec-driven
+rm -rf ~/.config/opencode/skills/workflow-implementation
+rm -rf ~/.config/opencode/agents/*
 ```
 
 ## Troubleshooting
 
-### OpenCode doesn't see new skills
-- Restart OpenCode Desktop completely
-- Check `~/.config/opencode/skills/` has the skill directories
-- Run `opencode skill list` to verify
+### Installer doesn't detect existing installation
+- Check that `~/.workflow-installer-state.json` exists
+- Manually create state file if needed
 
-### Filesystem MCP "Failed to list files"
-- Check `opencode.json` has correct Filesystem path
-- Verify the path exists and is accessible
-- Restart OpenCode Desktop after config changes
+### Tool doesn't see new skills/agents
+- Restart the tool completely
+- Check the tool's skills/agents directory
+- Verify symlinks (if using symlink mode)
 
-### GitNexus not working
-- Run `npx gitnexus analyze` in the workflow directory
-- Check GitNexus is running: `ps aux | grep gitnexus`
+### Config file not generated
+- Check installer logs for errors
+- Verify the tool's config directory exists
+- Try providing an existing config file manually
 
-### SonarQube not accessible
-- Check container is running: `docker ps | grep sonarqube`
-- Check port mapping: `docker port sonarqube`
-- Default URL: http://localhost:9000
+### State file corrupted
+- Delete `~/.workflow-installer-state.json`
+- Re-run installer
 
 ## Support
 

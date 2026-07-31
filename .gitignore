@@ -1,0 +1,13 @@
+# Runtime / local artifacts
+.workflow-installer-state.json
+*.backup.*
+
+# Logs
+logs/*.ndjson
+logs/*.json
+
+# IDE / OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db

@@ -1,0 +1,12 @@
+{
+  "name": "OpenAI",
+  "type": "openai-compatible",
+  "baseURL": "https://api.openai.com/v1",
+  "envVar": "OPENAI_API_KEY",
+  "models": [
+    { "id": "gpt-4o", "name": "GPT-4o", "free": false },
+    { "id": "gpt-4o-mini", "name": "GPT-4o Mini", "free": false },
+    { "id": "o1-preview", "name": "o1 Preview", "free": false },
+    { "id": "o1-mini", "name": "o1 Mini", "free": false }
+  ]
+}

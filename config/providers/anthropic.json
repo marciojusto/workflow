@@ -1,0 +1,11 @@
+{
+  "name": "Anthropic",
+  "type": "anthropic",
+  "baseURL": "https://api.anthropic.com/v1",
+  "envVar": "ANTHROPIC_API_KEY",
+  "models": [
+    { "id": "claude-opus-4-5-20251101", "name": "Claude Opus 4.5", "free": false },
+    { "id": "claude-sonnet-4-20250514", "name": "Claude Sonnet 4", "free": false },
+    { "id": "claude-3-5-haiku-20241022", "name": "Claude 3.5 Haiku", "free": false }
+  ]
+}

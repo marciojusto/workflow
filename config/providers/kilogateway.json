@@ -1,0 +1,13 @@
+{
+  "name": "Kilo Gateway",
+  "type": "openai-compatible",
+  "baseURL": "https://api.kilo.ai/api/gateway",
+  "envVar": "KILO_API_KEY",
+  "models": [
+    { "id": "moonshotai/kimi-k2.5", "name": "Kimi K2.5", "free": false },
+    { "id": "moonshotai/kimi-k2.7-code", "name": "Kimi K2.7 Code", "free": false },
+    { "id": "z-ai/glm-5.2", "name": "GLM 5.2", "free": false },
+    { "id": "deepseek/deepseek-v4-flash:free", "name": "DeepSeek V4 Flash (free)", "free": true },
+    { "id": "stepfun/step-3.7-flash:free", "name": "StepFun 3.7 Flash (free)", "free": true }
+  ]
+}

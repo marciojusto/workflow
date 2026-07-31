@@ -1,0 +1,12 @@
+{
+  "name": "Ollama",
+  "type": "openai-compatible",
+  "baseURL": "http://localhost:11434/v1",
+  "envVar": null,
+  "models": [
+    { "id": "llama3.3", "name": "Llama 3.3", "free": true },
+    { "id": "qwen2.5", "name": "Qwen 2.5", "free": true },
+    { "id": "deepseek-r1", "name": "DeepSeek R1", "free": true },
+    { "id": "codellama", "name": "Code Llama", "free": true }
+  ]
+}
