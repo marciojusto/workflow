@@ -137,7 +137,7 @@ It will detect your existing installation and allow you to modify the configurat
 ### For OpenCode
 
 ```bash
-opencode run "Implementar MMH-1435" --mode=auto
+opencode run "Implement JIRA-9999" --mode=auto
 ```
 
 ### Available Modes
