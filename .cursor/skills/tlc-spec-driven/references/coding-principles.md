@@ -16,6 +16,21 @@ Behavioral bias, not checklist. Read before every implementation.
 
 ## During Implementation
 
+### TDD (Test-Driven Development)
+
+Default for every implementation task unless the Test Coverage Matrix says `none`.
+
+Cycle:
+1. **RED** — write a failing test derived from the spec/AC, not from the implementation
+2. **GREEN** — implement the minimum code to make that test pass
+3. **REFACTOR** — improve structure while keeping tests green
+
+Rules:
+- Tests first. If tests don’t exist yet, create them before the implementation.
+- One behavior at a time. Don’t write the whole test suite before the first GREEN.
+- Tests are the spec. Implementation conforms to tests; tests don’t bend to implementation.
+- If a test is genuinely wrong, STOP and ask before changing it.
+
 ### Simplicity
 
 - No features beyond what was asked
@@ -23,12 +38,6 @@ Behavioral bias, not checklist. Read before every implementation.
 - No "flexibility" or "configurability" not requested
 - No error handling for impossible scenarios
 - 200 lines that could be 50? Rewrite it.
-
-### Readability First — Code for Humans
-- Write code that the next developer can understand in 30 seconds
-- Names should reveal intent; avoid comments that explain what the code does
-- Follow existing project conventions; don't invent new patterns
-- Code should read like a story — top to bottom, clear progression
 
 ### Surgical Changes
 
@@ -44,7 +53,7 @@ Behavioral bias, not checklist. Read before every implementation.
 - NEVER weaken an existing test assertion to make it pass
 - NEVER delete a test to reduce failure count
 - NEVER use the test framework's skip/disable/pending mechanism to bypass a failing test
-- NEVER modify tests written in the RED phase during GREEN phase
+- NEVER modify a task's tests afterward to make the implementation pass
 - If a test is genuinely wrong, STOP and confirm with the user before changing it
 - Tests are the spec — implementation conforms to tests, not the other way around
 

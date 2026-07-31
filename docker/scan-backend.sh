@@ -13,7 +13,7 @@ if [ -f "$SCRIPT_DIR/.env" ]; then
 fi
 
 # Default values
-SONAR_HOST="${SONAR_HOST:-http://localhost:9002}"
+SONAR_HOST="${SONAR_HOST:-http://localhost:9000}"
 SONAR_TOKEN="${SONAR_TOKEN:-}"
 SONAR_USER="${SONAR_USER:-admin}"
 SONAR_PASSWORD="${SONAR_PASSWORD:-admin}"
@@ -50,7 +50,7 @@ while [[ $# -gt 0 ]]; do
       echo "  --user <username>        SonarQube username (default: admin)"
       echo "  --password <password>   SonarQube password (default: admin)"
       echo "  --project-key <key>       Project key (default: deal-bs)"
-      echo "  --host <url>             SonarQube host (default: http://localhost:9002)"
+      echo "  --host <url>             SonarQube host (default: http://localhost:9000)"
       echo "  --help, -h               Show this help"
       echo ""
       echo "Examples:"

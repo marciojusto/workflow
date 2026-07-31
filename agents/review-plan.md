@@ -3,7 +3,7 @@ name: review-plan
 version: v1.0.0
 description: "Independent plan reviewer. Receives a technical plan from miles-expert and validates it for architecture coherence, side effects, risks, and feasibility before human approval. Uses GLM 5.1 for strong reasoning at moderate cost."
 mode: subagent
-model: kilo/z-ai/glm-5.1
+model: kilogateway/glm-5.2
 retry: 2
 timeout_minutes: 10
 fallback_model: kilo/deepseek/deepseek-v4-pro

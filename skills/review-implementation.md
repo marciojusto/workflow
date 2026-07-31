@@ -51,7 +51,7 @@ O teste E2E pode validar apenas a AC corrente ou todas as ACs do ticket — pedi
      - base_path: implementation.base_path
      - scope: "quick"
      - run_sonar: true
-     - sonar_url: "http://localhost:9002"
+     - sonar_url: "http://localhost:9000"
      - sonar_token: "squ_278bc6fee0a5864b9ce811532790b8eb722668bd"
    - on_error: report_and_continue
    - save_output_as: principles_result

@@ -3,7 +3,7 @@ name: coherence-checker
 version: v1.0.0
 description: "Validates implementation coherence after execution: architecture fit, side effects, duplication with existing features, naming conventions, and cross-module consistency. Runs before E2E to avoid wasting tests on incoherent code."
 mode: subagent
-model: kilo/z-ai/glm-5.1
+model: kilogateway/glm-5.2
 retry: 2
 timeout_minutes: 8
 fallback_model: openrouter/qwen-3.6-plus
@@ -71,6 +71,12 @@ You are an architecture coherence validator. After code is implemented but befor
 - Do test names describe the scenario (not implementation)?
 - Is there adequate test coverage?
 
+### 7. TDD Compliance
+- Were tests written before the implementation (RED before GREEN)?
+- Is there evidence of the RED-GREEN-REFACTOR cycle?
+- Do test files have earlier modification timestamps than implementation files for the same behavior?
+- Are tests failing before implementation passes?
+
 ## Process
 
 1. Analyse each modified/created file
@@ -79,7 +85,8 @@ You are an architecture coherence validator. After code is implemented but befor
 4. Identify cross-module risks
 5. Validate Clean Code compliance (functions <20 lines, descriptive names, early return)
 6. Check testing patterns (Given-When-Then, Arrange-Act-Assert)
-7. Return structured result
+7. Validate TDD compliance (tests before implementation, RED-GREEN-REFACTOR evidence)
+8. Return structured result
 
 ## Format
 ```json
@@ -101,6 +108,12 @@ You are an architecture coherence validator. After code is implemented but befor
     "missing_given_when_then": ["testFile.spec.ts"],
     "missing_arrange_act_assert": ["testFile.spec.ts"],
     "poor_test_names": ["test1() → shouldCalculateTotal()"]
+  },
+  "tdd_compliance": {
+    "tests_before_implementation": true,
+    "red_green_refactor_evidence": true,
+    "test_timestamps_before_impl": true,
+    "issues": ["testFile.spec.ts appears to have been written after implementation"]
   }
 }
 ```

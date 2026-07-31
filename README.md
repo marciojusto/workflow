@@ -20,7 +20,7 @@ workflow/
 ├── plans/               # Implementation plans
 ├── scripts/             # Utility scripts (read_excel.py)
 ├── skills/              # Skill definitions (copied from .opencode/skills)
-│   ├── workflow-jira-ticket/
+│   ├── workflow-implementation/
 │   ├── playwright-ac-validator/
 │   ├── log-analyzer-pro/
 │   └── tana-jira-sync/

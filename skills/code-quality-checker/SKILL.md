@@ -15,7 +15,7 @@ on_error: report_and_continue
 - base_path: path to project root (optional, defaults to current directory)
 - scope: "full" | "quick" (optional, defaults to "quick")
 - run_sonar: boolean (optional, defaults to true)
-- sonar_url: string (optional, defaults to http://localhost:9002)
+- sonar_url: string (optional, defaults to http://localhost:9000)
 - sonar_token: string (optional, defaults to squ_278bc6fee0a5864b9ce811532790b8eb722668bd)
 
 ## Output
@@ -141,12 +141,12 @@ if project_type == "node-backend":
 
 ### Sonar URL:
 - Use provided sonar_url, or
-- Default: http://localhost:9002
+- Default: http://localhost:9000
 
 ### Sonar Token:
 - Use provided sonar_token, or
 - Default: squ_278bc6fee0a5864b9ce811532790b8eb722668bd (pre-generated for admin)
-- Token can be generated via: `curl -s -u admin:admin -X POST "http://localhost:9002/api/user_tokens/generate?name=scanner"`
+- Token can be generated via: `curl -s -u admin:admin -X POST "http://localhost:9000/api/user_tokens/generate?name=scanner"`
 
 ## Steps
 

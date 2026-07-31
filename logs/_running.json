@@ -97,5 +97,26 @@
     ],
     "current_step": null,
     "status": "running"
+  },
+  "grill-habita-plus": {
+    "started_at": "2026-07-30T17:51:57.351406+00:00",
+    "steps": [
+      {
+        "step": "persist",
+        "agent": "orchestrator",
+        "started_at": "2026-07-30T17:51:57.351411+00:00",
+        "status": "success",
+        "ended_at": "2026-07-31T10:21:42.589832+00:00",
+        "duration_ms": 273800
+      },
+      {
+        "step": "persist",
+        "agent": "orchestrator",
+        "started_at": "2026-07-31T10:17:08.789818+00:00",
+        "status": "in_progress"
+      }
+    ],
+    "current_step": null,
+    "status": "running"
   }
 }

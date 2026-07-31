@@ -1,0 +1,22 @@
+{
+  "ticket_id": "MMH-1496",
+  "title": "Customer Data Missing in Deal List After Save (Visible in Miles)",
+  "version": 3,
+  "status": "approved",
+  "risk_level": "LOW",
+  "code_principles": {
+    "dry": "ok",
+    "kiss": "ok",
+    "yagni": "ok",
+    "solid": "ok",
+    "soc": "ok"
+  },
+  "changes": [
+    {"file": "server/utils/partyMapper.ts", "line": 634, "desc": "Fallback inference in resolveEntityGroupId()", "risk": "LOW"},
+    {"file": "server/utils/partyMapper.ts", "line": 924, "desc": "buildProposalIndOrST: use enumGroupId param", "risk": "LOW"},
+    {"file": "server/utils/partyMapper.ts", "line": 1036, "desc": "buildProposalOrg: use legalEntityGroupId param", "risk": "LOW"},
+    {"file": "server/utils/partyMapper.ts", "lines": "1022,1129", "desc": "Add legalEntityGroupId param to buildProposalOrg", "risk": "LOW"},
+    {"file": "server/utils/partyMapper.ts", "line": 550, "desc": "mapPartyDetailsSimulation: use resolveEntityGroupId()", "risk": "LOW"},
+    {"file": "server/services/dealPayloadBuilder.ts", "line": 242, "desc": "Guard null enumGroupId before getLabelClientType", "risk": "LOW"}
+  ]
+}

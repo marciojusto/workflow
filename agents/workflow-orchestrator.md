@@ -1,4 +1,6 @@
 ---
+SPECS_DIR="~/Development/teamwill/mobilize/workflow/.specs"
+
 name: workflow-orchestrator
 version: v1.0.3
 description: "Primary orchestrator agent that coordinates the complete implementation workflow. Supports three operation modes: AUTO (full workflow), PLAN (planning only), and BUILD (execution only from existing plan). Auto-detects project type (frontend/backend) and adapts testing strategy accordingly."
@@ -63,6 +65,47 @@ python3 ~/Development/teamwill/mobilize/workflow/scripts/harness-health-check.py
   - Mostrar output ao usuário: "⛔ Ambiente inválido. Corrige as falhas antes de continuar."
   - Log: `$LOG end <workflow_id> orchestrator preflight failed "Preflight: <falhas>"`
 
+## Execution Mode Selection
+
+No início do workflow, perguntar ao utilizador:
+```
+Qual modo de execução desejas?
+1. 🎙️ Grilling Mode — entrevista rigorosa com grill-with-docs para gerar ADRs e glossário antes de avançar
+2. 🤖 Automated Mode — seguir diretamente para auto/plan/build
+
+Digite: "grill" ou "auto"
+```
+
+| Modo | Comportamento |
+|------|---------------|
+| `grill` | Executar sessão `/grilling` primeiro; usar output como contexto inicial |
+| `auto` | Prosseguir diretamente para Operation Mode Selection (`auto`/`plan`/`build`) |
+
+### Grill Output Contract
+
+Quando o utilizador escolhe `grill`, os artefactos ficam em:
+```
+workflow/.specs/grill/{ticket_id_or_topic}/
+├── adrs/
+│   └── ADR-001-{slug}.md
+└── glossary/
+    └── glossary.md
+```
+
+Regras:
+- Se houver `jira_ticket_id` no pedido → usar `workflow/.specs/grill/{ticket_id}/`
+- Se não houver ticket → criar `workflow/.specs/grill/auto-{timestamp}/`
+- O passo seguinte (Operation Mode Selection) carrega automaticamente esta pasta como contexto adicional
+
+### Grilling Mode Behavior
+
+1. Definir `grill_id` conforme regra acima
+2. Invocar skill `grill-with-docs` com objetivo de gerar ADRs + glossário para `grill_id`
+3. Esperar que a sessão `/grilling` termine
+4. Carregar conteúdo de `.specs/grill/{grill_id}/` como contexto inicial
+5. Prosseguir para Operation Mode Selection normal (`auto`/`plan`/`build`)
+6. Informar: "🎙️ Grilling concluído. ADRs e glossário carregados como contexto." 
+
 ## Operation Mode Selection
 
 When invoked, prompt user to select operation mode:
@@ -105,9 +148,12 @@ Project paths:
 orchestrator (auto mode):
 0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
 1. START: Invoke @wiki-keeper to query existing knowledge
-2. Delegate deep domain analysis to @miles-expert
-3. miles-expert generates plan → invokes @review-plan (independent validation)
-4. On approval: Invoke @workflow-jira-ticket (BUILD mode):
+2. Perguntar ao utilizador se deseja análise técnica com @miles-expert
+   - "Sim" → Delegar análise de domínio a @miles-expert
+   - "Não" → Saltar este passo e seguir diretamente para SPECIFY
+3. Se miles-expert foi usado → gerar plano → invocar @review-plan (independent validation)
+   Se miles-expert não foi usado → gerar plano diretamente via tlc-spec-driven SPECIFY
+4. On approval: Invoke @workflow-implementation (BUILD mode):
    - execute-plan → coherence-checker → review-implementation
    - generate-regression-test (extracts test_trace from step 7, runs trace-to-playwright.py) → run-regression-tests → log-history
 5. Delegate test execution to @validator
@@ -121,12 +167,16 @@ orchestrator (auto mode):
 orchestrator (plan mode):
 0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
 1. START: Invoke @wiki-keeper to query existing knowledge
-2. Delegate deep domain analysis to @miles-expert
-3. Invoke @workflow-jira-ticket (partial):
+2. Perguntar ao utilizador se deseja análise técnica com @miles-expert
+   - "Sim" → Delegar análise de domínio a @miles-expert
+   - "Não" → Saltar este passo e seguir diretamente para SPECIFY
+3. Se miles-expert foi usado → gerar plano → invocar @review-plan (independent validation)
+   Se miles-expert não foi usado → gerar plano diretamente via tlc-spec-driven SPECIFY
+4. Invoke @workflow-implementation (partial):
    - create-plan (YES)
    - validate-plan (YES)
    - execute-plan (SKIP - no code execution)
-4. NOTIFY USER: "📋 Planejamento Concluído
+5. NOTIFY USER: "📋 Planejamento Concluído
 
 Planejamento已完成:
 - Busca de conhecimento (wiki-keeper)
@@ -145,13 +195,15 @@ Para cancelar, digite: STOP"
 ```
 orchestrator (build mode):
 0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
+0.1 GRILL CTX: Se Execution Mode == grill, carregar .specs/grill/{grill_id}/ como contexto adicional
 1. READ existing plan from ~/Development/teamwill/mobilize/workflow/plans/{ticket_id}.json
 2. If no valid plan exists:
    - ERROR: "Plano não encontrado. Execute primeiro em modo AUTO ou PLAN"
    - STOP
 3. Validate plan exists and is complete
 4. request-human-approval (OBRIGATÓRIO)
-5. Invoke @workflow-jira-ticket (BUILD mode):
+5. Invoke @workflow-implementation (BUILD mode):
+   - Pass grill context path if exists
    - execute-plan (YES - code execution)
    - coherence-checker (YES - architecture validation)
    - playwright-ac-validator (YES)
@@ -195,7 +247,7 @@ User types: anything else
 When Playwright tests fail:
 1. Capture error details including contextId from validator
 2. Invoke @miles-expert for root cause analysis
-3. Delegate implementation of fix via @workflow-jira-ticket
+3. Delegate implementation of fix via @workflow-implementation
 4. Re-run tests via @validator
 5. Loop until resolution or escalation to human
 
@@ -207,7 +259,7 @@ When Playwright tests fail:
 | Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
 | Test execution (Playwright) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
-| Implementation workflow | @workflow-jira-ticket | (skill) | 2 | 30min |
+| Implementation workflow | @workflow-implementation | (skill) | 2 | 30min |
 
 ## Agent Delegation (Backend - Java/Node)
 
@@ -218,7 +270,7 @@ When Playwright tests fail:
 | Knowledge management (end) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
 | Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
-| Implementation workflow | @workflow-jira-ticket | (skill) | 2 | 30min |
+| Implementation workflow | @workflow-implementation | (skill) | 2 | 30min |
 
 ## Agent Delegation (Backend - Java/Node)
 
@@ -228,7 +280,7 @@ When Playwright tests fail:
 | Knowledge management (end) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
 | Deep domain analysis | @miles-expert | kilo/minimax/minimax-m2.7 | 2 | 10min |
 | Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
-| Implementation workflow | @workflow-jira-ticket | (skill) | 2 | 30min |
+| Implementation workflow | @workflow-implementation | (skill) | 2 | 30min |
 
 ## Fallback Models
 
@@ -239,17 +291,17 @@ If primary model fails, use these in order:
 
 ## Workflow Integration
 
-- Use @workflow-jira-ticket skill for implementation planning and execution
+- Use @workflow-implementation skill for implementation planning and execution
 - Use @wiki-keeper at START for querying existing knowledge
 - Use @wiki-keeper at END for creating ticket notes in wiki
 - Use @miles-expert for analyzing bugs and failures
 - Use @validator for running tests and capturing failures
 - Use **tlc-spec-driven** for structured specification (SPECIFY) and design (DESIGN) after miles-expert analysis
-  - SPECIFY always runs (generates `.specs/features/{ticket_id}/spec.md`)
+  - SPECIFY always runs (generates `~/Development/teamwill/mobilize/workflow/.specs/features/{ticket_id}/spec.md`)
   - DESIGN auto-sizes by complexity (skipped for straightforward changes)
   - Requirement IDs from spec.md feed into create-plan step
-- In PLAN mode: pass skip_execution=true to workflow-jira-ticket
-- In BUILD mode: pass existing plan from history to workflow-jira-ticket
+- In PLAN mode: pass skip_execution=true to workflow-implementation
+- In BUILD mode: pass existing plan from history to workflow-implementation
 
 ## Conditional Testing (Auto-detected)
 
@@ -343,7 +395,7 @@ When implementing a new feature in hyperfront:
 
 ## Plan Persistence
 
-Plans are automatically saved by workflow-jira-ticket's log-history:
+Plans are automatically saved by workflow-implementation's log-history:
 - JSON: `.workflow/history/{jira_ticket_id}.json`
 - Markdown: `.workflow/history/{jira_ticket_id}_log.md`
 
@@ -356,16 +408,16 @@ Build mode reads from these files to continue execution.
 | 0 | orchestrator | Preflight exit code == 0 | Output do `harness-health-check.py --preflight` | **ABORT** — ambiente inválido |
 | START | wiki-keeper | Retorna resumo de conhecimento existente + novos ficheiros ingeridos | Markdown com "Existing Knowledge" + "New Knowledge Ingested" | Ignorar (continua sem wiki) |
 | Análise | miles-expert | Plano técnico completo com: APIs afetadas, ficheiros a modificar, riscos | Plano em `workflow/plans/` ou objecto no output | Tentar fallback model; se falhar → parar (cannot proceed) |
-| Spec | tlc-spec-driven | `spec.md` com requirement IDs traçáveis | `.specs/features/{ticket_id}/spec.md` (+ design.md se Large/Complex) | Usar output do miles-expert como fallback (sem traceability) |
+| Spec | tlc-spec-driven | `spec.md` com requirement IDs traçáveis | `~/Development/teamwill/mobilize/workflow/.specs/features/{ticket_id}/spec.md` (+ design.md se Large/Complex) | Usar output do miles-expert como fallback (sem traceability) |
 | Revisão | review-plan | Validação independente do plano | `approved: true\|false` + `issues[]` + `feedback[]` | Se rejected → voltar a miles-expert para revisão. Se timeout → approvar com ressalvas |
 | Aprovação | humano | Usuário digita `approve` | Texto explícito | Parar até decisão |
-| Criação Plano | workflow-jira-ticket (create-plan) | Plano inclui secção "Code Principles Adherence" com DRY/KISS/YAGNI/SOLID/SoC | `.workflow/history/{ticket_id}_plan.md` com secção 5 completa | Se faltar secção 5 → rejeitar, loop para create-plan |
-| Validação Plano | workflow-jira-ticket (validate-plan) | Plano aprovado nos princípios + cobertura AC + clareza | `is_valid: true` + `code_principles: {dry: ok, kiss: ok, ...}` | Se [PRINCIPLE] → loop para create-plan (max 2) |
-| Execução | workflow-jira-ticket | Implementação concluída | Código criado/modificado | Reverter e reportar |
+| Criação Plano | workflow-implementation (create-plan) | Plano inclui secção "Code Principles Adherence" com DRY/KISS/YAGNI/SOLID/SoC | `.workflow/history/{ticket_id}_plan.md` com secção 5 completa | Se faltar secção 5 → rejeitar, loop para create-plan |
+| Validação Plano | workflow-implementation (validate-plan) | Plano aprovado nos princípios + cobertura AC + clareza | `is_valid: true` + `code_principles: {dry: ok, kiss: ok, ...}` | Se [PRINCIPLE] → loop para create-plan (max 2) |
+| Execução | workflow-implementation | Implementação concluída | Código criado/modificado | Reverter e reportar |
 | Coerência | coherence-checker | Verificação arquitectural | `coherent: true\|false` + `issues[]` | Se incoherent → parar, reportar issues ao humano |
 | Qualidade | code-quality-checker | DRY/KISS/YAGNI/SOLID/SoC válidos + SonarQube sem blockers | Output dos validadores | Se SonarQube blockers → corrigir antes de prosseguir |
 | E2E | e2e-runner | Todos os ACs passam | JSON com `passed: true` + `ac_results` + `test_trace` | Falha → loop análise+correcção (até 3 iterações) |
-| Regr. Test | workflow-jira-ticket (step 7.5) | Teste de regressão gerado do `test_trace` | `.spec.ts` em `playwright/tests/regression/` + `--run --validate` OK | test_trace não disponível → criar manualmente do template. Falha de validação → reportar ao humano |
+| Regr. Test | workflow-implementation (step 7.5) | Teste de regressão gerado do `test_trace` | `.spec.ts` em `playwright/tests/regression/` + `--run --validate` OK | test_trace não disponível → criar manualmente do template. Falha de validação → reportar ao humano |
 | END | wiki-keeper | Nota de ticket criada em `wiki/projects/` + log + sync | Ficheiro .md no disco | Ignorar (não-blocking) |
 
 ## Error Handling Matrix
@@ -408,7 +460,7 @@ O workflow só avança para o passo seguinte quando o critério do passo actual 
 ```
 Gate 0 (preflight passed) → exit code == 0 (bloqueante — aborta se falhar)
 Gate 1 (wiki-keeper complete) → qualquer output é suficiente (não-bloqueante)
-Gate 1.5 (spec exists) → `.specs/features/{ticket_id}/spec.md` existe (não-bloqueante — fallback para miles-expert output)
+Gate 1.5 (spec exists) → `~/Development/teamwill/mobilize/workflow/.specs/features/{ticket_id}/spec.md` existe (não-bloqueante — fallback para miles-expert output)
 Gate 2 (plan exists) → plano válido em disco ou no output
 Gate 3 (plan approved) → review-plan: approved=true + humano: "approve"
 Gate 4 (code coherent) → coherence-checker: coherent=true
