@@ -58,13 +58,6 @@ SCRIPTS_DIR="$WORKFLOW_ROOT/scripts"
 ---
 
 
-
-
-
-
-
-
-
 ## Atlassian MCP Rules (READ-ONLY)
 - The Atlassian MCP is READ-ONLY unless explicitly ordered otherwise
 - NEVER add comments, change status, transition issues, create issues, or modify any Jira data
@@ -321,78 +314,6 @@ If primary model fails, use these in order:
 
 The validator automatically adapts to the detected project type.
 
-## Backend Access Instructions (deal-bs)
-
-When implementing frontend features in hyperfront, you may need to investigate 
-backend logic in deal-bs to understand API contracts, data models, or business rules.
-
-### deal-bs Project (Java Spring Backend)
-
-**Location:** ~/Development/teamwill/mobilize/deal-bs
-
-#### When to Access deal-bs
-- Understanding API endpoints consumed by the frontend
-- Investigating data model structures
-- Debugging backend-related issues
-- Understanding business logic implementation
-
-#### Key Directory Structure
-
-```
-deal-bs/
-├── src/main/java/com/mfs/mpp/integrationlayer/core/
-│   ├── domain/                 # Business domain modules
-│   │   ├── auth/              # Authentication (AuthController, AuthService)
-│   │   ├── baremes/           # Pricing/baremes (BaremeController, BaremeService)
-│   │   ├── catalog/           # Vehicle catalog
-│   │   ├── contract/          # Contract management
-│   │   ├── deal/              # Deal/Proposal management (DealController, DealService)
-│   │   ├── delivery/          # Delivery scheduling
-│   │   ├── party/             # Customer/Party management
-│   │   ├── proposal/          # Proposal workflow
-│   │   ├── stipulation/       # Stipulations/Terms
-│   │   ├── template/          # Document templates
-│   │   ├── vehicle/           # Vehicle information
-│   │   └── utils/             # Constants and utilities
-│   ├── client/                # API clients (MmpApiClient, OktaJwtTokenProvider)
-│   ├── config/                # Spring configuration
-│   ├── dto/                   # Data Transfer Objects
-│   └── enums/                 # Enumerations
-├── src/main/openapi/          # OpenAPI specifications (API contracts)
-├── src/main/resources/        # Application properties
-└── src/test/java/             # Unit tests
-```
-
-#### Common Investigation Paths
-
-| What You Need | Path |
-|---------------|------|
-| API Endpoint contracts | `deal-bs/src/main/openapi/*.yaml` |
-| Deal business logic | `deal-bs/src/main/java/.../domain/deal/service/impl/DealServiceImpl.java` |
-| Party/Customer handling | `deal-bs/src/main/java/.../domain/party/service/impl/PartyServiceImpl.java` |
-| API Client implementation | `deal-bs/src/main/java/.../core/client/MmpApiClient.java` |
-| Constants/Enums | `deal-bs/src/main/java/.../core/utils/DealConstants.java` or `core/enums/` |
-| Configuration | `deal-bs/src/main/resources/application.properties` |
-
-#### How to Read deal-bs Files
-
-Use absolute paths when reading:
-```
-Read: ~/Development/teamwill/mobilize/deal-bs/src/main/java/com/mfs/mpp/integrationlayer/core/domain/deal/service/impl/DealServiceImpl.java
-```
-
-#### Integration with hyperfront
-
-The frontend (hyperfront) consumes deal-bs APIs via:
-- `server/services/bsClient.ts` - Main API client for deal-bs endpoints
-- API endpoints are defined in OpenAPI specs in `deal-bs/src/main/openapi/`
-
-When implementing a new feature in hyperfront:
-1. Check `deal-bs/src/main/openapi/` for relevant API contract
-2. Check `deal-bs/src/main/java/.../domain/*/` for business logic
-3. Check `deal-bs/src/main/java/.../core/client/` for API client implementation
-
----
 
 ## Key Behaviors
 
