@@ -62,6 +62,10 @@ SCRIPTS_DIR="$WORKFLOW_ROOT/scripts"
 
 
 
+
+
+
+
 ## Atlassian MCP Rules (READ-ONLY)
 - The Atlassian MCP is READ-ONLY unless explicitly ordered otherwise
 - NEVER add comments, change status, transition issues, create issues, or modify any Jira data

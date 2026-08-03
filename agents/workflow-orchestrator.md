@@ -129,6 +129,22 @@ Regras:
 5. Prosseguir para Operation Mode Selection normal (`auto`/`plan`/`build`)
 6. Informar: "🎙️ Grilling concluído. ADRs e glossário carregados como contexto."
 
+## Task Tracker Detection (Step 0.2 — OBRIGATÓRIO)
+
+Antes de extrair o ticket, perguntar ao utilizador:
+
+
+| Resposta | Fluxo |
+|----------|-------|
+|  | Prosseguir para  |
+|  | Prosseguir para  com adapter Redmine |
+|  | Perguntar nome/API config, depois  |
+|  | Saltar para  |
+
+**CRITICAL**: Esta etapa é obrigatória. Não assumir que o usuário tem JIRA configurado.
+---
+
+
 ## Operation Mode Selection
 
 When invoked, prompt user to select operation mode:

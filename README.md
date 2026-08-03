@@ -143,11 +143,11 @@ opencode run "Implement JIRA-9999" --mode=auto
 
 ### Available Modes
 
-| Mode | Description |
-|------|-------------|
-| `auto` | Full workflow (planning + teach + execution) |
-| `plan` | Planning + teach, no code execution |
-| `build` | Execution only, from existing plan |
+| Mode | Description | JIRA/Redmine | Expert | Teach |
+|------|-------------|--------------|--------|------|
+| `auto` | Full workflow (planning + execution) | Optional | Optional | Auto-recommended |
+| `plan` | Planning only, no code execution | Optional | Optional | Auto-recommended |
+| `build` | Execution only, from existing plan | Optional | Optional | No |
 
 ---
 
