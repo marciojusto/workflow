@@ -355,6 +355,63 @@ Look for these indicators to identify the backend project:
 
 ---
 
+## Teach Mode (Optional — Post-Plan Explanation)
+
+After `validate-plan` succeeds and before `execute-plan` starts, the orchestrator should evaluate whether to recommend `teach`.
+
+### Complexity Scoring
+
+Calculate a complexity score based on the plan output:
+
+| Signal | Points |
+|--------|--------|
+| Files modified > 3 | +1 |
+| New domain concepts introduced | +1 |
+| spec.md length > 150 lines OR requirements > 5 | +1 |
+| Business expert was NOT consulted | +1 |
+| Cross-module changes (frontend + backend + API) | +1 |
+| New entities/DTOs/controllers created | +1 |
+
+### Recommendation Logic
+
+```bash
+COMPLEXITY_SCORE=<calculated_score>
+
+if [ "$COMPLEXITY_SCORE" -ge 2 ]; then
+    # Recommend teach
+    echo "📚 Este plano tem complexidade média/alta."
+    echo "Queres que eu gere uma explicação didática (teach) antes de executar? (s/n)"
+    read -r TEACH_ANSWER
+    if [[ "$TEACH_ANSWER" =~ ^[Ss]$ ]]; then
+        # Invoke teach skill
+        echo "Invocando teach para explicar o plano..."
+        # Save explanation to $WORKFLOW_ROOT/.specs/teach/{ticket_id}/explanation.md
+    fi
+else
+    echo "✓ Plano simples, pulando explicação didática."
+fi
+```
+
+### Teach Output
+
+If user accepts, invoke `teach` skill and save outputs to:
+```
+$WORKFLOW_ROOT/.specs/teach/{ticket_id}/
+├── explanation.md    # Main explanation in plain language
+├── glossary.md       # Domain-specific terms
+└── diagram.md        # Architecture diagram (if applicable)
+```
+
+### Integration Points
+
+- **Trigger**: After `validate-plan` succeeds
+- **Gate**: Optional — does not block execution
+- **Skip conditions**:
+  - User explicitly declines
+  - Complexity score < 2
+  - User is already familiar with the domain (detected via learning records)
+---
+
 ## Key Behaviors
 
 - Always ensure proper handoff between agents with context

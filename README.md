@@ -44,6 +44,7 @@ workflow/
 │   ├── workflow-installer/
 │   ├── workflow-implementation/
 │   ├── tlc-spec-driven/
+│   ├── teach/                  # Explain plans in plain language
 │   ├── code-quality-checker/
 │   ├── e2e-validator/
 │   ├── gitnexus-scan/
@@ -144,8 +145,8 @@ opencode run "Implement JIRA-9999" --mode=auto
 
 | Mode | Description |
 |------|-------------|
-| `auto` | Full workflow (planning + execution) |
-| `plan` | Planning only, no code execution |
+| `auto` | Full workflow (planning + teach + execution) |
+| `plan` | Planning + teach, no code execution |
 | `build` | Execution only, from existing plan |
 
 ---

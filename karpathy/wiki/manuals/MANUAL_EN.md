@@ -53,9 +53,13 @@ SPECS_DIR="$WORKFLOW_ROOT/.specs"
 SCRIPTS_DIR="$WORKFLOW_ROOT/scripts"
 ```
 
-**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY.
+**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY.
 
 ---
+
+
+
+
 
 
 ## Atlassian MCP Rules (READ-ONLY)
