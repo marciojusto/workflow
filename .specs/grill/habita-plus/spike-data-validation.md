@@ -8,7 +8,11 @@
 
 ## Objetivo
 
-Validar ou matar a hipótese central do negócio: **existe oferta Medium-Term Rental (3–12 meses) suficiente e detetável nas fontes alvo para sustentar um agregador.** Se a cobertura MTR real for marginal, o Habita+ não tem matéria-prima — e o skeleton Kotlin é irrelevante.
+Validar a hipótese central do negócio sob o MVP **agregador geral + filtro MTR**:
+1. **Sobrevivência do agregador:** existe oferta suficiente (campos completos ≥80%, hotlink viável) nas fontes alvo para sustentar um catálogo geral de arrendamento.
+2. **Diferenciação MTR:** a oferta MTR (3–12 meses) é detetável e quantificável — suficiente para ser um filtro competitivo, não apenas ruído.
+
+Se H2 (campos) ou H3 (hotlink) falharem, o Habita+ não tem matéria-prima. Se o MTR for apenas residual (<5%), o filtro MTR é um diferencial fraco, mas o agregador geral ainda pode avançar com a intelligence de preço como proposta de valor.
 
 ## Hipóteses a testar
 
@@ -54,19 +58,22 @@ Validar ou matar a hipótese central do negócio: **existe oferta Medium-Term Re
 - [ ] Pares comparáveis (mesma zona + tipologia): mediana MTR vs mediana LTR.
 - [ ] Fator por cidade; sanity check contra literatura (+20–40%).
 
-## Critérios de Go/No-Go
+## Critérios de Go/No-Go (MVP: agregador geral + filtro MTR)
 
 | Resultado | Decisão |
 |---|---|
-| Cobertura MTR (DECLARED+INFERRED) ≥15% E campos ≥80% completos | **GO** — derivar JSON Schema dos dados reais e iniciar skeleton |
-| Cobertura 8–15% | **GO CONDICIONADO** — alargar keywords INFERRED, testar Airbnb/FB antes do skeleton |
-| Cobertura <8% | **NO-GO / PIVOT** — reavaliar tese: posicionar como agregador geral com inteligência de preço, ou focar canal B2B dados |
+| Campos ≥80% completos (H2) E hotlink OK (H3) | **GO** — agregador geral viável; derivar JSON Schema e iniciar skeleton |
+| MTR cobertura ≥15% (DECLARED+INFERRED com keywords conservadoras) | **GO + MTR como diferencial forte** — filtro MTR é competitivo desde dia 1 |
+| MTR cobertura 8–15% | **GO + MTR como diferencial fraco** — agregador geral avança; MTR filter requer LLM para precision aceitável |
+| MTR cobertura <8% | **GO (posicionamento revisado)** — agregador geral com intelligence de preço; MTR fica como filtro secundário ou é removido do pitch |
+| Campos <80% ou hotlink bloqueado | **NO-GO** — matéria-prima insuficiente para qualquer variante do produto |
 
-## Entregáveis
+## Entregáveis (ajustados ao MVP)
 
-1. `spike-report.md` — resultados das 5 medições + decisão Go/No-Go fundamentada.
-2. `listing-schema-v1.json` — JSON Schema canónico derivado dos dados REAIS (campos presentes ≥80% = required; resto optional).
-3. Calibração inicial: thresholds de confiança INFERRED + MtrPremium por cidade.
+1. `spike-report.md` — resultados das 5 medições + recomendação de MVP.
+2. `listing-schema-v1.json` — JSON Schema canónico **por-fonte** derivado dos dados REAIS (campos presentes ≥80% = required; resto optional). Idealista é a fonte primária; Imovirtual e OLX têm schemas reduzidos.
+3. Calibração inicial: thresholds de confiança INFERRED + MtrPremium por cidade (para o filtro MTR).
+4. `spike-mtr-validation-sample.csv` — 50 items para validação manual de precision do classificador MTR.
 
 ## Método
 
@@ -75,3 +82,8 @@ Validar ou matar a hipótese central do negócio: **existe oferta Medium-Term Re
 3. Scripts Python descartáveis (pandas) para as medições 1, 2, 4, 5.
 4. Teste de hotlink (medição 3) com curl + HTML de teste local.
 5. Redigir spike-report.md com decisão.
+
+
+## Emenda 2026-08-03 — Reframing do MVP
+
+Após análise dos dados, o MVP do Habita+ passa a ser **agregador geral de arrendamento com filtro MTR como diferenciador incremental**, e não "MTR-only". Esta alteração impacta os critérios de Go/No-Go: o survival gate é agora a disponibilidade de campos (H2) e hotlink (H3), não a cobertura MTR. A cobertura MTR informa a força do diferencial, mas não mata o projeto se for baixa.

@@ -10,7 +10,7 @@ description: User history implementation workflow. Thin orchestrator that delega
 
 ```
 mode-selection → detect-project-type → detect-task-tracker
-  → (JIRA/Redmine) extract-jira-ticket → analyze-with-expert (optional)
+  → (JIRA/Redmine) extract-ticket → analyze-with-expert (optional)
   → (Standalone)   grill+spike → tlc-spec-driven direto
   → spec-driven-planning (tlc-spec-driven SPECIFY+DESIGN)
   → teach (optional, based on complexity)
@@ -47,18 +47,18 @@ Seu projeto usa algum controlador de tarefas?
 ```
 
 Store selection in context as `task_tracker_type`:
-- `jira` → proceed to Step 0.3 (extract-jira-ticket)
-- `redmine` → proceed to Step 0.3 (extract-jira-ticket with Redmine adapter)
+- `jira` → proceed to Step 0.3 (extract-ticket)
+- `redmine` → proceed to Step 0.3 (extract-ticket with Redmine adapter)
 - `other` → ask for tracker name/API config, then proceed to Step 0.3
 - `none` → skip to Step 0.5 (grill+spike → tlc-spec-driven direto)
 
 **CRITICAL**: This step is mandatory. Do not assume the user has JIRA configured.
 
-## Step 0.3: extract-jira-ticket (CONDITIONAL)
+## Step 0.3: extract-ticket (CONDITIONAL)
 
 **Only if task_tracker_type is jira/redmine/other.**
 
-Invoke: `extract-jira-ticket.md`
+Invoke: `extract-ticket.md`
 → output: title, description, ACs, current_ac, total_ac_count, all_done, attachments, links, linked_issues, existing_plan, rag_resources
 
 If `task_tracker_type == none`, skip this step entirely.

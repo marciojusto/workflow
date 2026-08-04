@@ -1,17 +1,17 @@
 ---
-name: extract-jira-ticket
+name: extract-ticket
 version: v1.0.0
-description: Extrair user story ou bug info e critérios de aceitação a partir de um ticket do Jira.
+description: Extrair user story ou bug info e critérios de aceitação a partir de um ticket do tracker de tarefas.
 ---
 
-# Extract Jira Ticket
+# Extract Ticket
 
 ## Config
 retry: 1
 on_error: return_empty
 
 ## Inputs
-- jira_ticket_id
+- ticket_id
 
 ## Output
 - title
@@ -29,13 +29,13 @@ on_error: return_empty
 - changes_detected
 
 ## Instructions
-Você coletará as informações de uma issue do Jira, verificará alterações desde a última execução e determinará qual AC deve ser implementada a seguir.
+Você coletará as informações de uma issue do tracker, verificará alterações desde a última execução e determinará qual AC deve ser implementada a seguir.
 
 Na primeira execução para um ticket, guarda um snapshot do estado actual.
 Em execuções subsequentes, compara o estado actual com o snapshot guardado e reporta alterações ao utilizador.
 
 Sua tarefa:
-- Extrair o título (summary) da issue
+- Extrair o título (summary) do ticket
 - Extrair a descrição (description)
 - Extrair critérios de aceitação
 - Extrair anexos relevantes (imagens, documentos)
@@ -60,14 +60,14 @@ Regras:
 ## Steps
 
 1. get-ticket
-   - call: mcp.atlassian.get_info
+   - call: mcp.tracker.get_ticket
    - input:
-     jira_ticket_id: jira_ticket_id
+     ticket_id: ticket_id
 
 2. get-linked-issues
-   - call: mcp.atlassian.get_linked_issues
+   - call: mcp.tracker.get_linked_issues
    - input:
-     issueIdOrKey: jira_ticket_id
+     issueIdOrKey: ticket_id
    - on_error: return_empty_array
    - logic:
      - If linked issues found:
@@ -77,33 +77,33 @@ Regras:
      - Include linked issues context in the output for better understanding
 
 3. get-attachments
-   - call: mcp.atlassian.get_attachments
+   - call: mcp.tracker.get_attachments
    - input:
-     issueIdOrKey: jira_ticket_id
+     issueIdOrKey: ticket_id
    - on_error: return_empty_array
 
 3. get-links
-   - call: mcp.atlassian.get_issue_remote_links
+   - call: mcp.tracker.get_issue_remote_links
    - input:
-     issueIdOrKey: jira_ticket_id
+     issueIdOrKey: ticket_id
    - on_error: return_empty_array
 
 4. get-comments
-   - call: mcp.atlassian.get_comments
+   - call: mcp.tracker.get_comments
    - input:
-     issueIdOrKey: jira_ticket_id
+     issueIdOrKey: ticket_id
    - on_error: return_empty_array
 
 5. get-history
    - call: mcp.filesystem.read_file
    - input:
-     path: ".workflow/history/{jira_ticket_id}.json"
+     path: ".workflow/history/{ticket_id}.json"
    - on_error: create_empty
 
 6. get-snapshot
    - call: mcp.filesystem.read_file
    - input:
-     path: ".workflow/history/{jira_ticket_id}_snapshot.json"
+     path: ".workflow/history/{ticket_id}_snapshot.json"
    - on_error: return_empty_object
 
 7. detect-changes
@@ -119,7 +119,7 @@ Regras:
 8. save-snapshot
    - call: mcp.filesystem.write_file
    - input:
-     path: ".workflow/history/{jira_ticket_id}_snapshot.json"
+     path: ".workflow/history/{ticket_id}_snapshot.json"
      content: current ticket snapshot (title, description, acceptance_criteria, attachments, links, comments, timestamp)
 
 9. compute-next-ac
@@ -154,7 +154,7 @@ Regras:
     - call: mcp.filesystem.search_files
     - input:
       path: "~/Development/teamwill/mobilize/workflow/plans"
-      pattern: "*{jira_ticket_id}*ac{current_ac_index}*"
+      pattern: "*{ticket_id}*ac{current_ac_index}*"
     - on_error: return_empty_array
     - logic:
       - if files found:
@@ -171,7 +171,7 @@ Regras:
        
        - Check local RAG first:
          - search `.workflow/RAG/sprint_*/` for sprint-specific folders
-         - search `.workflow/RAG/{jira_ticket_id}/` for ticket-specific resources
+         - search `.workflow/RAG/{ticket_id}/` for ticket-specific resources
        
        - Check OneDrive RAG if not found locally:
          - search the OneDrive RAG path for matching folders

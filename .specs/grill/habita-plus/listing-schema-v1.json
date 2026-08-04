@@ -1,0 +1,422 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ListingSchemaV1",
+  "description": "Schema canónico de Listing derivado dos dados reais do spike (D1 + D2). Estrutura por-fonte: campos comuns normalizados + source_specific.",
+  "type": "object",
+  "required": [
+    "source",
+    "external_id",
+    "price",
+    "url"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": [
+        "idealista",
+        "imovirtual",
+        "olx"
+      ],
+      "description": "Fonte original do listing."
+    },
+    "external_id": {
+      "type": "string",
+      "description": "ID estável da fonte (propertyCode para Idealista, adId para Imovirtual, id para OLX)."
+    },
+    "canonical": {
+      "$ref": "#/definitions/canonical"
+    },
+    "source_specific": {
+      "$ref": "#/definitions/source_specific"
+    }
+  },
+  "definitions": {
+    "canonical": {
+      "type": "object",
+      "description": "Campos normalizados presentes em todas as fontes após adaptação.",
+      "required": [
+        "price",
+        "url",
+        "title",
+        "city",
+        "scraped_at"
+      ],
+      "properties": {
+        "price": {
+          "type": "number",
+          "description": "Preço em EUR (renda mensal para LTR; para MTR pode ser nightly × 30 ou mensal declarado)."
+        },
+        "currency": {
+          "type": "string",
+          "default": "EUR"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Deep link para o anúncio original."
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Descrição integral (null para Imovirtual, que não a fornece)."
+        },
+        "city": {
+          "type": "string",
+          "description": "Cidade principal (Lisboa, Porto, etc.)."
+        },
+        "district": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Bairro/freguesia (null para OLX)."
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "property_type": {
+          "type": "string",
+          "description": "apartment | house | studio | room | other"
+        },
+        "rooms": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Tipologia T-number (T0=studio, T1=1 quarto, etc.)."
+        },
+        "area_sqm": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "floor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Piso (ex: 'SECOND', '3', 'ground')."
+        },
+        "monthly_rent": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Renda mensal declarada (para MTR e LTR)."
+        },
+        "price_per_sqm": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "photo_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "photo_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "is_business": {
+          "type": "boolean",
+          "description": "True se anunciante é profissional/agência."
+        },
+        "agency_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "date_published": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "scraped_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da coleta (ISO 8601)."
+        },
+        "mtr_classification": {
+          "type": "string",
+          "enum": [
+            "DECLARED",
+            "INFERRED",
+            "UNKNOWN"
+          ],
+          "description": "Classificação MTR pelo módulo intelligence (não pelo scraper)."
+        },
+        "mtr_confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "normalizer_version": {
+          "type": "string",
+          "description": "Versão do normalizador que produziu este record (ADR-002)."
+        }
+      }
+    },
+    "source_specific": {
+      "type": "object",
+      "description": "Campos específicos de cada fonte, para debug e re-normalização.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/idealista_specific"
+        },
+        {
+          "$ref": "#/definitions/imovirtual_specific"
+        },
+        {
+          "$ref": "#/definitions/olx_specific"
+        }
+      ]
+    },
+    "idealista_specific": {
+      "type": "object",
+      "properties": {
+        "propertyCode": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "sale",
+            "rent"
+          ]
+        },
+        "propertyType_raw": {
+          "type": "string"
+        },
+        "detailedType_typology": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "locationId": {
+          "type": "string"
+        },
+        "numPhotos": {
+          "type": "integer"
+        },
+        "thumbnail": {
+          "type": "string"
+        },
+        "multimedia_images": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "features": {
+          "type": "object"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contactInfo": {
+          "type": "object"
+        },
+        "status": {
+          "type": "string"
+        },
+        "firstActivationDate": {
+          "type": "string"
+        },
+        "hasVideo": {
+          "type": "boolean"
+        },
+        "has3DTour": {
+          "type": "boolean"
+        },
+        "hasPlan": {
+          "type": "boolean"
+        },
+        "isOnlineBookingActive": {
+          "type": "boolean"
+        },
+        "rentalTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priceInfo": {
+          "type": "object"
+        }
+      }
+    },
+    "imovirtual_specific": {
+      "type": "object",
+      "properties": {
+        "adId": {
+          "type": "string"
+        },
+        "detailUrl": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "transactionType": {
+          "type": "string"
+        },
+        "estate": {
+          "type": "string"
+        },
+        "advertType": {
+          "type": "string"
+        },
+        "market": {
+          "type": "string",
+          "enum": [
+            "PRIMARY",
+            "SECONDARY"
+          ]
+        },
+        "pricePerSqm": {
+          "type": "number"
+        },
+        "terrainAreaSqm": {
+          "type": "number"
+        },
+        "province": {
+          "type": "string"
+        },
+        "county": {
+          "type": "string"
+        },
+        "street": {
+          "type": "string"
+        },
+        "postalCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "imageUrls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "agencyId": {
+          "type": "string"
+        },
+        "agencySlug": {
+          "type": "string"
+        },
+        "agencyType": {
+          "type": "string"
+        },
+        "isExclusive": {
+          "type": "boolean"
+        },
+        "isFeatured": {
+          "type": "boolean"
+        },
+        "isPromoted": {
+          "type": "boolean"
+        },
+        "hasOpenDay": {
+          "type": "boolean"
+        },
+        "dateCreated": {
+          "type": "string"
+        },
+        "dateCreatedFirst": {
+          "type": "string"
+        },
+        "pushedUpAt": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "searchTransaction": {
+          "type": "string"
+        },
+        "searchLocation": {
+          "type": "string"
+        }
+      }
+    },
+    "olx_specific": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "price_label": {
+          "type": "string"
+        },
+        "negotiable": {
+          "type": "boolean"
+        },
+        "region": {
+          "type": "string"
+        },
+        "seller_name": {
+          "type": "string"
+        },
+        "category_id": {
+          "type": "string"
+        },
+        "created_time": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "description": "Dict com rooms, area, condition, etc. — não normalizado."
+        },
+        "source": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "notes": [
+    "Schema por-fonte: o canonical exige apenas 4 campos (source, external_id, price, url).",
+    "Tipologia (rooms) só está 100% presente em Idealista e Imovirtual; OLX requer parsing do attributes dict.",
+    "Geo estruturado (lat/lon ou district) só está 100% presente em Idealista e Imovirtual; OLX tem city apenas.",
+    "Descrição integral só está 100% presente em Idealista e OLX; Imovirtual tem shortDescription apenas.",
+    "mtr_classification e mtr_confidence são populados pelo módulo intelligence (não pelo scraper).",
+    "normalizer_version permite re-processar listings quando o normalizador evoluir (ADR-002)."
+  ]
+}

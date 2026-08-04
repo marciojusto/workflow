@@ -30,7 +30,7 @@ on_error: report_and_continue
 This step invokes the miles-expert agent to perform deep domain analysis after ticket data has been extracted.
 
 ### When to Use
-- After extract-jira-ticket step (0.3)
+- After extract-ticket step (0.3)
 - Before create-plan step (2)
 - When deep technical analysis is needed for complex tickets
 - For bugs where root cause is not obvious

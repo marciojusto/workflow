@@ -1,10 +1,10 @@
 ---
-name: extract-jira-ticket
+name: extract-ticket
 version: v1.0.0
 description: Extrair user story ou bug info e critérios de aceitação a partir de um ticket do Jira.
 ---
 
-# Extract Jira Ticket
+# Extract Ticket
 
 ## Config
 retry: 1
