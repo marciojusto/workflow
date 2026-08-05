@@ -23,7 +23,7 @@ description: Solicitar aprovação humana antes de executar o plano
 
 ### Step 1: Display Information
 Mostre ao utilizador:
-- **Ticket**: {jira_ticket_id}
+- **Ticket**: {ticket_id}
 - **Current AC**: {current_ac}
 - **Plano**: exiba o conteúdo completo do plano
 - **Validation Result**: resultado do review-plan.md

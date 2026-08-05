@@ -7,7 +7,7 @@ description: Registrar execução
 # Log History
 
 ## Inputs
-- jira_ticket_id
+- ticket_id
 - current_ac_index
 - current_ac
 - total_acs
@@ -22,21 +22,21 @@ description: Registrar execução
 Regista a conclusão de uma AC num ficheiro de histórico em formato Markdown.
 Inclui informações detalhadas de todas as mudanças realizadas: ficheiros alterados, código adicionado/removido, e validações executadas.
 
-Mantém também o ficheiro JSON `.workflow/history/{jira_ticket_id}.json` para navegação programática.
+Mantém também o ficheiro JSON `.workflow/history/{ticket_id}.json` para navegação programática.
 
 ## Steps
 
 1. read-json-history
    - call: mcp.filesystem.read_file
    - input:
-      path: ".workflow/history/{jira_ticket_id}.json"
+      path: ".workflow/history/{ticket_id}.json"
    - on_error: create_empty
 
 2. append-to-json-history
    - input: history from step 1, current_ac_index, current_ac, total_acs, implementation_summary, files_changed
    - logic:
       - if history is empty or null:
-        - history = { jira_ticket_id: jira_ticket_id, total_acs: total_acs, completed_acs: [], completion_percentage: 0 }
+        - history = { ticket_id: ticket_id, total_acs: total_acs, completed_acs: [], completion_percentage: 0 }
       - timestamp = current ISO 8601 timestamp
       - append to completed_acs: { index, ac, timestamp, summary, files_changed }
       - completion_percentage = round((completed_acs.length / total_acs) * 100)
@@ -46,11 +46,11 @@ Mantém também o ficheiro JSON `.workflow/history/{jira_ticket_id}.json` para n
 3. write-json-history
    - call: mcp.filesystem.write_file
    - input:
-      path: ".workflow/history/{jira_ticket_id}.json"
+      path: ".workflow/history/{ticket_id}.json"
       content: history object from step 2 as JSON string
 
 4. generate-markdown-log
-   - input: all inputs (jira_ticket_id, current_ac_index, current_ac, total_acs, implementation_summary, files_changed, code_changes)
+   - input: all inputs (ticket_id, current_ac_index, current_ac, total_acs, implementation_summary, files_changed, code_changes)
    - logic:
      - build markdown document with:
        - Header with ticket ID and AC number
@@ -65,13 +65,13 @@ Mantém também o ficheiro JSON `.workflow/history/{jira_ticket_id}.json` para n
 5. write-markdown-history
    - call: mcp.filesystem.write_file
    - input:
-      path: ".workflow/history/{jira_ticket_id}_ac_{current_ac_index}.md"
+      path: ".workflow/history/{ticket_id}_ac_{current_ac_index}.md"
       content: markdown from step 4
 
 6. append-to-main-log
    - call: mcp.filesystem.read_file
    - input:
-      path: ".workflow/history/{jira_ticket_id}_log.md"
+      path: ".workflow/history/{ticket_id}_log.md"
    - on_error: create_empty
 
 7. append-entry
@@ -81,7 +81,7 @@ Mantém também o ficheiro JSON `.workflow/history/{jira_ticket_id}.json` para n
 8. write-main-log
    - call: mcp.filesystem.write_file
    - input:
-      path: ".workflow/history/{jira_ticket_id}_log.md"
+      path: ".workflow/history/{ticket_id}_log.md"
       content: updated main log
 
 Formato de saída:
@@ -91,10 +91,10 @@ Formato de saída:
 }
 ```
 
-Formato do ficheiro JSON `.workflow/history/{jira_ticket_id}.json`:
+Formato do ficheiro JSON `.workflow/history/{ticket_id}.json`:
 ```json
 {
-  "jira_ticket_id": "PROJ-123",
+  "ticket_id": "PROJ-123",
   "total_acs": 5,
   "completion_percentage": 40,
   "completed_acs": [
@@ -109,7 +109,7 @@ Formato do ficheiro JSON `.workflow/history/{jira_ticket_id}.json`:
 }
 ```
 
-Formato do ficheiro Markdown `.workflow/history/{jira_ticket_id}_ac_0.md`:
+Formato do ficheiro Markdown `.workflow/history/{ticket_id}_ac_0.md`:
 ```markdown
 # AC #0 — PROJ-123
 

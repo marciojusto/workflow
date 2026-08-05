@@ -35,7 +35,7 @@ Invoked **after** step 0.5 (analyze-with-miles-expert) when:
 ```json
 {
   "project_type": "hyperfront | deal-bs",
-  "jira_ticket_id": "PROJ-123",
+  "ticket_id": "PROJ-123",
   "title": "Bug: Login fails for B2B customers",
   "description": "...",
   "acceptance_criteria": ["AC1", "AC2"],

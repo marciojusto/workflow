@@ -9,14 +9,16 @@
 ```
 workflow/
 ├── agents/              # Agent definitions
-│   ├── workflow-orchestrator.md
-│   ├── miles-expert.md
-│   ├── coherence-checker.md
-│   ├── review-plan.md
-│   ├── e2e-runner.md
-│   ├── wiki-keeper.md
-│   ├── vision-describer.md
-│   └── business-expert-template.md
+│   ├── workflow-orchestrator.md      # Primary coordinator (session mgmt, logging)
+│   ├── miles-expert.md               # Domain expert example
+│   ├── coherence-checker.md          # Architecture validation
+│   ├── review-plan.md                # Plan review
+│   ├── e2e-runner.md                 # E2E test execution
+│   ├── wiki-keeper.md                # Knowledge management
+│   ├── vision-describer.md           # Image analysis
+│   └── business-expert-template.md   # Template for custom experts
+├── adapters/            # Tracker adapters
+│   └── trackers/        # Jira, Redmine, Mock adapters
 ├── config/
 │   └── providers/       # LLM provider configs
 │       ├── kilogateway.json
@@ -26,35 +28,38 @@ workflow/
 │       ├── openrouter.json
 │       └── ollama.json
 ├── docker/              # Docker configuration for SonarQube scanning
-│   └── docker-compose.yml
+├── docs/                # 📚 Documentation (NEW)
+│   ├── index.md         # Documentation home
+│   ├── architecture/    # Architecture guides
+│   ├── guides/          # User guides
+│   ├── api/             # API documentation
+│   └── reference/       # CLI reference
 ├── karpathy/            # Wiki system (knowledge management)
-│   ├── raw/             # Source documents (PDFs, OpenAPIs)
-│   ├── wiki/            # Generated notes
-│   ├── history/         # Historical records
-│   └── control/         # index.md, log.md
 ├── plans/               # Implementation plans
 ├── scripts/             # Utility scripts
 │   ├── install-workflow.sh
 │   ├── Install-Workflow.ps1
-│   ├── install-state.py
+│   ├── install-state.py          # Session management (NEW)
+│   ├── workflow.py               # Unified CLI (NEW)
 │   ├── harness-health-check.py
-│   ├── step-log.py
+│   ├── step-log.py               # Logging with session support
+│   ├── plan-validator.py         # Plan validation (NEW)
+│   ├── snapshot-manager.py       # Snapshots & rollback (NEW)
 │   └── update-manuals.py
 ├── skills/              # Skill definitions
 │   ├── workflow-installer/
 │   ├── workflow-implementation/
+│   ├── workflow-logger/          # Logging skill (NEW)
 │   ├── tlc-spec-driven/
-│   ├── teach/                  # Explain plans in plain language
-│   ├── code-quality-checker/
-│   ├── e2e-validator/
-│   ├── gitnexus-scan/
-│   ├── log-analyzer-pro/
-│   ├── release-tickets/
-│   ├── tana-jira-sync/
-│   └── convert-conversation/
-├── tests/               # E2E test outputs
-├── MANUAL_EN.md         # English manual
-├── MANUAL_PT.md         # Portuguese manual
+│   ├── teach/
+│   └── ...
+├── tests/               # Test suite (NEW)
+│   ├── unit/            # Unit tests
+│   └── integration/     # Integration tests
+├── .specs/              # Specifications
+├── .workflow/           # Runtime data
+│   ├── history/         # Execution history
+│   └── snapshots/       # State snapshots (NEW)
 └── README.md
 ```
 
@@ -68,6 +73,55 @@ workflow/
 | 🇧🇷 Português | [MANUAL_PT.md](./MANUAL_PT.md) | Documentação completa do workflow em Português |
 
 ---
+
+## ✨ New Features (v3.0)
+
+### Session Management
+Pause, resume, and track workflows with full state persistence:
+```bash
+python3 scripts/workflow.py session-create MMH-1435 auto
+python3 scripts/workflow.py session-pause abc123 "waiting_review"
+python3 scripts/workflow.py session-resume abc123
+```
+
+### Advanced Plan Validation
+LLM-powered plan validation with quality scoring (0-100):
+```bash
+python3 scripts/workflow.py validate-plan plans/MMH-1435_plan.md \
+  --current-ac "User can login" --acs "AC1" "AC2"
+# Returns: quality_score, issues, principles validation
+```
+
+### Automatic Snapshots & Rollback
+Pre-step snapshots with one-command rollback:
+```bash
+# Create snapshot
+python3 scripts/workflow.py snapshot-create abc123 snap1 plans/ src/
+
+# Rollback if something goes wrong
+python3 scripts/workflow.py rollback abc123
+```
+
+### Unified CLI
+Single entry point for all workflow operations:
+```bash
+python3 scripts/workflow.py status
+python3 scripts/workflow.py log-view MMH-1435
+python3 scripts/workflow.py snapshot-list abc123
+```
+
+### Task Tracker Adapters
+Pluggable adapters for Jira, Redmine, GitHub, GitLab:
+```json
+// ~/.workflow-installer-state.json
+{
+  "tracker": {
+    "type": "jira|redmine|github|gitlab|mock",
+    "url": "https://your-tracker.com",
+    "apiKey": "your-key"
+  }
+}
+```
 
 ## 🚀 Installation
 
@@ -151,12 +205,40 @@ opencode run "Implement JIRA-9999" --mode=auto
 
 ---
 
-## 📋 Manuals
+## 📚 Documentation
 
-For detailed documentation, see:
+Complete documentation is available in the `docs/` folder:
+
+| Document | Description |
+|----------|-------------|
+| [docs/index.md](docs/index.md) | Documentation home |
+| [docs/guides/getting-started.md](docs/guides/getting-started.md) | Getting started guide |
+| [docs/architecture/overview.md](docs/architecture/overview.md) | Architecture overview |
+| [docs/reference/cli.md](docs/reference/cli.md) | Complete CLI reference |
+
+### Legacy Manuals
 
 - [MANUAL_EN.md](./MANUAL_EN.md) — Complete workflow documentation in English
 - [MANUAL_PT.md](./MANUAL_PT.md) — Documentação completa do workflow em Português
+
+## 🧪 Testing
+
+Run the test suite:
+
+```bash
+# Unit tests
+python3 -m unittest discover tests/unit -v
+
+# Integration tests
+python3 -m unittest tests.integration.test_workflow_integration -v
+
+# All tests
+python3 -m unittest discover tests -v
+```
+
+**Test Coverage:**
+- ✅ 31 unit tests (install-state, step-log, plan-validator, snapshot-manager)
+- ✅ 4 integration tests (complete workflow lifecycle)
 
 ---
 
@@ -215,5 +297,5 @@ This project is licensed under the MIT License.
 
 ---
 
-*Last Updated: 2026-07-31*
-*Version: 2.0*
+*Last Updated: 2026-08-05*
+*Version: 3.0*

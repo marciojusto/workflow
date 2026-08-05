@@ -69,7 +69,7 @@ def update_common(content: str) -> str:
     )
     content = content.replace(
         "workflow/.specs/grill/{ticket_id}/",
-        "$SPECS_DIR/grill/{jira_ticket_id}/",
+        "$SPECS_DIR/grill/{ticket_id}/",
     )
     content = content.replace(
         "workflow/.specs/grill/auto-{timestamp}/",

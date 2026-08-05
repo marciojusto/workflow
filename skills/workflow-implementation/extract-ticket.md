@@ -1,7 +1,7 @@
 ---
 name: extract-ticket
 version: v1.0.0
-description: Extrair user story ou bug info e critérios de aceitação a partir de um ticket do Jira.
+description: Extrair user story ou bug info e critérios de aceitação a partir de um ticket do rastreador de tarefas configurado (Jira, Redmine, ou outro).
 ---
 
 # Extract Ticket
@@ -11,7 +11,7 @@ retry: 1
 on_error: return_empty
 
 ## Inputs
-- jira_ticket_id
+- ticket_id
 
 ## Output
 - title
@@ -29,7 +29,7 @@ on_error: return_empty
 - changes_detected
 
 ## Instructions
-Você coletará as informações de uma issue do Jira, verificará alterações desde a última execução e determinará qual AC deve ser implementada a seguir.
+Você coletará as informações de um ticket do rastreador configurado, verificará alterações desde a última execução e determinará qual AC deve ser implementada a seguir.
 
 Na primeira execução para um ticket, guarda um snapshot do estado actual.
 Em execuções subsequentes, compara o estado actual com o snapshot guardado e reporta alterações ao utilizador.
@@ -60,54 +60,48 @@ Regras:
 ## Steps
 
 1. get-ticket
-   - call: mcp.atlassian.get_info
+   - call: bash
    - input:
-     jira_ticket_id: jira_ticket_id
+     command: "python3 $WORKFLOW_ROOT/scripts/tracker-adapter.py get-ticket --ticket-id {ticket_id}"
 
 2. get-linked-issues
-   - call: mcp.atlassian.get_linked_issues
+   - call: bash
    - input:
-     issueIdOrKey: jira_ticket_id
+     command: "python3 $WORKFLOW_ROOT/scripts/tracker-adapter.py get-linked-issues --ticket-id {ticket_id}"
    - on_error: return_empty_array
-   - logic:
-     - If linked issues found:
-       - For each linked issue, fetch its details using get_info
-       - Extract: title, description, acceptance_criteria
-       - Store in linked_issues array
-     - Include linked issues context in the output for better understanding
 
 3. get-attachments
-   - call: mcp.atlassian.get_attachments
+   - call: bash
    - input:
-     issueIdOrKey: jira_ticket_id
+     command: "python3 $WORKFLOW_ROOT/scripts/tracker-adapter.py get-attachments --ticket-id {ticket_id}"
    - on_error: return_empty_array
 
-3. get-links
-   - call: mcp.atlassian.get_issue_remote_links
+4. get-links
+   - call: bash
    - input:
-     issueIdOrKey: jira_ticket_id
+     command: "python3 $WORKFLOW_ROOT/scripts/tracker-adapter.py get-remote-links --ticket-id {ticket_id}"
    - on_error: return_empty_array
 
-4. get-comments
-   - call: mcp.atlassian.get_comments
+5. get-comments
+   - call: bash
    - input:
-     issueIdOrKey: jira_ticket_id
+     command: "python3 $WORKFLOW_ROOT/scripts/tracker-adapter.py get-comments --ticket-id {ticket_id}"
    - on_error: return_empty_array
 
-5. get-history
+6. get-history
    - call: mcp.filesystem.read_file
    - input:
-     path: ".workflow/history/{jira_ticket_id}.json"
+     path: ".workflow/history/{ticket_id}.json"
    - on_error: create_empty
 
-6. get-snapshot
+7. get-snapshot
    - call: mcp.filesystem.read_file
    - input:
-     path: ".workflow/history/{jira_ticket_id}_snapshot.json"
+     path: ".workflow/history/{ticket_id}_snapshot.json"
    - on_error: return_empty_object
 
-7. detect-changes
-   - input: current ticket data from steps 1-4, snapshot from step 6
+8. detect-changes
+   - input: current ticket data from steps 1-4, snapshot from step 7
    - logic:
      - if snapshot is empty:
        - this is first run → save snapshot and return no changes
@@ -116,14 +110,14 @@ Regras:
        - report any differences found
        - return list of changes
 
-8. save-snapshot
+9. save-snapshot
    - call: mcp.filesystem.write_file
    - input:
-     path: ".workflow/history/{jira_ticket_id}_snapshot.json"
+     path: ".workflow/history/{ticket_id}_snapshot.json"
      content: current ticket snapshot (title, description, acceptance_criteria, attachments, links, comments, timestamp)
 
-9. compute-next-ac
-    - input: acceptance_criteria from step 1, history from step 5
+10. compute-next-ac
+    - input: acceptance_criteria from step 1, history from step 6
     - logic:
       - if history is empty or history.completed_acs is empty:
         - current_ac_index = 0
@@ -150,11 +144,11 @@ Regras:
           - all_done = false
           - current_ac = acceptance_criteria[current_ac_index]
 
-10. check-existing-plan
+11. check-existing-plan
     - call: mcp.filesystem.search_files
     - input:
-      path: "~/Development/teamwill/mobilize/workflow/plans"
-      pattern: "*{jira_ticket_id}*ac{current_ac_index}*"
+      path: "$WORKFLOW_ROOT/plans"
+      pattern: "*{ticket_id}*ac{current_ac_index}*"
     - on_error: return_empty_array
     - logic:
       - if files found:
@@ -163,23 +157,23 @@ Regras:
       - else:
         - existing_plan = { found: false }
 
- 11. get-rag-resources
-     - logic:
-       - RAG resources can be in two locations:
-         1. Local: `.workflow/RAG/` (project folder)
-         2. OneDrive: `/Users/marcio_oliveira/Library/CloudStorage/OneDrive-TEAMWILLCONSULTING/TW Digital/Mobilize/RAG`
-       
-       - Check local RAG first:
-         - search `.workflow/RAG/sprint_*/` for sprint-specific folders
-         - search `.workflow/RAG/{jira_ticket_id}/` for ticket-specific resources
-       
-       - Check OneDrive RAG if not found locally:
-         - search the OneDrive RAG path for matching folders
-       
-       - Build rag_resources = list of { api_name, spec_path, filename, source: 'local' | 'onedrive' }
+12. get-rag-resources
+    - logic:
+      - RAG resources can be in two locations:
+        1. Local: `.workflow/RAG/` (project folder)
+        2. OneDrive: configured in state file
+        
+      - Check local RAG first:
+        - search `.workflow/RAG/sprint_*/` for sprint-specific folders
+        - search `.workflow/RAG/{ticket_id}/` for ticket-specific resources
+      
+      - Check OneDrive RAG if not found locally:
+        - search the OneDrive RAG path for matching folders
+      
+      - Build rag_resources = list of { api_name, spec_path, filename, source: 'local' | 'onedrive' }
 
-12. present-changes
-    - input: changes_detected from step 7
+13. present-changes
+    - input: changes_detected from step 8
     - logic:
       - if changes_detected.length > 0:
         - ask user: "Foram detectadas alterações no ticket desde a última execução:"
@@ -187,8 +181,8 @@ Regras:
           - "Deseja continuar com a implementação da AC ou cancelar?"
       - else: proceed normally
 
-13. format-output
-    - input: attachments from step 2, links from step 3, existing_plan from step 10, rag_resources from step 11
+14. format-output
+    - input: attachments from step 2, links from step 3, existing_plan from step 11, rag_resources from step 12
     - logic:
       - attachments = list of { filename, mimeType, url } for each attachment
       - links = list of { title, url } for each remote link
@@ -209,12 +203,12 @@ Formato de saída:
   "links": [],
   "existing_plan": {
     "found": true,
-    "path": "~/Development/teamwill/mobilize/workflow/plans/mmh-1435_ac0_plan.md",
+    "path": "$WORKFLOW_ROOT/plans/{ticket_id}_ac{current_ac_index}_plan.md",
     "content": "..."
   },
   "rag_resources": [
     { "api_name": "sprint_01", "spec_path": ".workflow/RAG/sprint_01", "filename": "sprint_requirements.md" },
-    { "api_name": "mmh_1435", "spec_path": ".workflow/RAG/MMH_1435", "filename": "Asset Tab V1.xlsx" }
+    { "api_name": "{ticket_id}", "spec_path": ".workflow/RAG/{ticket_id}", "filename": "Asset Tab V1.xlsx" }
   ],
   "changes_detected": [
     { "field": "description", "before": "...", "after": "..." },

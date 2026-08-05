@@ -1,7 +1,7 @@
 ---
 name: workflow-implementation
 version: v1.3.0
-description: User history implementation workflow. Thin orchestrator that delegates each step to independent sub-skills. Hybrid flow: uses tlc-spec-driven for SPECIFY+DESIGN, native tasks for EXECUTE. Supports JIRA/Redmine integration or standalone mode with grill+spike.
+description: User history implementation workflow. Thin orchestrator that delegates each step to independent sub-skills. Hybrid flow: uses tlc-spec-driven for SPECIFY+DESIGN, native tasks for EXECUTE. Supports task tracker integration (Jira, Redmine, or custom) or standalone mode with grill+spike.
 ---
 
 # Workflow Implementation
@@ -10,7 +10,7 @@ description: User history implementation workflow. Thin orchestrator that delega
 
 ```
 mode-selection → detect-project-type → detect-task-tracker
-  → (JIRA/Redmine) extract-ticket → analyze-with-expert (optional)
+  → (tracker) extract-ticket → analyze-with-expert (optional)
   → (Standalone)   grill+spike → tlc-spec-driven direto
   → spec-driven-planning (tlc-spec-driven SPECIFY+DESIGN)
   → teach (optional, based on complexity)
@@ -40,7 +40,7 @@ Check `AGENTS.md` if exists. Check app running for frontend if validar mode.
 Ask the user:
 ```
 Seu projeto usa algum controlador de tarefas?
-1. JIRA
+1. Jira
 2. Redmine
 3. Outro (especifique)
 4. Não, projeto pessoal/sem ferramenta externa
@@ -52,7 +52,7 @@ Store selection in context as `task_tracker_type`:
 - `other` → ask for tracker name/API config, then proceed to Step 0.3
 - `none` → skip to Step 0.5 (grill+spike → tlc-spec-driven direto)
 
-**CRITICAL**: This step is mandatory. Do not assume the user has JIRA configured.
+**CRITICAL**: This step is mandatory. Do not assume the user has a task tracker configured.
 
 ## Step 0.3: extract-ticket (CONDITIONAL)
 
@@ -102,7 +102,7 @@ Output: `task_context` object with:
 
 ## Step 0.6: analyze-with-expert (OPTIONAL)
 
-**For both JIRA and standalone modes.**
+**For both tracker and standalone modes.**
 
 Ask user: "Deseja análise técnica com o expert de domínio configurado? (s/n)"
 - If `sim` → invoke @business-expert with task context
@@ -112,12 +112,12 @@ Ask user: "Deseja análise técnica com o expert de domínio configurado? (s/n)"
 
 ## Step 1: spec-driven-planning (tlc-spec-driven — hybrid)
 
-After context gathering (from JIRA or standalone), invoke tlc-spec-driven skill:
+After context gathering (from tracker or standalone), invoke tlc-spec-driven skill:
 
 1. **SPECIFY** (always): Convert context into `.specs/features/{ticket_id}/spec.md`
    - Extract requirement IDs from acceptance criteria or user description
    - Document gray areas and decisions
-   - Context: from Step 0.3 (JIRA) or Step 0.5 (standalone) + Step 0.6 (expert if used)
+   - Context: from Step 0.3 (tracker) or Step 0.5 (standalone) + Step 0.6 (expert if used)
 2. **DESIGN** (if Large/Complex): Generate `.specs/features/{ticket_id}/design.md`
    - Architecture decisions, component breakdown
    - Skip if change is straightforward (auto-sized by tlc-spec-driven)
@@ -174,12 +174,27 @@ Output: plan object with traceable requirement IDs
 Invoke: `validate-plan.md`
 Input: plan, current_ac
 
-**Code Principles**: validate-plan verifica:
-1. Secção 5 (DRY/KISS/YAGNI/SOLID/SoC) — issue prefixada com `[PRINCIPLE]`
-2. Secção 6 (Clean Code) — issue prefixada com `[CLEAN_CODE]`
-3. Secção 7 (Testing) — issue prefixada com `[TESTING]`
+**Advanced Validation**: Use `plan-validator.py` for comprehensive analysis:
+```bash
+python3 $WORKFLOW_ROOT/scripts/plan-validator.py \
+  $WORKFLOW_ROOT/plans/{ticket_id}_ac{current_ac_index}_plan.md \
+  --current-ac "$CURRENT_AC" \
+  --acs "${ACCEPTANCE_CRITERIA[@]}" \
+  --format json
+```
 
-Se alguma secção não existe ou se algum princípio é violado → is_valid = false.
+**Validation Criteria:**
+1. **Structure** — Required sections exist (Code Principles, Clean Code, Testing)
+2. **Coverage** — All ACs are adequately covered in the plan
+3. **Code Principles** — DRY/KISS/YAGNI/SOLID/SoC properly documented
+4. **Clean Code** — Small functions, descriptive names, max parameters, early return, English, readability
+5. **Testing Strategy** — Given-When-Then, Arrange-Act-Assert, descriptive test names
+
+**Quality Score**: 0-100, threshold = 70
+- Score < 70 → is_valid = false
+- Missing sections → is_valid = false
+- Issues prefixed with [STRUCTURE], [COVERAGE], [PRINCIPLE], [CLEAN_CODE], [TESTING]
+
 If invalid → loop back to create-plan (max 2 iterations)
 
 ## Step 6: request-human-approval
@@ -190,17 +205,34 @@ Input: plan, current_ac
 
 ## Step 7: execute-plan
 
+**Snapshot before execution**:
+```bash
+python3 $WORKFLOW_ROOT/scripts/snapshot-manager.py auto \
+  --session-id $SESSION_ID \
+  --step execute-plan \
+  --paths $WORKFLOW_ROOT/plans/ $WORKFLOW_ROOT/.specs/ src/
+```
+
 Invoke: `execute-plan.md`
 Input: approved plan
 **ONLY after step 6 approved**
 
 ## Step 8: run-tests
 
+**Snapshot before tests**:
+```bash
+python3 $WORKFLOW_ROOT/scripts/snapshot-manager.py auto \
+  --session-id $SESSION_ID \
+  --step run-tests \
+  --paths src/ playwright/tests/ playwright-report/
+```
+
 If `nuxt-frontend` → invoke `e2e-validator` with current AC
    → Capture `test_trace` from e2e-validator output
 If `java-spring-backend` → `./mvnw test`
 If `node-backend` → `npm test`
 If failed → loop to create-plan
+   → Optional rollback: `python3 $WORKFLOW_ROOT/scripts/workflow.py rollback $SESSION_ID`
 
 ## Step 8.5: generate-regression-test
 
@@ -241,12 +273,20 @@ Invoke: `log-history.md`
 Input: ticket_id, current_ac_index, current_ac, implementation_summary, regression_test_result
 → loop to step 0.2 (detect-task-tracker) for next AC
 
+**Snapshot after completion**:
+```bash
+python3 $WORKFLOW_ROOT/scripts/snapshot-manager.py auto \
+  --session-id $SESSION_ID \
+  --step log-history \
+  --paths $WORKFLOW_ROOT/.workflow/history/
+```
+
 ---
 
 ## Modes Summary
 
-| Mode | JIRA/Redmine | Expert | Teach | Description |
-|------|--------------|--------|-------|-------------|
+| Mode | Tracker | Expert | Teach | Description |
+|------|---------|--------|-------|-------------|
 | `nova` | Optional | Optional | Auto-recommended | New feature from scratch |
 | `bug` | Optional | Optional | Auto-recommended | Fix a bug |
 | `validar` | Optional | N/A | No | Run E2E validation only |

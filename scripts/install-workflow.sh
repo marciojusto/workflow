@@ -422,6 +422,64 @@ PYEOF
     echo ""
 }
 
+# ── Step 6b: Install Global Skills ──
+install_global_skills() {
+    echo "Step 6b/8: Instalando skills globais no OpenCode..."
+    echo ""
+
+    if [[ ! " ${SELECTED_TOOLS[*]} " =~ "opencode" ]]; then
+        warn "OpenCode não selecionado, pulando instalação de skills globais"
+        echo ""
+        echo "=============================="
+        echo ""
+        return
+    fi
+
+    OPENCODE_SKILLS_DIR="$HOME/.config/opencode/skills"
+    mkdir -p "$OPENCODE_SKILLS_DIR"
+
+    if [ ! -d "$OPENCODE_SKILLS_DIR/tlc-spec-driven" ]; then
+        cp -r "$WORKFLOW_DIR/skills/tlc-spec-driven" "$OPENCODE_SKILLS_DIR/"
+        info "tlc-spec-driven instalada globalmente"
+    else
+        warn "tlc-spec-driven já instalada"
+    fi
+
+    if [ ! -d "$OPENCODE_SKILLS_DIR/workflow-implementation" ]; then
+        cp -r "$WORKFLOW_DIR/skills/workflow-implementation" "$OPENCODE_SKILLS_DIR/"
+        info "workflow-implementation instalada globalmente"
+    else
+        warn "workflow-implementation já instalada"
+    fi
+
+    if [ ! -d "$OPENCODE_SKILLS_DIR/teach" ]; then
+        cp -r "$WORKFLOW_DIR/skills/teach" "$OPENCODE_SKILLS_DIR/"
+        info "teach instalada globalmente"
+    else
+        warn "teach já instalada"
+    fi
+
+    if [ ! -d "$OPENCODE_SKILLS_DIR/grill-with-docs" ]; then
+        mkdir -p "$OPENCODE_SKILLS_DIR/grill-with-docs"
+        cat > "$OPENCODE_SKILLS_DIR/grill-with-docs/SKILL.md" << 'EOF'
+---
+name: grill-with-docs
+description: A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go.
+disable-model-invocation: true
+---
+
+Run a `/grilling` session, using the `/domain-modeling` skill.
+EOF
+        info "grill-with-docs instalada globalmente"
+    else
+        warn "grill-with-docs já instalada"
+    fi
+
+    echo ""
+    echo "=============================="
+    echo ""
+}
+
 # ── Step 7: Workflow Directories ──
 create_workflow_dirs() {
     echo "Step 7/8: Criando diretórios do workflow..."

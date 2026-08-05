@@ -13,7 +13,7 @@ requires_mode: plan
 - title
 - description
 - current_ac
-- jira_ticket_id
+- ticket_id
 - current_ac_index
 - acceptance_criteria (can be empty for bug tickets)
 
@@ -108,9 +108,9 @@ Este script retorna o conteúdo do Excel em formato JSON, listo para ser usado n
 3. save-plan
    - call: mcp.filesystem.write_file
    - input:
-     path: "~/Development/teamwill/mobilize/workflow/plans/{jira_ticket_id}_ac{current_ac_index}_plan.md"
+     path: "$WORKFLOW_ROOT/plans/{ticket_id}_ac{current_ac_index}_plan.md"
      content: plan as markdown document
    - logic:
-     - ensure ~/Development/teamwill/mobilize/workflow/plans/ directory exists
+     - ensure $WORKFLOW_ROOT/plans/ directory exists
      - write markdown file with plan content
      - return plan_path

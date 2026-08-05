@@ -71,10 +71,11 @@ def _read_all():
     return entries
 
 
-def cmd_start(wf_id, agent, step, description=""):
+def cmd_start(wf_id, agent, step, description="", session_id=None):
     entry = {
         "timestamp": _now(),
         "workflow_id": wf_id,
+        "session_id": session_id,
         "agent": agent,
         "step": step,
         "event": "start",
@@ -94,10 +95,22 @@ def cmd_start(wf_id, agent, step, description=""):
     running[wf_id]["current_step"] = step
     running[wf_id]["steps"].append({"step": step, "agent": agent, "started_at": _now(), "status": "in_progress"})
     _write_running(running)
+
+    # Update session if session_id provided
+    if session_id:
+        try:
+            import subprocess
+            subprocess.run([
+                sys.executable, os.path.join(os.path.dirname(__file__), "install-state.py"),
+                "session-update", session_id, f"current_step={step}"
+            ], capture_output=True, timeout=5)
+        except Exception:
+            pass
+
     print(json.dumps(entry, ensure_ascii=False))
 
 
-def cmd_end(wf_id, agent, step, status, output_summary="", error=""):
+def cmd_end(wf_id, agent, step, status, output_summary="", error="", session_id=None):
     started = None
 
     # Find matching start to compute duration
@@ -120,6 +133,7 @@ def cmd_end(wf_id, agent, step, status, output_summary="", error=""):
     entry = {
         "timestamp": _now(),
         "workflow_id": wf_id,
+        "session_id": session_id,
         "agent": agent,
         "step": step,
         "event": "end",
@@ -147,6 +161,22 @@ def cmd_end(wf_id, agent, step, status, output_summary="", error=""):
         elif all(s["status"] in ("success", "skipped") for s in running[wf_id]["steps"]):
             running[wf_id]["status"] = "completed"
         _write_running(running)
+
+    # Update session if session_id provided
+    if session_id:
+        try:
+            import subprocess
+            updates = ["current_step=", f"error={error or ''}" if status == "failure" else "error="]
+            if status == "failure":
+                updates.append("status=failed")
+            for update in updates:
+                subprocess.run([
+                    sys.executable, os.path.join(os.path.dirname(__file__), "install-state.py"),
+                    "session-update", session_id, update
+                ], capture_output=True, timeout=5)
+        except Exception:
+            pass
+
     print(json.dumps(entry, ensure_ascii=False))
 
 
@@ -352,8 +382,15 @@ if __name__ == "__main__":
         wf_id = sys.argv[2]
         agent = sys.argv[3]
         step = sys.argv[4]
-        desc = " ".join(sys.argv[5:]) if len(sys.argv) > 5 else ""
-        cmd_start(wf_id, agent, step, desc)
+        session_id = None
+        args = sys.argv[5:]
+        if "--session-id" in args:
+            idx = args.index("--session-id")
+            if idx + 1 < len(args):
+                session_id = args[idx + 1]
+                args = args[:idx] + args[idx + 2:]
+        desc = " ".join(args)
+        cmd_start(wf_id, agent, step, desc, session_id)
 
     elif cmd == "end":
         if len(sys.argv) < 6:
@@ -362,8 +399,15 @@ if __name__ == "__main__":
         agent = sys.argv[3]
         step = sys.argv[4]
         status = sys.argv[5]
-        output_summary = " ".join(sys.argv[6:]) if len(sys.argv) > 6 else ""
-        cmd_end(wf_id, agent, step, status, output_summary)
+        session_id = None
+        args = sys.argv[6:]
+        if "--session-id" in args:
+            idx = args.index("--session-id")
+            if idx + 1 < len(args):
+                session_id = args[idx + 1]
+                args = args[:idx] + args[idx + 2:]
+        output_summary = " ".join(args)
+        cmd_end(wf_id, agent, step, status, output_summary, session_id=session_id)
 
     elif cmd == "log":
         if len(sys.argv) < 6:

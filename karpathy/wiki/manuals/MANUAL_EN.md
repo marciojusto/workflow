@@ -11,30 +11,6 @@ timeout_minutes: 10
 retry: 2
 ---
 
-## Step Logging (OBRIGATÓRIO)
-
-Em cada transição de fase, regista no log centralizado:
-```bash
-LOG="python3 $WORKFLOW_ROOT/scripts/step-log.py"
-
-# Ao iniciar uma fase:
-$LOG start <workflow_id> <agente> <fase> "Descrição curta"
-
-# Ao terminar uma fase:
-$LOG end <workflow_id> <agente> <fase> <status> "Resumo do output"
-
-# Evento intermédio:
-$LOG log <workflow_id> <agente> <fase> <status> "Mensagem"
-```
-
-**Onde usar no fluxo:**
-- ANTES de invocar cada subagente → `$LOG start`
-- DEPOIS de receber resultado → `$LOG end`
-- Em cada iteração do loop de correção (test fail → fix → retest)
-- No final do workflow (completo ou cancelado)
-
----
-
 ## Configuration Loading (REQUIRED)
 
 Before any workflow operation, load configuration from the installer state file:
@@ -53,24 +29,75 @@ SPECS_DIR="$WORKFLOW_ROOT/.specs"
 SCRIPTS_DIR="$WORKFLOW_ROOT/scripts"
 ```
 
-**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY.
+**CRITICAL**: Always load this configuration at the start of every workflow mode. Do not hardcode paths or expert names. If no business expert is configured, skip domain analysis and proceed directly to SPECIFY.
+
+## Session Management (REQUIRED)
+
+Every workflow execution MUST have an active session. The orchestrator creates and manages the session lifecycle:
+
+```bash
+# Create session at workflow start
+SESSION_OUTPUT=$(python3 $WORKFLOW_ROOT/scripts/workflow.py session-create "$WORKFLOW_ID" "$MODE")
+SESSION_ID=$(echo "$SESSION_OUTPUT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('session_id', ''))")
+
+if [ -z "$SESSION_ID" ]; then
+    echo "❌ Failed to create workflow session"
+    exit 1
+fi
+
+echo "📋 Session created: $SESSION_ID"
+
+# All subsequent log calls MUST include --session-id
+LOG="python3 $WORKFLOW_ROOT/scripts/step-log.py"
+
+# Example usage:
+# $LOG start $WORKFLOW_ID orchestrator preflight "Validating environment" --session-id $SESSION_ID
+# $LOG end $WORKFLOW_ID orchestrator preflight success "Environment OK" --session-id $SESSION_ID
+```
+
+**Session Lifecycle:**
+1. **Create** — At workflow start (all modes: auto/plan/build)
+2. **Update** — After each step (step-log.py auto-updates with --session-id)
+3. **Pause** — On user request or critical error
+4. **Resume** — When user continues paused workflow
+5. **Complete** — At workflow end (success/failure/cancelled)
+
+**Checkpointing:**
+- Checkpoints are created automatically on pause
+- Manual checkpoint: `python3 $WORKFLOW_ROOT/scripts/workflow.py checkpoint $SESSION_ID <step> <ac_index>`
+- Resume from checkpoint: `python3 $WORKFLOW_ROOT/scripts/workflow.py session-resume $SESSION_ID`
 
 ---
 
+## Step Logging (OBRIGATÓRIO)
 
+Em cada transição de fase, regista no log centralizado **com session_id**:
+```bash
+LOG="python3 $WORKFLOW_ROOT/scripts/step-log.py"
 
+# Ao iniciar uma fase:
+$LOG start <workflow_id> <agente> <fase> "Descrição curta" --session-id $SESSION_ID
 
+# Ao terminar uma fase:
+$LOG end <workflow_id> <agente> <fase> <status> "Resumo do output" --session-id $SESSION_ID
 
+# Evento intermédio:
+$LOG log <workflow_id> <agente> <fase> <status> "Mensagem" --session-id $SESSION_ID
+```
 
+**Onde usar no fluxo:**
+- ANTES de invocar cada subagente → `$LOG start` (com session-id)
+- DEPOIS de receber resultado → `$LOG end` (com session-id)
+- Em cada iteração do loop de correção (test fail → fix → retest)
+- No final do workflow (completo ou cancelado) → `$LOG end` + `session-complete`
 
+---
 
-
-
-## Atlassian MCP Rules (READ-ONLY)
-- The Atlassian MCP is READ-ONLY unless explicitly ordered otherwise
-- NEVER add comments, change status, transition issues, create issues, or modify any Jira data
-- Use only: `getJiraIssue`, `searchJiraIssues`, `getTransitionsForJiraIssue`, `getVisibleJiraProjects`, `searchConfluenceUsingCql`
-- Any write operation (addComment, transitionJiraIssue, createJiraIssue, etc.) requires EXPLICIT user authorization per operation
+## Task Tracker MCP Rules (READ-ONLY)
+- The task tracker MCP is READ-ONLY unless explicitly ordered otherwise
+- NEVER add comments, change status, transition issues, create issues, or modify any tracker data
+- Use only read operations: get_ticket, search_tickets, get_linked_issues, get_attachments, get_remote_links, get_comments
+- Any write operation requires EXPLICIT user authorization per operation
 
 ## Output Guidelines (IMPORTANT - Reduce Loops)
 - Be DIRECT and CONCISE
@@ -81,6 +108,7 @@ SCRIPTS_DIR="$WORKFLOW_ROOT/scripts"
 - If code is needed: provide it directly
 - If answer is simple: just give the answer
 - Avoid loops: do not re-explain things already stated
+
 ---
 
 ## Preflight (Step 0 — OBRIGATÓRIO em todos os modos)
@@ -98,27 +126,60 @@ python3 $WORKFLOW_ROOT/scripts/harness-health-check.py --preflight
 
 ## Execution Mode Selection
 
-Antes de continuar, perguntar ao utilizador:
+No início do workflow, perguntar ao utilizador:
 ```
 Qual modo de execução desejas?
 1. 🎙️ Grilling Mode — entrevista rigorosa com grill-with-docs para gerar ADRs e glossário antes de avançar
-2. 🤖 Automated Mode — workflow autónomo sem interrupções
+2. 🤖 Automated Mode — seguir diretamente para auto/plan/build
 
 Digite: "grill" ou "auto"
 ```
 
 | Modo | Comportamento |
 |------|---------------|
-| `grill` | Invocar skill `grill-with-docs` antes de prosseguir; esperar que a entrevista termine e gere ADRs/glossário |
-| `auto` | Prosseguir diretamente para o fluxo automático |
+| `grill` | Executar sessão `/grilling` primeiro; usar output como contexto inicial |
+| `auto` | Prosseguir diretamente para Operation Mode Selection (`auto`/`plan`/`build`) |
+
+### Grill Output Contract
+
+Quando o utilizador escolhe `grill`, os artefactos ficam em:
+```
+$SPECS_DIR/grill/{ticket_id_or_topic}/
+├── adrs/
+│   └── ADR-001-{slug}.md
+└── glossary/
+    └── glossary.md
+```
+
+Regras:
+- Se houver `ticket_id` no pedido → usar `$SPECS_DIR/grill/{ticket_id}/`
+- Se não houver ticket → criar `$SPECS_DIR/grill/auto-{timestamp}/`
+- O passo seguinte (Operation Mode Selection) carrega automaticamente esta pasta como contexto adicional
 
 ### Grilling Mode Behavior
 
-Após o utilizador escolher `grill`:
-1. Invocar skill `grill-with-docs` automaticamente
-2. Esperar que a sessão `/grilling` termine
-3. Prosseguir para o Operation Mode Selection normal (`auto`/`plan`/`build`)
-4. Entregar ADRs e glossário gerados como contexto para os passos seguintes
+1. Definir `grill_id` conforme regra acima
+2. Invocar skill `grill-with-docs` com objetivo de gerar ADRs + glossário para `grill_id`
+3. Esperar que a sessão `/grilling` termine
+4. Carregar conteúdo de `.specs/grill/{grill_id}/` como contexto inicial
+5. Prosseguir para Operation Mode Selection normal (`auto`/`plan`/`build`)
+6. Informar: "🎙️ Grilling concluído. ADRs e glossário carregados como contexto."
+
+## Task Tracker Detection (Step 0.2 — OBRIGATÓRIO)
+
+Antes de extrair o ticket, perguntar ao utilizador:
+
+
+| Resposta | Fluxo |
+|----------|-------|
+|  | Prosseguir para  |
+|  | Prosseguir para  com adapter Redmine |
+|  | Perguntar nome/API config, depois  |
+|  | Saltar para  |
+
+**CRITICAL**: Esta etapa é obrigatória. Não assumir que o usuário tem um rastreador de tarefas configurado.
+---
+
 
 ## Operation Mode Selection
 
@@ -142,7 +203,7 @@ Digite: "auto", "plan", ou "build"
 
 ### Project Type Auto-Detection
 
-The orchestrator automatically detects the project type based on file indicators:
+The orchestrator automatically detects the project type based on file indicators in the current project directory:
 ```
 Detection Logic (step 0.1):
 - If pom.xml exists → project_type = "java-spring-backend"
@@ -160,12 +221,17 @@ Project paths:
 ### AUTO Mode (Full Workflow)
 ```
 orchestrator (auto mode):
-0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
+0. SESSION: Create workflow session via workflow.py session-create
+   → Store SESSION_ID for all subsequent logging
+   → Log: $LOG start $WORKFLOW_ID orchestrator init "Starting AUTO workflow" --session-id $SESSION_ID
+0.1 PREFLIGHT: Run python3 $WORKFLOW_ROOT/scripts/harness-health-check.py --preflight → abort if fails
+   → Log: $LOG end $WORKFLOW_ID orchestrator preflight <status> "<result>" --session-id $SESSION_ID
 1. START: Invoke @wiki-keeper to query existing knowledge
 2. Perguntar ao utilizador se deseja análise técnica com @$BUSINESS_EXPERT
    - "Sim" → Delegar análise de domínio a @$BUSINESS_EXPERT
    - "Não" → Saltar este passo e seguir diretamente para SPECIFY
-3. $BUSINESS_EXPERT generates plan → invokes @review-plan (independent validation)
+3. Se $BUSINESS_EXPERT foi usado → gerar plano → invocar @review-plan (independent validation)
+   Se $BUSINESS_EXPERT não foi usado → gerar plano diretamente via tlc-spec-driven SPECIFY
 4. On approval: Invoke @workflow-implementation (BUILD mode):
    - execute-plan → coherence-checker → review-implementation
    - generate-regression-test (extracts test_trace from step 7, runs trace-to-playwright.py) → run-regression-tests → log-history
@@ -173,21 +239,29 @@ orchestrator (auto mode):
 6. If tests fail: analyze errors → delegate fixes to @$BUSINESS_EXPERT
 7. Repeat until tests pass or human intervention needed
 8. END: Invoke @wiki-keeper to create ticket note
+   → Complete session: workflow.py session-complete $SESSION_ID completed
+   → Log: $LOG end $WORKFLOW_ID orchestrator complete success "Workflow completed" --session-id $SESSION_ID
 ```
 
 ### PLAN Mode (Planning Only)
 ```
 orchestrator (plan mode):
-0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
+0. SESSION: Create workflow session via workflow.py session-create
+   → Store SESSION_ID for all subsequent logging
+0.1 PREFLIGHT: Run python3 $WORKFLOW_ROOT/scripts/harness-health-check.py --preflight → abort if fails
 1. START: Invoke @wiki-keeper to query existing knowledge
 2. Perguntar ao utilizador se deseja análise técnica com @$BUSINESS_EXPERT
    - "Sim" → Delegar análise de domínio a @$BUSINESS_EXPERT
    - "Não" → Saltar este passo e seguir diretamente para SPECIFY
-3. Invoke @workflow-implementation (partial):
+3. Se $BUSINESS_EXPERT foi usado → gerar plano → invocar @review-plan (independent validation)
+   Se $BUSINESS_EXPERT não foi usado → gerar plano diretamente via tlc-spec-driven SPECIFY
+4. Invoke @workflow-implementation (partial):
    - create-plan (YES)
    - validate-plan (YES)
    - execute-plan (SKIP - no code execution)
-4. NOTIFY USER: "📋 Planejamento Concluído
+5. PAUSE: Pause session (planning complete, waiting for BUILD)
+   → workflow.py session-pause $SESSION_ID "planning_complete"
+   → NOTIFY USER: "📋 Planejamento Concluído
 
 Planejamento已完成:
 - Busca de conhecimento (wiki-keeper)
@@ -199,20 +273,26 @@ Próximo passo requer execução de código.
 Para continuar, digite: BUILD
 
 Para cancelar, digite: STOP"
-5. STOP HERE - Wait for user to switch to BUILD mode
+6. STOP HERE - Wait for user to switch to BUILD mode
 ```
 
 ### BUILD Mode (Execution Only)
 ```
 orchestrator (build mode):
-0. PREFLIGHT: Run python3 harness-health-check.py --preflight → abort if fails
+0. SESSION: Resume existing session OR create new one
+   → If resuming: workflow.py session-resume <session_id>
+   → If new: workflow.py session-create $WORKFLOW_ID build
+0.1 PREFLIGHT: Run python3 $WORKFLOW_ROOT/scripts/harness-health-check.py --preflight → abort if fails
+0.2 GRILL CTX: Se Execution Mode == grill, carregar $SPECS_DIR/grill/{grill_id}/ como contexto adicional
 1. READ existing plan from $WORKFLOW_ROOT/plans/{ticket_id}.json
 2. If no valid plan exists:
    - ERROR: "Plano não encontrado. Execute primeiro em modo AUTO ou PLAN"
+   - session-complete $SESSION_ID failed
    - STOP
 3. Validate plan exists and is complete
 4. request-human-approval (OBRIGATÓRIO)
 5. Invoke @workflow-implementation (BUILD mode):
+   - Pass grill context path if exists
    - execute-plan (YES - code execution)
    - coherence-checker (YES - architecture validation)
    - playwright-ac-validator (YES)
@@ -220,6 +300,7 @@ orchestrator (build mode):
    - generate-regression-test (via trace-to-playwright.py from test_trace) → run-regression-tests → log-history
 6. Delegate test execution to @validator
 7. END: Invoke @wiki-keeper to create ticket note
+   → session-complete $SESSION_ID completed
 ```
 
 ### User Input Handling for Mode Switch
@@ -239,7 +320,7 @@ User types: anything else
 
 ## Orchestration Flow (AUTO - Default)
 
-0. **PREFLIGHT**: Run `harness-health-check.py --preflight`
+0. **PREFLIGHT**: Run `$WORKFLOW_ROOT/scripts/harness-health-check.py --preflight`
    - If exit code != 0: ABORT — show failures to user
    - If exit code == 0: log "Preflight passed" and proceed
 1. Receive user task or ticket to implement
@@ -281,21 +362,11 @@ When Playwright tests fail:
 | Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
 | Implementation workflow | @workflow-implementation | (skill) | 2 | 30min |
 
-## Agent Delegation (Backend - Java/Node)
-
-| Task | Delegate To | Model | Retry | Timeout |
-|------|-------------|-------|-------|----------|
-| Knowledge management (start) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
-| Knowledge management (end) | @wiki-keeper | kilo/qwen/qwen3.5-flash-02-23 | 3 | 5min |
-| Deep domain analysis | @$BUSINESS_EXPERT | kilo/minimax/minimax-m2.7 | 2 | 10min |
-| Test execution (JUnit/Maven) | @validator | kilo/stepfun/step-3.7-flash:free | 2 | 15min |
-| Implementation workflow | @workflow-implementation | (skill) | 2 | 30min |
-
 ## Fallback Models
 
 If primary model fails, use these in order:
 1. wiki-keeper: kilo/qwen/qwen3.6-flash → kilo/qwen/qwen3.5-flash-02-23
-2. miles-expert: kilo/minimax/minimax-m2.7 → openrouter/qwen-3.6-plus
+2. $BUSINESS_EXPERT: kilo/minimax/minimax-m2.7 → openrouter/qwen-3.6-plus
 3. validator: kilo/stepfun/step-3.7-flash:free → kilo/minimax/minimax-m2.7
 
 ## Workflow Integration
@@ -305,7 +376,7 @@ If primary model fails, use these in order:
 - Use @wiki-keeper at END for creating ticket notes in wiki
 - Use @$BUSINESS_EXPERT for analyzing bugs and failures
 - Use @validator for running tests and capturing failures
-- Use **tlc-spec-driven** for structured specification (SPECIFY) and design (DESIGN) after miles-expert analysis
+- Use **tlc-spec-driven** for structured specification (SPECIFY) and design (DESIGN) after $BUSINESS_EXPERT analysis
   - SPECIFY always runs (generates `$SPECS_DIR/features/{ticket_id}/spec.md`)
   - DESIGN auto-sizes by complexity (skipped for straightforward changes)
   - Requirement IDs from spec.md feed into create-plan step
@@ -322,6 +393,91 @@ If primary model fails, use these in order:
 
 The validator automatically adapts to the detected project type.
 
+## Backend Access Instructions
+
+When implementing features, you may need to investigate backend logic to understand API contracts, data models, or business rules.
+
+### Project Discovery
+
+Use the project root detected from the current working directory or configured in the installer state file:
+```bash
+PROJECT_ROOT=$(pwd)
+WORKFLOW_ROOT=$(python3 -c "import json; print(json.load(open('$STATE_FILE')).get('workflow_root', ''))" 2>/dev/null || echo "")
+```
+
+Look for these indicators to identify the backend project:
+- `pom.xml` → Java Spring backend
+- `package.json` + `server/` → Node.js backend
+- `src/main/java/` → Java project
+
+### Common Investigation Paths
+
+| What You Need | Path |
+|---------------|------|
+| API Endpoint contracts | `{project_root}/src/main/openapi/*.yaml` |
+| Business logic | `{project_root}/src/main/java/.../domain/*/service/impl/` |
+| API Client implementation | `{project_root}/src/main/java/.../core/client/` |
+| Constants/Enums | `{project_root}/src/main/java/.../core/utils/` or `core/enums/` |
+| Configuration | `{project_root}/src/main/resources/application.properties` |
+
+---
+
+## Teach Mode (Optional — Post-Plan Explanation)
+
+After `validate-plan` succeeds and before `execute-plan` starts, the orchestrator should evaluate whether to recommend `teach`.
+
+### Complexity Scoring
+
+Calculate a complexity score based on the plan output:
+
+| Signal | Points |
+|--------|--------|
+| Files modified > 3 | +1 |
+| New domain concepts introduced | +1 |
+| spec.md length > 150 lines OR requirements > 5 | +1 |
+| Business expert was NOT consulted | +1 |
+| Cross-module changes (frontend + backend + API) | +1 |
+| New entities/DTOs/controllers created | +1 |
+
+### Recommendation Logic
+
+```bash
+COMPLEXITY_SCORE=<calculated_score>
+
+if [ "$COMPLEXITY_SCORE" -ge 2 ]; then
+    # Recommend teach
+    echo "📚 Este plano tem complexidade média/alta."
+    echo "Queres que eu gere uma explicação didática (teach) antes de executar? (s/n)"
+    read -r TEACH_ANSWER
+    if [[ "$TEACH_ANSWER" =~ ^[Ss]$ ]]; then
+        # Invoke teach skill
+        echo "Invocando teach para explicar o plano..."
+        # Save explanation to $WORKFLOW_ROOT/.specs/teach/{ticket_id}/explanation.md
+    fi
+else
+    echo "✓ Plano simples, pulando explicação didática."
+fi
+```
+
+### Teach Output
+
+If user accepts, invoke `teach` skill and save outputs to:
+```
+$WORKFLOW_ROOT/.specs/teach/{ticket_id}/
+├── explanation.md    # Main explanation in plain language
+├── glossary.md       # Domain-specific terms
+└── diagram.md        # Architecture diagram (if applicable)
+```
+
+### Integration Points
+
+- **Trigger**: After `validate-plan` succeeds
+- **Gate**: Optional — does not block execution
+- **Skip conditions**:
+  - User explicitly declines
+  - Complexity score < 2
+  - User is already familiar with the domain (detected via learning records)
+---
 
 ## Key Behaviors
 
@@ -333,8 +489,8 @@ The validator automatically adapts to the detected project type.
 ## Plan Persistence
 
 Plans are automatically saved by workflow-implementation's log-history:
-- JSON: `.workflow/history/{jira_ticket_id}.json`
-- Markdown: `.workflow/history/{jira_ticket_id}_log.md`
+- JSON: `.workflow/history/{ticket_id}.json`
+- Markdown: `.workflow/history/{ticket_id}_log.md`
 
 Build mode reads from these files to continue execution.
 
@@ -344,18 +500,50 @@ Build mode reads from these files to continue execution.
 |-------|--------|---------------------|------------------------|-----------|
 | 0 | orchestrator | Preflight exit code == 0 | Output do `harness-health-check.py --preflight` | **ABORT** — ambiente inválido |
 | START | wiki-keeper | Retorna resumo de conhecimento existente + novos ficheiros ingeridos | Markdown com "Existing Knowledge" + "New Knowledge Ingested" | Ignorar (continua sem wiki) |
-| Análise | miles-expert | Plano técnico completo com: APIs afetadas, ficheiros a modificar, riscos | Plano em `$WORKFLOW_ROOT/plans/` ou objecto no output | Tentar fallback model; se falhar → parar (cannot proceed) |
-| Spec | tlc-spec-driven | `spec.md` com requirement IDs traçáveis | `$SPECS_DIR/features/{ticket_id}/spec.md` (+ design.md se Large/Complex) | Usar output do miles-expert como fallback (sem traceability) |
-| Revisão | review-plan | Validação independente do plano | `approved: true\|false` + `issues[]` + `feedback[]` | Se rejected → voltar a miles-expert para revisão. Se timeout → approvar com ressalvas |
+| Análise | $BUSINESS_EXPERT | Plano técnico completo com: APIs afetadas, ficheiros a modificar, riscos | Plano em `$WORKFLOW_ROOT/plans/` ou objecto no output | Tentar fallback model; se falhar → parar (cannot proceed) |
+| Spec | tlc-spec-driven | `spec.md` com requirement IDs traçáveis | `$SPECS_DIR/features/{ticket_id}/spec.md` (+ design.md se Large/Complex) | Usar output do $BUSINESS_EXPERT como fallback (sem traceability) |
+| Revisão | review-plan | Validação independente do plano | `approved: true\|false` + `issues[]` + `feedback[]` | Se rejected → voltar a $BUSINESS_EXPERT para revisão. Se timeout → approvar com ressalvas |
 | Aprovação | humano | Usuário digita `approve` | Texto explícito | Parar até decisão |
 | Criação Plano | workflow-implementation (create-plan) | Plano inclui secção "Code Principles Adherence" com DRY/KISS/YAGNI/SOLID/SoC | `.workflow/history/{ticket_id}_plan.md` com secção 5 completa | Se faltar secção 5 → rejeitar, loop para create-plan |
-| Validação Plano | workflow-implementation (validate-plan) | Plano aprovado nos princípios + cobertura AC + clareza | `is_valid: true` + `code_principles: {dry: ok, kiss: ok, ...}` | Se [PRINCIPLE] → loop para create-plan (max 2) |
-| Execução | workflow-implementation | Implementação concluída | Código criado/modificado | Reverter e reportar |
+| Validação Plano | workflow-implementation (validate-plan) + plan-validator.py | Quality score ≥ 70 + cobertura AC + princípios OK | `quality_score: 85` + `is_valid: true` + `issues: []` | Score < 70 → loop para create-plan (max 2) |
+| Snapshot | snapshot-manager.py | Snapshot criado antes de execute-plan | `snapshot_id: auto_execute-plan_...` | Se falhar → continuar sem snapshot (não-bloqueante) |
+| Execução | workflow-implementation | Implementação concluída | Código criado/modificado | Rollback disponível via snapshot-manager |
 | Coerência | coherence-checker | Verificação arquitectural | `coherent: true\|false` + `issues[]` | Se incoherent → parar, reportar issues ao humano |
 | Qualidade | code-quality-checker | DRY/KISS/YAGNI/SOLID/SoC válidos + SonarQube sem blockers | Output dos validadores | Se SonarQube blockers → corrigir antes de prosseguir |
 | E2E | e2e-runner | Todos os ACs passam | JSON com `passed: true` + `ac_results` + `test_trace` | Falha → loop análise+correcção (até 3 iterações) |
 | Regr. Test | workflow-implementation (step 7.5) | Teste de regressão gerado do `test_trace` | `.spec.ts` em `playwright/tests/regression/` + `--run --validate` OK | test_trace não disponível → criar manualmente do template. Falha de validação → reportar ao humano |
 | END | wiki-keeper | Nota de ticket criada em `wiki/projects/` + log + sync | Ficheiro .md no disco | Ignorar (não-blocking) |
+
+## Rollback and Recovery
+
+**Automatic Snapshots**: Before critical steps, snapshots are created automatically:
+- Before `execute-plan` — snapshot of plans, specs, and source code
+- Before `run-tests` — snapshot of tests and reports
+- After `log-history` — snapshot of history files
+
+**Manual Rollback**:
+```bash
+# List snapshots for current session
+python3 $WORKFLOW_ROOT/scripts/workflow.py snapshot-list $SESSION_ID
+
+# Rollback to latest snapshot
+python3 $WORKFLOW_ROOT/scripts/workflow.py rollback $SESSION_ID
+
+# Rollback to specific snapshot
+python3 $WORKFLOW_ROOT/scripts/workflow.py rollback $SESSION_ID --snapshot-id <id>
+
+# Rollback to specific directory
+python3 $WORKFLOW_ROOT/scripts/workflow.py rollback $SESSION_ID --target-dir /path/to/restore/
+```
+
+**When to Rollback**:
+- Tests fail repeatedly and code is in inconsistent state
+- Implementation breaks existing functionality
+- User wants to try a different approach
+
+**Snapshot Retention**: Last 10 snapshots per session are kept automatically.
+
+---
 
 ## Error Handling Matrix
 
@@ -364,7 +552,7 @@ Cada erro é tratado conforme o tipo e a criticidade do passo:
 ### Type: Timeout
 | Criticidade | Acção | Limite |
 |-------------|-------|--------|
-| **Bloqueante** (miles-expert, review-plan, execute-plan) | Retry 2x com mesmo modelo; se persistir → fallback model; se ainda falhar → **ABORT** | 3 tentativas totais |
+| **Bloqueante** ($BUSINESS_EXPERT, review-plan, execute-plan) | Retry 2x com mesmo modelo; se persistir → fallback model; se ainda falhar → **ABORT** | 3 tentativas totais |
 | **Não-bloqueante** (wiki-keeper, coherence-checker) | Retry 1x; se falhar → skip step, log warning | 2 tentativas |
 | **Teste** (e2e-runner) | Retry 1x com screenshots do erro; log detalhado | 2 tentativas |
 
@@ -386,7 +574,8 @@ Cada erro é tratado conforme o tipo e a criticidade do passo:
 ### Type: Rejected (review-plan ou coherence-checker)
 | Acção | Quando |
 |-------|--------|
-| review-plan rejected | Voltar a miles-expert com feedback para revisão do plano (max 2 iterações) |
+| review-plan rejected | Voltar a $BUSINESS_EXPERT com feedback para revisão do plano (max 2 iterações) |
+| plan-validator score < 70 | Loop para create-plan com feedback específico do validator (max 2 iterações) |
 | coherence-checker incoherent | Parar execução, listar issues ao humano, pedir decisão (fix/correção manual/continuar) |
 | code-quality-checker com blockers | Corrigir blockers automaticamente; se não for possível → reportar ao humano |
 
@@ -397,7 +586,7 @@ O workflow só avança para o passo seguinte quando o critério do passo actual 
 ```
 Gate 0 (preflight passed) → exit code == 0 (bloqueante — aborta se falhar)
 Gate 1 (wiki-keeper complete) → qualquer output é suficiente (não-bloqueante)
-Gate 1.5 (spec exists) → `$SPECS_DIR/features/{ticket_id}/spec.md` existe (não-bloqueante — fallback para miles-expert output)
+Gate 1.5 (spec exists) → `$SPECS_DIR/features/{ticket_id}/spec.md` existe (não-bloqueante — fallback para $BUSINESS_EXPERT output)
 Gate 2 (plan exists) → plano válido em disco ou no output
 Gate 3 (plan approved) → review-plan: approved=true + humano: "approve"
 Gate 4 (code coherent) → coherence-checker: coherent=true
@@ -433,9 +622,20 @@ Aguardar input do humano antes de qualquer acção.
 
 To cancel workflow at any time, user can type: /stop or /cancel
 - Current agent will finish gracefully
-- Progress will be logged for later resume
-- Log failure state with: `$LOG end <workflow_id> orchestrator <fase> cancelled "Cancelado pelo usuário"`
-- User will be notified of incomplete state
+- Session is paused automatically with reason "user_cancelled"
+- Progress is logged for later resume
+- Log failure state with: `$LOG end <workflow_id> orchestrator <fase> cancelled "Cancelado pelo usuário" --session-id $SESSION_ID`
+- User will be notified of incomplete state and how to resume
+
+**Resume after cancel:**
+```bash
+# List paused sessions
+python3 $WORKFLOW_ROOT/scripts/workflow.py session-list paused
+
+# Resume specific session
+python3 $WORKFLOW_ROOT/scripts/workflow.py session-resume <session_id>
+```
+
 ## Parallel E2E Execution (NEW - v1.0.4)
 
 When executing E2E tests for tickets with 3+ Acceptance Criteria, use parallel execution to reduce time by 50-67%.

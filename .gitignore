@@ -1,13 +1,31 @@
-# Runtime / local artifacts
-.workflow-installer-state.json
-*.backup.*
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 
 # Logs
 logs/*.ndjson
-logs/*.json
+logs/_running.json
 
-# IDE / OS
-.idea
-.vscode
+# Runtime data
+.workflow/history/
+.workflow/snapshots/
+.workflow/traces/
+
+# Test outputs
+test-results/
+playwright-report/
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Backups
+*.bak
+*.backup
+
+# Temporary files
+*.tmp
+*.temp

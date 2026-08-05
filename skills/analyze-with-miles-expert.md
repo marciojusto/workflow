@@ -10,7 +10,7 @@ retry: 1
 on_error: report_and_continue
 
 ## Inputs
-- jira_ticket_id
+- ticket_id
 - title
 - description
 - acceptance_criteria
@@ -52,7 +52,7 @@ This step invokes the miles-expert agent to perform deep domain analysis after t
    ```
    Analyze the following ticket for implementation planning:
 
-   Ticket: {jira_ticket_id}
+   Ticket: {ticket_id}
    Title: {title}
    Description: {description}
 
