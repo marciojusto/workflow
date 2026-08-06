@@ -29,6 +29,11 @@ Comandos de Snapshot/Rollback:
   snapshot-latest <session_id>
   rollback <session_id> [--snapshot-id ID] [--target-dir DIR]
 
+Comandos de Segurança:
+  security-scan [--project-root DIR] [--output FILE]
+  security-baseline [--project-root DIR] --output FILE
+  security-compare [--project-root DIR] --baseline FILE
+
 Comandos de Estado:
   status                                   Mostra estado completo
   checkpoint <session_id> <step> <ac_idx>  Cria checkpoint manual
@@ -52,6 +57,7 @@ STATE_SCRIPT = os.path.join(SCRIPTS_DIR, "install-state.py")
 LOG_SCRIPT = os.path.join(SCRIPTS_DIR, "step-log.py")
 VALIDATOR_SCRIPT = os.path.join(SCRIPTS_DIR, "plan-validator.py")
 SNAPSHOT_SCRIPT = os.path.join(SCRIPTS_DIR, "snapshot-manager.py")
+SECURITY_SCRIPT = os.path.join(SCRIPTS_DIR, "security-scanner.py")
 
 
 def run_script(script: str, args: list, capture: bool = True) -> str:
@@ -390,6 +396,87 @@ def cmd_snapshot_latest(args):
     print_json(output)
 
 
+def cmd_security_scan(args):
+    """Run security scan."""
+    project_root = "."
+    output = None
+    
+    i = 0
+    while i < len(args):
+        if args[i] == "--project-root" and i + 1 < len(args):
+            project_root = args[i + 1]
+            i += 2
+        elif args[i] == "--output" and i + 1 < len(args):
+            output = args[i + 1]
+            i += 2
+        else:
+            i += 1
+    
+    cmd = [sys.executable, SECURITY_SCRIPT, "scan", "--project-root", project_root]
+    if output:
+        cmd.extend(["--output", output])
+    cmd.append("--format")
+    cmd.append("json")
+    
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    print(result.stdout)
+    if result.stderr:
+        print(result.stderr, file=sys.stderr)
+    sys.exit(result.returncode)
+
+
+def cmd_security_baseline(args):
+    """Create security baseline."""
+    project_root = "."
+    output = None
+    
+    i = 0
+    while i < len(args):
+        if args[i] == "--project-root" and i + 1 < len(args):
+            project_root = args[i + 1]
+            i += 2
+        elif args[i] == "--output" and i + 1 < len(args):
+            output = args[i + 1]
+            i += 2
+        else:
+            i += 1
+    
+    if not output:
+        print("Error: --output required for baseline")
+        sys.exit(1)
+    
+    cmd = [sys.executable, SECURITY_SCRIPT, "baseline", "--project-root", project_root, "--output", output]
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    print(result.stdout)
+    sys.exit(result.returncode)
+
+
+def cmd_security_compare(args):
+    """Compare current scan with baseline."""
+    project_root = "."
+    baseline = None
+    
+    i = 0
+    while i < len(args):
+        if args[i] == "--project-root" and i + 1 < len(args):
+            project_root = args[i + 1]
+            i += 2
+        elif args[i] == "--baseline" and i + 1 < len(args):
+            baseline = args[i + 1]
+            i += 2
+        else:
+            i += 1
+    
+    if not baseline:
+        print("Error: --baseline required for compare")
+        sys.exit(1)
+    
+    cmd = [sys.executable, SECURITY_SCRIPT, "compare", "--project-root", project_root, "--baseline", baseline]
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    print(result.stdout)
+    sys.exit(result.returncode)
+
+
 def cmd_rollback(args):
     """Rollback to a snapshot."""
     if not args:
@@ -457,6 +544,9 @@ def main():
         "snapshot-create": cmd_snapshot_create,
         "snapshot-list": cmd_snapshot_list,
         "snapshot-latest": cmd_snapshot_latest,
+        "security-scan": cmd_security_scan,
+        "security-baseline": cmd_security_baseline,
+        "security-compare": cmd_security_compare,
         "status": cmd_status,
         "checkpoint": cmd_checkpoint,
         "rollback": cmd_rollback,

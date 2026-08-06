@@ -152,6 +152,20 @@ If user accepts → invoke `teach` skill, save to `.specs/teach/{ticket_id}/`
 
 Invoke `e2e-validator` with all ACs → capture screenshots → JSON report → wiki note → STOP
 
+## Step 2.5: security-baseline (NEW)
+
+**Before any implementation**, create security baseline of existing code:
+
+```bash
+python3 $WORKFLOW_ROOT/scripts/security-scanner.py baseline \
+  --project-root $PROJECT_ROOT \
+  --output $WORKFLOW_ROOT/.workflow/security/baseline_{ticket_id}.json
+```
+
+**Purpose**: Capture existing vulnerabilities so we can detect if new code introduces regressions.
+
+**Non-blocking**: If scan fails, workflow continues (log warning only).
+
 ## Step 3: check-existing-plan
 
 If plan exists → skip to step 6 (request-human-approval)
@@ -253,12 +267,37 @@ Invoke: `review-implementation.md`
 Input: implementation, current_ac, acceptance_criteria
 If rejected → loop to create-plan
 
+## Step 9a: security-scan (NEW)
+
+**After implementation**, scan for new vulnerabilities:
+
+```bash
+python3 $WORKFLOW_ROOT/scripts/security-scanner.py scan \
+  --project-root $PROJECT_ROOT \
+  --output $WORKFLOW_ROOT/.workflow/security/scan_{ticket_id}_ac{current_ac_index}.json
+```
+
+**Compare with baseline**:
+```bash
+python3 $WORKFLOW_ROOT/scripts/security-scanner.py compare \
+  --project-root $PROJECT_ROOT \
+  --baseline $WORKFLOW_ROOT/.workflow/security/baseline_{ticket_id}.json
+```
+
+**Gate**: If new CRITICAL or HIGH vulnerabilities introduced → **BLOCK** and report to user.
+
+**Output**: Security report with new/fixed issues.
+
+If security gate fails → loop to create-plan or escalate to human.
+
 ## Step 9b: run-code-quality-checks
 
 Per project_type:
 - Frontend: `npm run lint` then SonarQube
 - Java: `./mvnw verify -DskipTests` then SonarQube
 - Node: `npm run lint` then SonarQube
+
+**Note**: SonarQube covers code quality, security-scanner.py covers vulnerability detection.
 
 ## Step 9c: run-regression-tests
 

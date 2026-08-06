@@ -76,6 +76,28 @@ workflow/
 
 ## ✨ New Features (v3.0)
 
+### Security Scanning (NEW)
+Vulnerability detection for dependencies, secrets, and anti-patterns:
+```bash
+# Scan for vulnerabilities
+python3 scripts/workflow.py security-scan --project-root .
+
+# Create baseline before implementation
+python3 scripts/workflow.py security-baseline --project-root . --output baseline.json
+
+# Compare after implementation (detect regressions)
+python3 scripts/workflow.py security-compare --project-root . --baseline baseline.json
+```
+
+**Detects:**
+- Hardcoded secrets (API keys, passwords, tokens)
+- SQL injection patterns
+- XSS vulnerabilities
+- Command injection (eval, exec, os.system)
+- Insecure deserialization (pickle)
+- SSL verification disabled
+- Vulnerable dependencies (npm audit, safety)
+
 ### Session Management
 Pause, resume, and track workflows with full state persistence:
 ```bash
@@ -237,7 +259,7 @@ python3 -m unittest discover tests -v
 ```
 
 **Test Coverage:**
-- ✅ 31 unit tests (install-state, step-log, plan-validator, snapshot-manager)
+- ✅ 40 unit tests (install-state, step-log, plan-validator, snapshot-manager, security-scanner)
 - ✅ 4 integration tests (complete workflow lifecycle)
 
 ---
