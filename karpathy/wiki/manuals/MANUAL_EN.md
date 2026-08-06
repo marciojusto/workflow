@@ -510,6 +510,7 @@ Build mode reads from these files to continue execution.
 | Execução | workflow-implementation | Implementação concluída | Código criado/modificado | Rollback disponível via snapshot-manager |
 | Coerência | coherence-checker | Verificação arquitectural | `coherent: true\|false` + `issues[]` | Se incoherent → parar, reportar issues ao humano |
 | Qualidade | code-quality-checker | DRY/KISS/YAGNI/SOLID/SoC válidos + SonarQube sem blockers | Output dos validadores | Se SonarQube blockers → corrigir antes de prosseguir |
+| Segurança | security-scanner.py | Nenhuma vulnerabilidade CRITICAL/HIGH nova introduzida | `passed: true` + `new_issues: 0` | Se novas vulnerabilidades → loop para create-plan ou escalar |
 | E2E | e2e-runner | Todos os ACs passam | JSON com `passed: true` + `ac_results` + `test_trace` | Falha → loop análise+correcção (até 3 iterações) |
 | Regr. Test | workflow-implementation (step 7.5) | Teste de regressão gerado do `test_trace` | `.spec.ts` em `playwright/tests/regression/` + `--run --validate` OK | test_trace não disponível → criar manualmente do template. Falha de validação → reportar ao humano |
 | END | wiki-keeper | Nota de ticket criada em `wiki/projects/` + log + sync | Ficheiro .md no disco | Ignorar (não-blocking) |
@@ -576,6 +577,7 @@ Cada erro é tratado conforme o tipo e a criticidade do passo:
 |-------|--------|
 | review-plan rejected | Voltar a $BUSINESS_EXPERT com feedback para revisão do plano (max 2 iterações) |
 | plan-validator score < 70 | Loop para create-plan com feedback específico do validator (max 2 iterações) |
+| security-scanner new CRITICAL/HIGH | Loop para create-plan com vulnerability report, ou escalar se não resolvível |
 | coherence-checker incoherent | Parar execução, listar issues ao humano, pedir decisão (fix/correção manual/continuar) |
 | code-quality-checker com blockers | Corrigir blockers automaticamente; se não for possível → reportar ao humano |
 
@@ -592,7 +594,8 @@ Gate 3 (plan approved) → review-plan: approved=true + humano: "approve"
 Gate 4 (code coherent) → coherence-checker: coherent=true
 Gate 5 (code quality OK) → SonarQube sem blockers, princípios OK
 Gate 6 (E2E passed) → e2e-runner: passed=true
-Gate 6.5 (regression test generated) → `test_trace` disponível no output do step 7 (não-bloqueante — fallback: template manual)
+Gate 6.5 (security scan passed) → security-scanner: passed=true, no new CRITICAL/HIGH vulnerabilities
+Gate 6.6 (regression test generated) → `test_trace` disponível no output do step 7 (não-bloqueante — fallback: template manual)
 Gate 7 (knowledge recorded) → wiki-keeper criou nota (não-bloqueante)
 ```
 
