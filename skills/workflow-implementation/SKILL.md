@@ -125,6 +125,23 @@ After context gathering (from tracker or standalone), invoke tlc-spec-driven ski
 
 **Scope:** For all modes: nova, bug, continuar, standalone.
 
+## Step 1.2: architecture-skill (OPTIONAL)
+
+**Greenfield Java projects only.** After spec-driven-planning, offer architectural guidance when the project is a new/empty Spring Boot app.
+
+**Trigger** — only if `detect-project-type` returned `java-spring-backend` AND the project is greenfield (no `src/` with existing domain packages):
+
+```
+🏗️ Este é um projeto Spring Boot novo. Queres carregar a skill
+de arquitetura spring-boot-modular-monolith-ddd como contexto
+para o DESIGN (módulos, ownership, bounded contexts)? (s/n)
+```
+
+- If `sim` → invoke `spring-boot-modular-monolith-ddd` skill and apply its principles (module organization, ownership, DDD tactical/strategic) to `design.md`
+- If `não` → skip
+
+**CRITICAL**: Optional and user-driven. Never auto-trigger, never block or delay execution if the user declines or the skill is unavailable.
+
 ## Step 1.5: teach (OPTIONAL)
 
 After spec-driven-planning, evaluate complexity:
